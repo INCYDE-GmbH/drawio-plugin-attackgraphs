@@ -20,7 +20,7 @@ Shapes can now be used to aggregate values in a graph depending on other connect
 For aggregation functions, an edge to a child cell can be annotated with an impact or [edge weight](../aggregation_functions.md#example-of-an-aggregation-function-accessing-a-child's-impact), which can be used as a parameter of the function. This can be done by typing a number when having an edge selected.
 
 ### AttackGraph cells
-AttackGraph cells will render their (aggregated) attribute values inside the cell shape including an icon, if such attribute was defined in the global [default attributes dialog](default_attributes.md#Icon-Legend).
+AttackGraph cells will render their (aggregated) attribute values inside the cell shape including an icon, if such attribute was defined in the global [default attributes dialog](../default_attributes.md#Icon-Legend).
 
 ### Converting shapes to attackgraph shapes
 All shapes can be used to aggregate values in a graph (update upwards), but only attackgraph shapes will render their aggregated or computed attributes. You can however convert your shapes to attackgraph shapes by selecting them and right-clicking. In the `pop-up menu` their will be an entry called `'Set default attributes for selection'` at the very bottom. *Be warned though, in draw.io edges are cells as well, so having a huge selection of 'cells' and edges will not work (there will be no entry in the pop-up menu).*
