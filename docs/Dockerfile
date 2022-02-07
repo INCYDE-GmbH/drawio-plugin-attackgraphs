@@ -9,7 +9,7 @@ RUN sed -i 's|<templates>|<templates><template url="basic/attackgraph.xml" title
 # Lend an icon
 RUN cp $CATALINA_HOME/webapps/draw/templates/other/decision_tree.png $CATALINA_HOME/webapps/draw/templates/basic/attackgraph.png
 
-ENV DRAWIO_BASE_URL=https://drawio-plugin-attackgraphs.github.io/app
+ENV DRAWIO_BASE_URL=https://incyde-gmbh.github.io/drawio-plugin-attackgraphs/app
 ENV DRAWIO_CONFIG="{\"plugins\": [\"${DRAWIO_BASE_URL}/plugins/attackgraphs.js\"]}"
 
 # Configure draw.io
