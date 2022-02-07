@@ -28,16 +28,16 @@ If you want to use the default functions that come shipped with this plugin, you
 
 ## User Guide
 
-- [Default Attributes](/doc/default_attributes.md)
-- [Aggregation Functions](/doc/aggregation_functions.md)
-- [Computed Attributes](/doc/computed_attributes_functions.md)
-- [Function Templates](/doc/templates.md)
+- [Default Attributes](/docs/default_attributes.md)
+- [Aggregation Functions](/docs/aggregation_functions.md)
+- [Computed Attributes](/docs/computed_attributes_functions.md)
+- [Function Templates](/docs/templates.md)
 
 ## Technical Documentation
 
-- [plugin](/doc/technical/plugin.md)
-- [storage](/doc/technical/storage.md)
-- [graph](/doc/technical/graph.md)
+- [plugin](/docs/technical/plugin.md)
+- [storage](/docs/technical/storage.md)
+- [graph](/docs/technical/graph.md)
 
 ## Development
 
