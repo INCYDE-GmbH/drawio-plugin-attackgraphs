@@ -7,10 +7,10 @@
       t.parentNode.insertBefore(s, t);
   } catch (e) {} // ignore
 })();
-window.DRAWIO_BASE_URL = 'https://drawio-plugin-attackgraphs.github.io/app';
+window.DRAWIO_BASE_URL = 'https://incyde-gmbh.github.io/drawio-plugin-attackgraphs/app';
 window.DRAWIO_VIEWER_URL = '';
 window.DRAW_MATH_URL = 'math';
-window.DRAWIO_CONFIG = {"plugins": ["https://drawio-plugin-attackgraphs.github.io/app/plugins/attackgraphs.js"]};
+window.DRAWIO_CONFIG = {"plugins": ["https://incyde-gmbh.github.io/drawio-plugin-attackgraphs/app/plugins/attackgraphs.js"]};
 urlParams['sync'] = 'manual'; //Disable Real-Time
 urlParams['db'] = '0'; //dropbox
 urlParams['gh'] = '0'; //github
