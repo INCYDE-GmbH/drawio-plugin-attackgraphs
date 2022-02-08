@@ -26,6 +26,7 @@ export class Menubar {
       ui.menus.addMenuItem(menu, 'attackGraphs.enableSensitivityAnalysis');
       ui.menus.addMenuItem(menu, 'attackGraphs.applySensitivityAnalysis');
       ui.menus.addSubmenu('attackGraphs.applySensitivityAnalysis', menu, null);
+      ui.menus.addMenuItem(menu, 'attackGraphs.documentation');
       ui.menus.addMenuItem(menu, 'attackGraphs.showVersion');
     });
 
@@ -124,6 +125,10 @@ export class Menubar {
 
     ui.toolbar.addSeparator();
     this.updateUI(ui);
+
+    ui.actions.addAction('attackGraphs.documentation', () => {
+      window.open('https://incyde-gmbh.github.io/drawio-plugin-attackgraphs/', '_blank')?.focus();
+    });
 
     ui.actions.addAction('attackGraphs.showVersion', () => {
       void navigator.clipboard.writeText(__COMMIT_HASH__);

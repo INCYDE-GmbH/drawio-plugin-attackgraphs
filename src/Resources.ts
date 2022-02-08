@@ -55,6 +55,7 @@ attackGraphs.startAnalysisTitle=Start sensitivity analysis
 attackGraphs.acceptAnalysisTitle=Accept analysis
 attackGraphs.abortAnalysisTitle=Abort analysis
 attackGraphs.acceptAnalysisDialog=Do you want to apply the current analysis to the graph?
+attackGraphs.documentation=Documentation...
 `);
   }
 
@@ -100,6 +101,7 @@ attackGraphs.startAnalysisTitle=Sensitivitätsanalysis starten
 attackGraphs.acceptAnalysisTitle=Analyse anwenden
 attackGraphs.abortAnalysisTitle=Analyse verwerfen
 attackGraphs.acceptAnalysisDialog=Wollen sie die aktuelle Sensitivitätsanalyse auf den Graphen anwenden?
+attackGraphs.documentation=Dokumentation...
   `);
   }
 }
