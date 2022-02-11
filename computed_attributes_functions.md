@@ -1,6 +1,6 @@
 # Computed Attributes Functions
 
-This plugin allows to specify a computed attributes function for any shape in the diagram. The user can access the computed attributes function of a cell by clicking the [handle](plugin.md#ui) displayed on the left-hand side of the cell. 
+This plugin allows to specify a computed attributes function for any shape in the diagram. The user can access the computed attributes function of a cell by clicking the [handle](technical/plugin.md#ui) displayed on the left-hand side of the cell.
 
 ![image of cell handles](images/CellHandles.png)
 
@@ -23,7 +23,7 @@ type CellDataCollection = {
 
 type GlobalAttributeDict = { [name: string]: GlobalAttribute}
 
-type GlobalAttribute = { 
+type GlobalAttribute = {
   name: string,
   value: string,
   min: string,
@@ -46,3 +46,9 @@ function(collection){
     return collection.globalAttributes['Knowledge'].max;
 }
 ```
+
+## Testing functions
+
+To write working js functions more easily, you can use the provided [Testbench.js](https://github.com/INCYDE-GmbH/drawio-plugin-attackgraphs/blob/main/TestBench.js) file. It provides example data structured in the way [aggregation functions](aggregation_functions.md) and [computed attributes functions](computed_attributes_functions.md) will receive the data in an AttackGraph.
+
+It is recommended to copy the code into the debugger of your choice, or an online tool like [JSFiddle](https://jsfiddle.net/jsx0hvcw/) for better debugging functionality.
