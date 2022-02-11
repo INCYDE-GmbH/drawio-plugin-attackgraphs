@@ -64,3 +64,9 @@ function(collection){
     return {'Name': collection.globalAttributes['AttributeName'].max};
 }
 ```
+
+## Testing functions
+
+To write working js functions more easily, you can use the provided [Testbench.js](https://github.com/INCYDE-GmbH/drawio-plugin-attackgraphs/blob/main/TestBench.js) file. It provides example data structured in the way [aggregation functions](aggregation_functions.md) and [computed attributes functions](computed_attributes_functions.md) will receive the data in an AttackGraph.
+
+It is recommended to copy the code into the debugger of your choice, or an online tool like [JSFiddle](https://jsfiddle.net/jsx0hvcw/) for better debugging functionality.
