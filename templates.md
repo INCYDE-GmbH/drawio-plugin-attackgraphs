@@ -30,14 +30,13 @@ function (collection) {
     var worstNode = collection.childAttributes[0];
     var worstValue = 0;
     collection.childAttributes.forEach(function(child) {
-        var value = parseInt(child.attributes['custom']);
+        var value = parseInt(child.computedAttribute);
         if (value > worstValue) {
             worstValue = value;
             worstNode = child;
         }
     });
     var result = worstNode.attributes;
-    delete result['custom'];
     return result;
 }
 ```
@@ -55,7 +54,7 @@ function (collection) {
         var candidates = [];
         var worstValue = 0;
         collection.childAttributes.forEach(function(child) {
-            var value = parseInt(child.attributes['custom']);
+            var value = parseInt(child.computedAttribute);
             if (value > worstValue) {
                 worstValue = value;
                 candidates = [];
@@ -64,8 +63,8 @@ function (collection) {
                 candidates.push(child);
             }
         });
-        var tiebreaker = function(candidates, name) {
-            var min_value = 6;
+        var tiebreaker = function(candidates, name, max) {
+            var min_value = max;
             candidates.forEach(function(node) {
                 min_value = Math.min(min_value, node.attributes[name]);
             });
@@ -78,14 +77,13 @@ function (collection) {
             return result;
         };
         if (candidates.length > 1) {
-            candidates = tiebreaker(candidates, "Resources");
+            candidates = tiebreaker(candidates, "Resources", collection.globalAttributes["Resources"].max);
             if (candidates.length > 1) {
-                candidates = tiebreaker(candidates, "Knowledge");
+                candidates = tiebreaker(candidates, "Knowledge", collection.globalAttributes["Knowledge"].max);
             }
         }
         result = candidates[0].attributes;
     }
-    delete result['custom'];
     return result;
 }
 ```
@@ -93,27 +91,23 @@ function (collection) {
 
 ## AND 1
 
-Sum up all attributes. Limit "Location" to 1 and all other attributes to 5.
+Sum up all attributes. Limit attributes to their maximum value.
 
 ```js
 function (collection) {
     var result = {};
     collection.childAttributes.forEach(function(child) {
-        for (var attribute in child.attributes) {
-            if (attribute != "Feasibility") {
-                if (attribute in result) {
-                    result[attribute] += parseInt(child.attributes[attribute]);
-                } else {
-                    result[attribute] = parseInt(child.attributes[attribute]);
-                }
+    for (var attribute in child.attributes) {
+            if (attribute in result) {
+                result[attribute] += parseInt(child.attributes[attribute]);
+            } else {
+                result[attribute] = parseInt(child.attributes[attribute]);
             }
         }
     });
     for (var attribute in result) {
-        if (attribute == "Location") {
-            result[attribute] = Math.min(1, result[attribute]);
-        } else {
-            result[attribute] = Math.min(5, result[attribute]);
+        if (attribute in collection.globalAttributes) {
+            result[attribute] = Math.min(collection.globalAttributes[attribute].max, result[attribute]);
         }
     }
     return result;
@@ -159,6 +153,7 @@ function (collection) {
     return result;
 }
 ```
+
 # Template Code for Computed Attributes
 
 ## Feasibility 1
@@ -168,10 +163,10 @@ Invert "Knowledge" and "Resources". Subtract "Location".
 ```js
 function (collection) {
     return Math.min(5,
-        Math.max(1,
+        Math.max(collection.globalAttributes["Location"].max,
             Math.max(
-                6 - parseInt(collection.cellAttributes["Knowledge"]),
-                6 - parseInt(collection.cellAttributes["Resources"])
+                parseInt(collection.globalAttributes["Knowledge"].max) + 1 - parseInt(collection.cellAttributes["Knowledge"]),
+                parseInt(collection.globalAttributes["Resources"].max) + 1 - parseInt(collection.cellAttributes["Resources"])
             ) - parseInt(collection.cellAttributes["Location"]))
         );
 }
