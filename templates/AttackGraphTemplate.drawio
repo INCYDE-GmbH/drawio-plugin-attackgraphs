@@ -4,9 +4,9 @@
       <root>
         <object tooltip="" id="0">
           <ag_global_attributes>
-            <ag_global_attribute name="Knowledge" value="0" iconName="" min="0" max="10" />
-            <ag_global_attribute name="Location" value="0" iconName="" min="0" max="10" />
-            <ag_global_attribute name="Resources" value="0" iconName="" min="0" max="10" />
+            <ag_global_attribute name="Knowledge" value="0" iconName="lightbulb" min="0" max="10" />
+            <ag_global_attribute name="Location" value="0" iconName="map_pin_ellipse" min="0" max="10" />
+            <ag_global_attribute name="Resources" value="0" iconName="hammer" min="0" max="10" />
           </ag_global_attributes>
           <ag_attributes />
           <ag_computed_attributes />
