@@ -114,20 +114,28 @@ function (collection) {
 }
 ```
 
-## Security Controls
+## Security Control
 
 ```js
 function (collection) {
-    var result = collection.localAttributes;
+    var result = {};
+    for (var attribute in collection.localAttributes) {
+        result[attribute] = parseInt(collection.localAttributes[attribute]);
+    }
     collection.childAttributes.forEach(function(child) {
         for (var attribute in child.attributes) {
-            var securityControlValue = parseInt(child.attributes[attribute]);
-            var resultValue = parseInt(result[attribute]);
-            if (securityControlValue !== NaN && resultValue !== NaN) {
-                result[attribute] = resultValue + securityControlValue;
+            if (attribute in collection.globalAttributes) {
+                if (attribute in result) {
+                    result[attribute] += parseInt(child.attributes[attribute]);
+                }
             }
         }
     });
+    for (var attribute in result) {
+        if (attribute in collection.globalAttributes) {
+            result[attribute] = Math.min(collection.globalAttributes[attribute].max, result[attribute]);
+        }
+    }
     return result;
 }
 ```
