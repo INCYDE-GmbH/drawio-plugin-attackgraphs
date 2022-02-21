@@ -172,16 +172,10 @@ function (collection) {
         if (child.edgeWeight !== null) {
             impact = parseInt(child.edgeWeight);
         }
-        var value = 0;
-        for (var attribute in child.attributes) {
-            if (attribute in collection.globalAttributes) {
-                value += parseInt(child.attributes[attribute]);
-            }
-        }
-        risk = Math.max(risk, value * impact);
+        risk = Math.max(risk, parseInt(child.computedAttribute) * impact);
     });
 
-    return {'_risk':  risk};
+    return {'_risk': risk};
 }
 ```
 
