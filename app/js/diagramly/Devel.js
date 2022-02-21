@@ -75,7 +75,7 @@ if (!mxIsElectron && location.protocol !== 'http:')
 			// Adds script tags and loads shapes with eval
 			replace(/%script-src%/g, 'https://www.dropbox.com https://api.trello.com https://devhost.jgraph.com \'unsafe-eval\'').
 			// Adds Trello and Dropbox backend storage
-			replace(/%connect-src%/g, 'https://*.dropboxapi.com https://trello.com https://api.trello.com').
+			replace(/%connect-src%/g, 'https://*.dropboxapi.com https://trello.com https://api.trello.com wss://p2p-collab-test.jgraph.workers.dev').
 			// Loads common.css from mxgraph
 			replace(/%style-src%/g, 'https://devhost.jgraph.com').
 			replace(/%frame-src%/g, '').
@@ -288,6 +288,7 @@ mxscript(drawDevUrl + 'js/diagramly/Minimal.js');
 mxscript(drawDevUrl + 'js/diagramly/DistanceGuides.js');
 mxscript(drawDevUrl + 'js/diagramly/mxRuler.js');
 mxscript(drawDevUrl + 'js/diagramly/mxFreehand.js');
+mxscript(drawDevUrl + 'js/diagramly/P2PCollab.js');
 mxscript(drawDevUrl + 'js/diagramly/DevTools.js');
 
 // Vsdx/vssx support
@@ -299,9 +300,6 @@ mxscript(drawDevUrl + 'js/jszip/jszip.min.js');
 
 // GraphMl Import
 mxscript(drawDevUrl + 'js/diagramly/graphml/mxGraphMlCodec.js');
-
-// P2P Collab
-mxscript(drawDevUrl + 'js/diagramly/P2PCollab.js');
 
 // Org Chart Layout
 if (urlParams['orgChartDev'] == '1')
