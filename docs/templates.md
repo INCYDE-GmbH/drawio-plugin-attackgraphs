@@ -181,7 +181,7 @@ function (collection) {
         risk = Math.max(risk, value * impact);
     });
 
-    return {'_risk': Math.min(collection.globalAttributes['_risk'].max, risk)};
+    return {'_risk':  risk};
 }
 ```
 
