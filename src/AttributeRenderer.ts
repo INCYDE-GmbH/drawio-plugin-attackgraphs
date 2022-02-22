@@ -111,7 +111,7 @@ export class AttributeRenderer {
 
   static getChildValues(cell: NodeAttributeProvider): ChildCellData[] {
     return cell.cell.edges?.filter(x => x.source === cell.cell && x.target).map(x => {
-      const edgeWeight = this.edgeAttributes(x).getEdgeWeight() || 1;
+      const edgeWeight = this.edgeAttributes(x).getEdgeWeight();
       const target = this.nodeAttributes(x.target);
       const cellValues = target.getCellValues();
       const aggregatedValues = target.getAggregatedCellValues();
