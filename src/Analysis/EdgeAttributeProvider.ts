@@ -7,7 +7,7 @@ export class EdgeAttributeProvider extends NodeAttributeProvider {
   }
 
   getEdgeWeight(): number | null {
-    return this.parseEdgeWeight(this.getCellLabel()|| '');
+    return this.parseEdgeWeight(this.getCellLabel() || '');
   }
 
   parseEdgeWeight(input: string): number | null {
