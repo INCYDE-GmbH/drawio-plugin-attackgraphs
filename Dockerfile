@@ -1,4 +1,4 @@
-FROM jgraph/drawio:16.6.2
+FROM jgraph/drawio:16.6.4
 
 # Install plugin
 COPY dist/attackgraphs.js $CATALINA_HOME/webapps/draw/plugins/attackgraphs.js

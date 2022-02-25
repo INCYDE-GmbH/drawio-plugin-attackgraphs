@@ -537,9 +537,26 @@ DriveFile.prototype.isSyncSupported = function()
 /**
  * Hook for subclassers.
  */
-DriveFile.prototype.isFastSync = function()
+DriveFile.prototype.isFastSyncSupported = function()
 {
 	return true;
+};
+
+/**
+ * Returns true if all changes should be sent out immediately.
+ */
+DriveFile.prototype.isFastSyncEnabled = function()
+{
+	var collab = this.ui.drive.getCustomProperty(this.desc, 'collaboration');
+	 
+	if (collab != null)
+	{
+		return collab == 'enabled' && urlParams['fast-sync'] != '0';
+	}
+	else
+	{
+		return DrawioFile.prototype.isFastSyncEnabled.apply(this, arguments);
+	}
 };
 
 /**
