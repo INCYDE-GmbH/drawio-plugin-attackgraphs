@@ -30,11 +30,9 @@ export class AttackGraphIconLegendShape extends mxRectangleShape {
     c.setFontColor('#000');
     c.setFontSize(AttackGraphIconLegendShape.fontSize);
 
-    const sortedAttributes = attrs.sort((keyA, keyB) => keyA.name < keyB.name ? -1 : keyA.name > keyB.name ? 1 : 0);
-
     let i = 0;
     const graph = this.state?.view.graph;
-    for (const attribute of sortedAttributes) {
+    for (const attribute of attrs) {
       if (graph !== undefined) {
         if (Framework7Icons.Icons[attribute.iconName] !== undefined) {
           const icon = `data:image/svg+xml;utf8,${Framework7Icons.Icons[attribute.iconName]}`;
