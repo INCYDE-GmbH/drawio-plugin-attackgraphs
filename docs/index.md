@@ -27,4 +27,4 @@ https://incyde-gmbh.github.io/drawio-plugin-attackgraphs/app/templates/basic/att
 
 ### Acknowledgements
 
-This software is provided by [incyde GmbH](https://incyde.com/) in collaboration with Systems Lab 21 GmbH as part of the project *[Prognose Securitybedarf und Bewertung möglicher Sicherheitskonzepte für das System Bahn](https://www.dzsf.bund.de/SharedDocs/Standardartikel/DZSF/Projekte/Projekt_49_Securitybedarf.html)*, funded by the German Centre for Rail Traffic Research at the Federal Railway Authority.
+This software is provided by [INCYDE GmbH](https://incyde.com/) in collaboration with Systems Lab 21 GmbH as part of the project *[Prognose Securitybedarf und Bewertung möglicher Sicherheitskonzepte für das System Bahn](https://www.dzsf.bund.de/SharedDocs/Standardartikel/DZSF/Projekte/Projekt_49_Securitybedarf.html)*, funded by the German Centre for Rail Traffic Research at the Federal Railway Authority.
