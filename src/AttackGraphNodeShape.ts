@@ -2,6 +2,7 @@ import { Framework7Icons } from './Framework7Icons';
 import { NodeValues } from './Model';
 import { AttributeRenderer as AttributeRenderer } from './AttributeRenderer';
 import { AttributeProvider } from './Analysis/AttributeProvider';
+import { RootAttributeProvider } from './Analysis/RootAttributeProvider';
 
 export class AttackGraphNodeShape extends mxRectangleShape {
   public static readonly ID = 'attackgraphs.node';
@@ -26,23 +27,43 @@ export class AttackGraphNodeShape extends mxRectangleShape {
     c.setFontColor('#000');
     c.setFontSize(fontSize);
 
-    const sortedAttributes: { [name: string]: { oldValue: string, currentValue: string } } = {};
+    const attributes: { [name: string]: { oldValue: string, currentValue: string } } = {};
 
     for (const [k, v] of Object.entries(attrs.old)) {
       if (AttributeProvider.shouldRenderAttribute(k)) {
-        sortedAttributes[k] = { oldValue: v, currentValue: '' }
+        attributes[k] = { oldValue: v, currentValue: '' }
       }
     }
 
     for (const [k, v] of Object.entries(attrs.current)) {
       if (AttributeProvider.shouldRenderAttribute(k)) {
-        sortedAttributes[k] = { ...sortedAttributes[k], currentValue: v }
+        attributes[k] = { ...attributes[k], currentValue: v }
       }
     }
 
-    let currentOffset = 0;
     const graph = this.state?.view.graph;
-    for (const [key, { oldValue, currentValue }] of Object.entries(sortedAttributes)) {
+    const globalAttributes = AttributeRenderer.rootAttributes(graph as unknown as Draw.EditorGraph).getGlobalAttributes();
+    let tempAttributes = Object.entries(attributes);
+    if (globalAttributes !== null) {
+      const renderableAttributes = RootAttributeProvider.getRenderableAttributes(globalAttributes);
+      tempAttributes = tempAttributes.sort((keyA, keyB) => {
+        const idx1 = renderableAttributes.findIndex(e => e.name === keyA[0]);
+        const idx2 = renderableAttributes.findIndex(e => e.name === keyB[0]);
+        if (idx1 !== -1 && idx2 !== -1) {
+          return idx1 - idx2;
+        } else if (idx1 !== -1) {
+          return -1;
+        } else if (idx2 !== -1) {
+          return 1;
+        } else {
+          return Object.entries(attributes).findIndex(e => e[0] === keyA[0]) - Object.entries(attributes).findIndex(e => e[0] === keyB[0]);
+        }
+      });
+    }
+    const sortedAttributes = tempAttributes;
+
+    let currentOffset = 0;
+    for (const [key, { oldValue, currentValue }] of sortedAttributes) {
       if (key === 'label' || key === 'tooltip') {
         continue;
       }
