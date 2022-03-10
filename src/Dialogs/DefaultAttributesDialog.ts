@@ -227,7 +227,7 @@ export class DefaultAttributesDialog extends SettingsDialog<true> {
 
   private addUpDownBtnToRow(row: HTMLTableRowElement) {
     const tdUp = document.createElement('td');
-    this.addCustomButtonTo(tdUp, () => {
+    tdUp.appendChild(this.createUpDownBtn(() => {
       const table = row.parentElement as HTMLTableElement;
       const idx = row.rowIndex;
 
@@ -239,11 +239,11 @@ export class DefaultAttributesDialog extends SettingsDialog<true> {
 
         table.insertBefore(table.rows[idx], table.rows[idx-1]);
       }
-    }, Framework7Icons.Icons.control);
+    }, Framework7Icons.Icons.control));
     tdUp.title = 'Up';
 
     const tdDown = document.createElement('td');
-    this.addCustomButtonTo(tdDown, () => {
+    tdDown.appendChild(this.createUpDownBtn(() => {
       const table = row.parentElement as HTMLTableElement;
       const idx = row.rowIndex;
 
@@ -255,12 +255,30 @@ export class DefaultAttributesDialog extends SettingsDialog<true> {
 
         table.insertBefore(table.rows[idx], table.rows[idx+2] || null);
       }
-    }, Framework7Icons.Icons.control);
+    }, Framework7Icons.Icons.control));
     tdDown.title = 'Down';
     tdDown.style.transform = 'rotate(180deg)';
 
     row.insertBefore(tdUp, row.children[row.children.length - 1]);
     row.insertBefore(tdDown, row.children[row.children.length - 1]);
+  }
+
+  private createUpDownBtn(callback: () => void, icon?: string): HTMLElement {
+    const btn = mxUtils.button('', callback) as HTMLElement;
+    if (icon !== undefined) {
+      btn.innerHTML = icon;
+    } else {
+      btn.innerHTML = Framework7Icons.Icons.question;
+    }
+    btn.style.width = `24px`;
+    btn.style.height = `24px`;
+    btn.style.cursor = 'pointer';
+    if (btn.children[0] !== undefined) {
+      this.resizeSVG(btn.children[0], '100%', '100%');
+    }
+    btn.style.position = 'relative';
+    btn.style.display = 'inline-block';
+    return btn;
   }
 
   protected override removeRowFromForm(form: import('mxgraph').mxForm, row: HTMLTableRowElement): number | null {
@@ -274,6 +292,7 @@ export class DefaultAttributesDialog extends SettingsDialog<true> {
 
   private addIconPickerToRow(row: HTMLTableRowElement, callback: () => void, icon?: string): void {
     const td = document.createElement('td');
+    td.setAttribute('name', 'icon_picker');
     if (row.firstChild !== null) {
       row.insertBefore(td, row.firstChild);
     } else {
