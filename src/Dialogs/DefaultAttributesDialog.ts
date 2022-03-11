@@ -65,7 +65,7 @@ export class DefaultAttributesDialog extends SettingsDialog<true> {
     const addMoreGlobalAttributesTitle = this.getTitleDiv(mxResources.get('attackGraphs.addFurther'));
 
     const form = new mxForm('properties');
-    form.table.style.width = '100%';
+    form.table.style.cssText = 'width:100%;display:block;overflow-x:auto;white-space:nowrap;';
     this.attributeTable = form.table;
     this.addTextAreasTo(form, this.values);
 
