@@ -62,6 +62,7 @@ export class Sidebar {
   private createActivityVertexTemplateOfShape(
     sidebar: Draw.Sidebar,
     style: string,
+    defaultValues: boolean,
     aggregationFunction: AttackgraphFunction | null,
     computedAttributeFunction: AttackgraphFunction | null
     ): HTMLAnchorElement {
@@ -73,7 +74,7 @@ export class Sidebar {
 
     if (attributes !== null) {
       for (const attribute of attributes) {
-        value.setAttribute(attribute['name'], attribute['value'])
+        value.setAttribute(attribute['name'], (defaultValues) ? attribute['value'] : '');
       }
     }
 
@@ -140,15 +141,15 @@ export class Sidebar {
   }
 
   private createDefaultActivityVertexTemplate(sidebar: Draw.Sidebar, aggregationFunction: AttackgraphFunction | null, computedAttributeFunction: AttackgraphFunction | null) {
-    return this.createActivityVertexTemplateOfShape(sidebar, '', aggregationFunction, computedAttributeFunction);
+    return this.createActivityVertexTemplateOfShape(sidebar, '', false, aggregationFunction, computedAttributeFunction);
   }
 
   private createGreenActivityVertexTemplate(sidebar: Draw.Sidebar, aggregationFunction: AttackgraphFunction | null, computedAttributeFunction: AttackgraphFunction | null): HTMLAnchorElement {
-    return this.createActivityVertexTemplateOfShape(sidebar, 'fillColor=#D7E3BF', aggregationFunction, computedAttributeFunction);
+    return this.createActivityVertexTemplateOfShape(sidebar, 'fillColor=#D7E3BF', true, aggregationFunction, computedAttributeFunction);
   }
 
   private createYellowActivityVertexTemplate(sidebar: Draw.Sidebar, aggregationFunction: AttackgraphFunction | null, computedAttributeFunction: AttackgraphFunction | null): HTMLAnchorElement {
-    return this.createActivityVertexTemplateOfShape(sidebar, 'fillColor=#FEE599', aggregationFunction, computedAttributeFunction);
+    return this.createActivityVertexTemplateOfShape(sidebar, 'fillColor=#FEE599', true, aggregationFunction, computedAttributeFunction);
   }
 
   private createControlVertexTemplate(sidebar: Draw.Sidebar): HTMLAnchorElement {

@@ -28,7 +28,8 @@ test.describe('attributes and default attributes', () => {
     await page.fill('input[name="max"]', '100');
     await page.click('text=Apply');
 
-    await page.locator('.geSidebarContainer').locator('text=Activity').first().click();
+    // First activity vertex (white node) shall not have a default value
+    await page.locator('.geSidebarContainer').locator('text=Activity').nth(2).click();
     const activity = page.locator('.geDiagramContainer').locator('text=Activity');
     await expect(activity).toBeVisible();
     await page.press('body', 'Control+m');
@@ -59,7 +60,8 @@ test.describe('attributes and default attributes', () => {
     await page.locator('.mxPopupMenu').locator('text="Untitled Diagram (Browser)"').click();
     await page.locator('text="Open in This Window"').click();
 
-    await page.locator('.geSidebarContainer').locator('text=Activity').first().click();
+    // First activity vertex (white node) shall not have a default value
+    await page.locator('.geSidebarContainer').locator('text=Activity').nth(2).click();
     const activity = page.locator('.geDiagramContainer').locator('text=Activity');
     await expect(activity).toBeVisible();
     await page.press('body', 'Control+m');
