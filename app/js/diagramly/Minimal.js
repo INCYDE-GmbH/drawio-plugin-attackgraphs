@@ -532,7 +532,6 @@ EditorUi.initMinimalTheme = function()
 			'html body .geToolbarButton:active { opacity: 0.15; }' +
 			'html body .geStatus:active { opacity: 0.5; }' +
 			'.geStatus > div { box-sizing: border-box; max-width: 100%; text-overflow: ellipsis; }' +
-			'html body .geStatus { padding-top:3px !important; }' +
 			'html body .geMenubarContainer .geStatus { margin-top: 0px !important; }' +
 			'html table.mxPopupMenu tr.mxPopupMenuItemHover:active { opacity: 0.7; }' +
 			'html body .geDialog input, html body .geToolbarContainer input, html body .mxWindow input {padding: 2px; display: inline-block; }' +
@@ -675,6 +674,56 @@ EditorUi.initMinimalTheme = function()
         	if (elt.style.display != 'none')
         	{
         		elt.style.display = 'inline-block';
+
+				var file = this.getCurrentFile();
+	
+				if (file != null && file.isRealtimeEnabled() && file.isRealtimeSupported())
+				{
+					var icon = document.createElement('img');
+					icon.setAttribute('border', '0');
+					icon.style.position = 'absolute';
+					icon.style.left = '18px';
+					icon.style.top = '2px';
+					icon.style.width = '12px';
+					icon.style.height = '12px';
+					icon.style.cursor = 'default';
+
+					var err = file.getRealtimeError();
+					var state = file.getRealtimeState();
+					var status = mxResources.get('realtimeCollaboration');
+
+					if (state == 1)
+					{
+						icon.src = Editor.syncImage;
+						status += ' (' + mxResources.get('online') + ')';
+					}
+					else
+					{
+						icon.src = Editor.syncProblemImage;
+
+						if (err != null && err.message != null)
+						{
+							status += ' (' + err.message + ')';
+						}
+						else
+						{
+							status += ' (' + mxResources.get('disconnected') + ')';
+						}
+					}
+
+					mxEvent.addListener(icon, 'click', mxUtils.bind(this, function(evt)
+					{
+						this.showError(mxResources.get('realtimeCollaboration'),
+							mxUtils.htmlEntities(state == 1 ? mxResources.get('online') :
+								((err != null && err.message != null) ?
+								err.message : mxResources.get('disconnected'))));
+						mxEvent.consume(evt);
+					}));
+		
+					icon.setAttribute('title', status);
+					elt.style.paddingRight = '4px';
+					elt.appendChild(icon);
+				}
         	}
 		}
     };
@@ -1211,7 +1260,7 @@ EditorUi.initMinimalTheme = function()
 				}
 
 				if (!mxClient.IS_CHROMEAPP && !EditorUi.isElectronApp &&
-					file.constructor != LocalFile)
+					(file.constructor != LocalFile || file.fileHandle != null))
 				{
 					ui.menus.addMenuItems(menu, ['synchronize'], parent);
 				}
@@ -1223,7 +1272,7 @@ EditorUi.initMinimalTheme = function()
 				menu.addSeparator(parent);
 
 				if (graph.isEnabled() && graph.isSelectionEmpty() &&
-					file.isFastSyncEnabled() && file.isFastSyncSupported())
+					file.isRealtimeEnabled() && file.isRealtimeSupported())
 				{
 					this.addMenuItems(menu, ['shareCursor'], parent);
 				}
@@ -1238,8 +1287,8 @@ EditorUi.initMinimalTheme = function()
 					var filename = (file.getTitle() != null) ?
 						file.getTitle() : ui.defaultFilename;
 					
-					if (file.constructor == DriveFile ||
-						(!/(\.html)$/i.test(filename) &&
+					if ((file.constructor == DriveFile && file.sync != null &&
+						file.sync.isConnected()) || (!/(\.html)$/i.test(filename) &&
 						!/(\.svg)$/i.test(filename)))
 					{
 						this.addMenuItems(menu, ['-', 'properties'], parent);
@@ -1307,7 +1356,7 @@ EditorUi.initMinimalTheme = function()
 						}
 						
 						if (graph.isEnabled() && graph.isSelectionEmpty() &&
-							file.isFastSyncEnabled() && file.isFastSyncSupported())
+							file.isRealtimeEnabled() && file.isRealtimeSupported())
 						{
 							this.addMenuItems(menu, ['shareCursor'], parent);
 						}
@@ -2231,19 +2280,22 @@ EditorUi.initMinimalTheme = function()
 			
 			ui.picker = picker;
 			var statusVisible = false;
-
-			mxEvent.addListener(menubar, 'mouseenter', function()
-			{
-				ui.statusContainer.style.display = 'inline-block';
-			});
 			
-			mxEvent.addListener(menubar, 'mouseleave', function()
+			if (urlParams['embed'] != '1')
 			{
-				if (!statusVisible)
+				mxEvent.addListener(menubar, 'mouseenter', function()
 				{
-					ui.statusContainer.style.display = 'none';
-				}
-			});
+					ui.statusContainer.style.display = 'inline-block';
+				});
+				
+				mxEvent.addListener(menubar, 'mouseleave', function()
+				{
+					if (!statusVisible)
+					{
+						ui.statusContainer.style.display = 'none';
+					}
+				});
+			}
 			
 			var setNotificationTitle = mxUtils.bind(this, function(title)
 			{
@@ -2260,16 +2312,16 @@ EditorUi.initMinimalTheme = function()
 				}
 			});
 					
-			// Connects the status bar to the editor status and
-			// moves status to bell icon tooltip for trivial messages
-			if (urlParams['embed'] != '1')
-			{
-				menubar.style.visibility = (menubar.clientWidth < 14) ? 'hidden' : '';
+			// Connects the status bar to the editor status and moves
+			// status to bell icon title for frequent common messages
+			menubar.style.visibility = (menubar.clientWidth < 20) ? 'hidden' : '';
 
-				ui.editor.addListener('statusChanged', mxUtils.bind(this, function()
+			ui.editor.addListener('statusChanged', mxUtils.bind(this, function()
+			{
+				ui.setStatusText(ui.editor.getStatus());
+
+				if (urlParams['embed'] != '1')
 				{
-					ui.setStatusText(ui.editor.getStatus());
-		
 					if (ui.statusContainer.children.length == 0 ||
 						(ui.statusContainer.children.length == 1 &&
 						typeof ui.statusContainer.firstChild.getAttribute === 'function' &&
@@ -2300,20 +2352,12 @@ EditorUi.initMinimalTheme = function()
 					{
 						ui.statusContainer.style.display = 'inline-block';
 						setNotificationTitle(null);
-						
 						statusVisible = true;
 					}
+				}
 
-					menubar.style.visibility = (menubar.clientWidth > 12) ? '' : 'hidden';
-				}));
-			}
-			else
-			{
-				ui.editor.addListener('statusChanged', mxUtils.bind(this, function()
-				{
-					menubar.style.visibility = (menubar.clientWidth > 16) ? '' : 'hidden';
-				}));
-			}
+				menubar.style.visibility = (menubar.clientWidth < 20 && !statusVisible) ? 'hidden' : '';
+			}));
 			
 			elt = addMenu('diagram', null, Editor.menuImage);
 			elt.style.boxShadow = 'none';
@@ -2593,6 +2637,13 @@ EditorUi.initMinimalTheme = function()
 					if (ui.currentPage != null)
 					{
 						mxUtils.write(pageMenu, ui.currentPage.getName());
+						var n = (ui.pages != null) ? ui.pages.length : 1;
+						var idx = ui.getPageIndex(ui.currentPage);
+						idx = (idx != null) ? idx + 1 : 1;
+						var id = ui.currentPage.getId();
+						pageMenu.setAttribute('title', ui.currentPage.getName() +
+							' (' + idx + '/' + n + ')' + ((id != null) ?
+							' [' + id + ']' : ''));
 					}
 				};
 

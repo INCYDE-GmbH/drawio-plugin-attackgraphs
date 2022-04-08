@@ -236,11 +236,6 @@ App.MODE_BROWSER = 'browser';
 App.MODE_TRELLO = 'trello';
 
 /**
- * Notion App Mode
- */
-App.MODE_NOTION = 'notion';
-
-/**
  * Embed App Mode
  */
 App.MODE_EMBED = 'embed';
@@ -1437,26 +1432,6 @@ App.prototype.init = function()
 	if (this.gitLab != null)
 	{
 		this.gitLab.addListener('userChanged', mxUtils.bind(this, function()
-		{
-			this.updateUserElement();
-			this.restoreLibraries();
-		}));
-	}
-
-	/**
-	 * Creates notion client.
-	 */
-	this.notion = 
-	//TODO disabled by default
-		/*(!mxClient.IS_IE || document.documentMode == 10 ||
-		mxClient.IS_IE11 || mxClient.IS_EDGE) &&
-		(urlParams['ntn'] != '0' && (urlParams['embed'] != '1' ||
-		urlParams['ntn'] == '1')) */
-		urlParams['ntn'] == '1' ? new NotionClient(this) : null;
-
-	if (this.notion != null)
-	{
-		this.notion.addListener('userChanged', mxUtils.bind(this, function()
 		{
 			this.updateUserElement();
 			this.restoreLibraries();
@@ -2704,10 +2679,6 @@ App.prototype.appIconClicked = function(evt)
 		else if (mode == App.MODE_TRELLO)
 		{
 			this.openLink('https://trello.com/');
-		}
-		else if (mode == App.MODE_NOTION)
-		{
-			this.openLink('https://www.notion.so/');
 		}
 		else if (mode == App.MODE_GITHUB)
 		{
@@ -4066,16 +4037,14 @@ App.prototype.pickLibrary = function(mode)
 	mode = (mode != null) ? mode : this.mode;
 	
 	if (mode == App.MODE_GOOGLE || mode == App.MODE_DROPBOX || mode == App.MODE_ONEDRIVE ||
-		mode == App.MODE_GITHUB || mode == App.MODE_GITLAB || mode == App.MODE_TRELLO ||
-		mode == App.MODE_NOTION)
+		mode == App.MODE_GITHUB || mode == App.MODE_GITLAB || mode == App.MODE_TRELLO)
 	{
 		var peer = (mode == App.MODE_GOOGLE) ? this.drive :
 			((mode == App.MODE_ONEDRIVE) ? this.oneDrive :
 			((mode == App.MODE_GITHUB) ? this.gitHub :
 			((mode == App.MODE_GITLAB) ? this.gitLab :
 			((mode == App.MODE_TRELLO) ? this.trello :
-			((mode == App.MODE_NOTION) ? this.notion :
-			this.dropbox)))));
+			this.dropbox))));
 		
 		if (peer != null)
 		{
@@ -4274,15 +4243,6 @@ App.prototype.saveLibrary = function(name, images, file, mode, noSpin, noReload,
 				else if (mode == App.MODE_GITLAB && this.gitLab != null && this.spinner.spin(document.body, mxResources.get('inserting')))
 				{
 					this.gitLab.insertLibrary(name, xml, mxUtils.bind(this, function(newFile)
-					{
-						this.spinner.stop();
-						this.hideDialog(true);
-						this.libraryLoaded(newFile, images);
-					}), error, folderId);
-				}
-				else if (mode == App.MODE_NOTION && this.notion != null && this.spinner.spin(document.body, mxResources.get('inserting')))
-				{
-					this.notion.insertLibrary(name, xml, mxUtils.bind(this, function(newFile)
 					{
 						this.spinner.stop();
 						this.hideDialog(true);
@@ -4577,25 +4537,25 @@ App.prototype.loadTemplate = function(url, onload, onerror, templateFilename, as
 {
 	var base64 = false;
 	var realUrl = url;
+	var filterFn = (templateFilename != null) ? templateFilename : url;
+	var isVisioFilename = /(\.v(dx|sdx?))($|\?)/i.test(filterFn) ||
+		/(\.vs(x|sx?))($|\?)/i.test(filterFn);
+	var binary = /\.png$/i.test(filterFn) || /\.pdf$/i.test(filterFn);
 	
 	if (!this.editor.isCorsEnabledForUrl(realUrl))
 	{
-		// Always uses base64 response to check magic numbers for file type
+		base64 = binary || isVisioFilename;
 		var nocache = 't=' + new Date().getTime();
-		realUrl = PROXY_URL + '?url=' + encodeURIComponent(url) + '&base64=1&' + nocache;
-		base64 = true;
+		realUrl = PROXY_URL + '?url=' + encodeURIComponent(url) +
+			'&' + nocache + ((base64) ? '&base64=1' : '');
 	}
 
-	var filterFn = (templateFilename != null) ? templateFilename : url;
-	
 	this.editor.loadUrl(realUrl, mxUtils.bind(this, function(responseData)
 	{
 		try
 		{
 			var data = (!base64) ? responseData : ((window.atob && !mxClient.IS_IE && !mxClient.IS_IE11) ?
 				atob(responseData) : Base64.decode(responseData));
-			var isVisioFilename = /(\.v(dx|sdx?))($|\?)/i.test(filterFn) ||
-				/(\.vs(x|sx?))($|\?)/i.test(filterFn);
 			
 			if (isVisioFilename || this.isVisioData(data))
 			{
@@ -4696,10 +4656,6 @@ App.prototype.getPeerForMode = function(mode)
 	{
 		return this.trello;
 	}
-	else if (mode == App.MODE_NOTION)
-	{
-		return this.notion;
-	}
 	else
 	{
 		return null;
@@ -4765,14 +4721,6 @@ App.prototype.createFile = function(title, data, libs, mode, done, replace, fold
 			else if (mode == App.MODE_GITLAB && this.gitLab != null)
 			{
 				this.gitLab.insertFile(title, data, mxUtils.bind(this, function(file)
-				{
-					complete();
-					this.fileCreated(file, libs, replace, done, clibs);
-				}), error, false, folderId);
-			}
-			else if (mode == App.MODE_NOTION && this.notion != null)
-			{
-				this.notion.insertFile(title, data, mxUtils.bind(this, function(file)
 				{
 					complete();
 					this.fileCreated(file, libs, replace, done, clibs);
@@ -5309,10 +5257,6 @@ App.prototype.loadFile = function(id, sameWindow, file, success, force)
 				{
 					peer = this.trello;
 				}
-				else if (id.charAt(0) == 'N')
-				{
-					peer = this.notion;
-				}
 				
 				if (peer == null)
 				{
@@ -5486,10 +5430,23 @@ App.prototype.getLibraryStorageHint = function(file)
  */
 App.prototype.restoreLibraries = function()
 {
-	this.loadLibraries(mxSettings.getCustomLibraries(), mxUtils.bind(this, function()
+	var checked = [];
+
+	function addLibs(libs)
 	{
-		this.loadLibraries((urlParams['clibs'] || '').split(';'));
-	}));
+		for (var i = 0; i < libs.length; i++)
+		{
+			if (libs[i] != '' && mxUtils.indexOf(
+				checked, libs[i]) < 0)
+			{
+				checked.push(libs[i]);
+			}
+		}
+	};
+
+	addLibs(mxSettings.getCustomLibraries());
+	addLibs((urlParams['clibs'] || '').split(';'));
+	this.loadLibraries(checked);
 };
 
 /**
@@ -5499,9 +5456,9 @@ App.prototype.loadLibraries = function(libs, done)
 {
 	if (this.sidebar != null)
 	{
-		if (this.pendingLibraries == null)
+		if (this.loadedLibraries == null)
 		{
-			this.pendingLibraries = new Object();
+			this.loadedLibraries = new Object();
 		}
 		
 		// Ignores this library next time
@@ -5511,12 +5468,13 @@ App.prototype.loadLibraries = function(libs, done)
 			{
 				mxSettings.removeCustomLibrary(id);
 			}
-			
-			delete this.pendingLibraries[id];
+
+			delete this.loadedLibraries[id];
 		});
-				
+
 		var waiting = 0;
 		var files = [];
+		var idx = (libs.length > 0 && libs[0] == 'L.scratchpad') ? 1 : 0;
 
 		// Loads in order of libs array
 		var checkDone = mxUtils.bind(this, function()
@@ -5529,7 +5487,7 @@ App.prototype.loadLibraries = function(libs, done)
 					{
 						if (files[i] != null)
 						{
-							this.loadLibrary(files[i]);
+							this.loadLibrary(files[i], i <= idx);
 						}
 					}
 				}
@@ -5549,15 +5507,15 @@ App.prototype.loadLibraries = function(libs, done)
 				
 				(mxUtils.bind(this, function(id, index)
 				{
-					if (id != null && id.length > 0 && this.pendingLibraries[id] == null &&
+					if (id != null && id.length > 0 && this.loadedLibraries[id] == null &&
 						this.sidebar.palettes[id] == null)
 					{
 						// Waits for all libraries to load
+						this.loadedLibraries[id] = true;
 						waiting++;
 						
 						var onload = mxUtils.bind(this, function(file)
 						{
-							delete this.pendingLibraries[id];
 							files[index] = file;
 							waiting--;
 							checkDone();
@@ -5570,7 +5528,6 @@ App.prototype.loadLibraries = function(libs, done)
 							checkDone();
 						});
 						
-						this.pendingLibraries[id] = true;
 						var service = id.substring(0, 1);
 						
 						if (service == 'L')
@@ -5895,7 +5852,6 @@ App.prototype.updateButtonContainer = function()
 	}
 };
 
-
 App.prototype.fetchAndShowNotification = function(target, subtarget)
 {
 	if (this.fetchingNotif)
@@ -5916,7 +5872,7 @@ App.prototype.fetchAndShowNotification = function(target, subtarget)
 		});
 		
 		var lsReadFlag = target + 'NotifReadTS';
-		var lastRead = (localStorage != null) ? parseInt(localStorage.getItem(lsReadFlag)) : true;
+		var lastRead = isLocalStorage ? parseInt(localStorage.getItem(lsReadFlag)) : true;
 				
 		for (var i = 0; i < notifs.length; i++)
 		{
@@ -5928,7 +5884,7 @@ App.prototype.fetchAndShowNotification = function(target, subtarget)
 	
 	try
 	{
-		if (localStorage != null)
+		if (isLocalStorage)
 		{
 			cachedNotif = JSON.parse(localStorage.getItem(cachedNotifKey));
 		}
@@ -6280,14 +6236,6 @@ App.prototype.pickFolder = function(mode, fn, enabled, direct, force)
 	else if (enabled && mode == App.MODE_GITLAB && this.gitLab != null)
 	{
 		this.gitLab.pickFolder(mxUtils.bind(this, function(folderPath)
-		{
-			resume();
-			fn(folderPath);
-		}));
-	}
-	else if (enabled && mode == App.MODE_NOTION && this.notion != null)
-	{
-		this.notion.pickFolder(mxUtils.bind(this, function(folderPath)
 		{
 			resume();
 			fn(folderPath);
@@ -6816,11 +6764,6 @@ App.prototype.updateHeader = function()
 					this.appIcon.style.backgroundImage = 'url(' + IMAGE_PATH + '/gitlab-logo-white.svg)';
 					this.appIcon.style.backgroundSize = '100% 100%';
 				}
-				else if (mode == App.MODE_NOTION)
-				{
-					this.appIcon.style.backgroundImage = 'url(' + IMAGE_PATH + '/notion-logo-white.svg)';
-					this.appIcon.style.backgroundSize = '70% 70%';
-				}				
 				else if (mode == App.MODE_TRELLO)
 				{
 					this.appIcon.style.backgroundImage = 'url(' + IMAGE_PATH + '/trello-logo-white-orange.svg)';
@@ -7123,7 +7066,6 @@ App.prototype.updateUserElement = function()
 		(this.dropbox == null || this.dropbox.getUser() == null) &&
 		(this.gitHub == null || this.gitHub.getUser() == null) &&
 		(this.gitLab == null || this.gitLab.getUser() == null) &&
-		(this.notion == null || this.notion.getUser() == null) &&
 		(this.trello == null || !this.trello.isAuthorized())) //TODO Trello no user issue
 	{
 		if (this.userElement != null)
@@ -7595,37 +7537,6 @@ App.prototype.updateUserElement = function()
 						}), mxResources.get('gitlab'));
 					}
 
-					if (this.notion != null)
-					{
-						addUser(this.notion.getUser(), IMAGE_PATH + '/notion-logo.svg', mxUtils.bind(this, function()
-						{
-							var file = this.getCurrentFile();
-
-							if (file != null && file.constructor == NotionFile)
-							{
-								var doLogout = mxUtils.bind(this, function()
-								{
-									this.notion.logout();
-									window.location.hash = '';
-								});
-
-								if (!file.isModified())
-								{
-									doLogout();
-								}
-								else
-								{
-									this.confirm(mxResources.get('allChangesLost'), null, doLogout,
-										mxResources.get('cancel'), mxResources.get('discardChanges'));
-								}
-							}
-							else
-							{
-								this.notion.logout();
-							}
-						}), mxResources.get('notion'));
-					}
-					
 					//TODO We have no user info from Trello, how we can create a user?
 					if (this.trello != null)
 					{
@@ -7746,10 +7657,6 @@ App.prototype.updateUserElement = function()
 		else if (this.gitLab != null && this.gitLab.getUser() != null)
 		{
 			user = this.gitLab.getUser();
-		}
-		else if (this.notion != null && this.notion.getUser() != null)
-		{
-			user = this.notion.getUser();
 		}
 		//TODO Trello no user issue
 		

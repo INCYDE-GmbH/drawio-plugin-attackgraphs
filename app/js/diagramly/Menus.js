@@ -212,8 +212,8 @@
 
 			var file = editorUi.getCurrentFile();
 
-			if (graph.isEnabled() && urlParams['embed'] != '1' && graph.isSelectionEmpty() &&
-				file != null && file.isFastSyncEnabled() && file.isFastSyncSupported())
+			if (graph.isEnabled() && (urlParams['embed'] != '1' || urlParams['embedRT'] == '1') && graph.isSelectionEmpty() &&
+				file != null && file.isRealtimeEnabled() && file.isRealtimeSupported())
 			{
 				this.addMenuItems(menu, ['-', 'shareCursor'], null, evt);
 			}
@@ -321,7 +321,8 @@
 				{
 					if (this.freehandWindow == null)
 					{
-						this.freehandWindow = new FreehandWindow(editorUi, document.body.offsetWidth - 420, 102, 176, 84);
+						var withBrush = !mxClient.IS_IE && !mxClient.IS_IE11;
+						this.freehandWindow = new FreehandWindow(editorUi, document.body.offsetWidth - 420, 102, 176, withBrush? 120 : 84, withBrush);
 					}
 					
 					if (graph.freehand.isDrawing())
@@ -435,7 +436,7 @@
 				editorUi.showDialog(new PrintDialog(editorUi, mxResources.get('formatPdf')).container, 360,
 						(editorUi.pages != null && editorUi.pages.length > 1 && (editorUi.editor.editable ||
 						urlParams['hide-pages'] != '1')) ?
-						450 : 370, true, true);
+						470 : 390, true, true);
 			}
 			else
 			{
@@ -1665,6 +1666,7 @@
 			mxResources.parse('testCheckFile=Check File');
 			mxResources.parse('testDiff=Diff/Sync');
 			mxResources.parse('testInspectPages=Check Pages');
+			mxResources.parse('testFixPages=Fix Pages');
 			mxResources.parse('testInspect=Inspect');
 			mxResources.parse('testShowConsole=Show Console');
 			mxResources.parse('testXmlImageExport=XML Image Export');
@@ -1869,8 +1871,7 @@
 				{
 					var buttons = [['Snapshot', function(evt, input)
 					{
-						snapshot = editorUi.getPagesForNode(mxUtils.parseXml(
-							editorUi.getFileData(true)).documentElement);
+						snapshot = editorUi.getPagesForXml(editorUi.getFileData(true));
 						dlg.textarea.value = 'Snapshot updated ' + new Date().toLocaleString() +
 							' Checksum ' + editorUi.getHashValueForPages(snapshot);
 					}], ['Diff', function(evt, input)
@@ -1908,8 +1909,7 @@
 			    	
 					if (snapshot == null)
 					{
-						snapshot = editorUi.getPagesForNode(mxUtils.parseXml(
-							editorUi.getFileData(true)).documentElement);
+						snapshot = editorUi.getPagesForXml(editorUi.getFileData(true));
 						dlg.textarea.value = 'Snapshot created ' + new Date().toLocaleString() +
 							' Checksum ' + editorUi.getHashValueForPages(snapshot);
 					}
@@ -1931,52 +1931,101 @@
 			editorUi.actions.addAction('testInspectPages', mxUtils.bind(this, function()
 			{
 				var file = editorUi.getCurrentFile();
+				console.log('editorUi', editorUi, 'file', file);
 
-				console.log('editorUi', editorUi);
-
-				if (file != null && file.ownPages != null)
+				if (file != null && file.isRealtime())
 				{
-					console.log('Checksum ownPages: ' +
+					console.log('Checksum ownPages',
 						editorUi.getHashValueForPages(
 							file.ownPages));
+					console.log('Checksum theirPages',
+						editorUi.getHashValueForPages(
+							file.theirPages));
+					console.log('diff ownPages/theirPages',
+						editorUi.diffPages(file.ownPages,
+							file.theirPages));
 
-					if (file.shadowPages != null)
+					var shadow = file.getShadowPages();
+					
+					if (shadow != null)
 					{
-						console.log('Checksum shadowPages: ' +
-							editorUi.getHashValueForPages(
-								file.shadowPages));
+						console.log('Checksum shadowPages',
+							editorUi.getHashValueForPages(shadow));
+						console.log('diff shadowPages/ownPages',
+							editorUi.diffPages(shadow, file.ownPages));
 						console.log('diff ownPages/shadowPages',
-							editorUi.diffPages(file.ownPages,
-								file.shadowPages));
+							editorUi.diffPages(file.ownPages, shadow));
+						console.log('diff theirPages/shadowPages',
+							editorUi.diffPages(file.theirPages, shadow));
 					}
 
-					if (file.snapshot != null)
+					if (file.sync != null && file.sync.snapshot != null)
 					{
-						var pages = editorUi.getPagesForNode(file.snapshot);
-						console.log('Checksum snapshot: ' +
-							editorUi.getHashValueForPages(pages));
+						console.log('Checksum snapshot',
+							editorUi.getHashValueForPages(
+								file.sync.snapshot));
 						console.log('diff ownPages/snapshot',
-							editorUi.diffPages(file.ownPages, pages));
+							editorUi.diffPages(file.ownPages,
+								file.sync.snapshot));
+						console.log('diff theirPages/snapshot',
+							editorUi.diffPages(file.theirPages,
+								file.sync.snapshot));
 
 						if (editorUi.pages != null)
 						{
 							console.log('diff snapshot/actualPages',
-								editorUi.diffPages(pages, editorUi.pages));
+								editorUi.diffPages(file.sync.snapshot,
+									editorUi.pages));
 						}
 					}
 
 					if (editorUi.pages != null)
 					{
-						console.log('Checksum actualPages: ' +
-							editorUi.getHashValueForPages(
-								editorUi.pages));
 						console.log('diff ownPages/actualPages',
 							editorUi.diffPages(file.ownPages,
 								editorUi.pages));
+						console.log('diff theirPages/actualPages',
+							editorUi.diffPages(file.theirPages,
+								editorUi.pages));
 					}
+				}
+
+				if (file != null)
+				{
+					console.log('Shadow pages',
+						[editorUi.getXmlForPages(
+							file.getShadowPages())]);
+				}
+
+				if (editorUi.pages != null)
+				{
+					console.log('Checksum actualPages',
+						editorUi.getHashValueForPages(
+							editorUi.pages));
 				}
 			}));
 			
+			editorUi.actions.addAction('testFixPages', mxUtils.bind(this, function()
+			{
+				console.log('editorUi', editorUi);
+				var file = editorUi.getCurrentFile();
+
+				if (file != null && file.isRealtime() &&
+					file.shadowPages != null)
+				{
+					console.log('patching actualPages to shadowPages',
+						file.patch([editorUi.diffPages(
+							file.shadowPages, editorUi.pages)]));
+					file.ownPages = editorUi.clonePages(editorUi.pages);
+					file.theirPages = editorUi.clonePages(editorUi.pages);
+					file.shadowPages = editorUi.clonePages(editorUi.pages);
+
+					if (file.sync != null)
+					{
+						file.sync.snapshot = editorUi.clonePages(editorUi.pages);
+					}
+				}
+			}));
 	
 			editorUi.actions.addAction('testInspect', mxUtils.bind(this, function()
 			{
@@ -1985,7 +2034,6 @@
 			
 			editorUi.actions.addAction('testXmlImageExport', mxUtils.bind(this, function()
 			{
-				var bg = '#ffffff';
 				var scale = 1;
 				var b = 1;
 				
@@ -2000,7 +2048,8 @@
 				
 			    // Renders graph. Offset will be multiplied with state's scale when painting state.
 				var xmlCanvas = new mxXmlCanvas2D(root);
-				xmlCanvas.translate(Math.floor((b / scale - bounds.x) / vs), Math.floor((b / scale - bounds.y) / vs));
+				xmlCanvas.translate(Math.floor((b / scale - bounds.x) / vs),
+					Math.floor((b / scale - bounds.y) / vs));
 				xmlCanvas.scale(scale / vs);
 				
 				var stateCounter = 0;
@@ -2055,9 +2104,8 @@
 			this.put('testDevelop', new Menu(mxUtils.bind(this, function(menu, parent)
 			{
 				this.addMenuItems(menu, ['createSidebarEntry', 'showBoundingBox', '-',
-					'testInspectPages', 'testCheckFile', 'testDiff', '-',
-					'testInspect', '-', 'testXmlImageExport', '-',
-					'testShowConsole'], parent);
+					'testInspectPages', 'testFixPages', '-', 'testCheckFile', 'testDiff', '-',
+					'testInspect', '-', 'testXmlImageExport', '-', 'testShowConsole'], parent);
 			})));
 		}
 
@@ -2721,15 +2769,6 @@
 				}, parent);
 			}
 
-			if (editorUi.notion != null)
-			{
-				menu.addSeparator(parent);
-				menu.addItem(mxResources.get('notion') + '...', null, function()
-				{
-					pickFileFromService(editorUi.notion);
-				}, parent);
-			}
-
 			if (editorUi.trello != null)
 			{
 				menu.addItem(mxResources.get('trello') + '...', null, function()
@@ -3351,15 +3390,6 @@
 				}, parent);
 			}
 
-			if (editorUi.notion != null)
-			{
-				menu.addSeparator(parent);
-				menu.addItem(mxResources.get('notion') + '...', null, function()
-				{
-					editorUi.pickFile(App.MODE_NOTION);
-				}, parent);
-			}
-
 			if (editorUi.trello != null)
 			{
 				menu.addItem(mxResources.get('trello') + '...', null, function()
@@ -3491,15 +3521,6 @@
 						editorUi.showLibraryDialog(null, null, null, null, App.MODE_GITLAB);
 					}, parent);
 				}
-				
-				if (editorUi.notion != null)
-				{
-					menu.addSeparator(parent);
-					menu.addItem(mxResources.get('notion') + '...', null, function()
-					{
-						editorUi.showLibraryDialog(null, null, null, null, App.MODE_NOTION);
-					}, parent);
-				}
 
 				if (editorUi.trello != null)
 				{
@@ -3601,15 +3622,6 @@
 					menu.addItem(mxResources.get('gitlab') + '...', null, function()
 					{
 						editorUi.pickLibrary(App.MODE_GITLAB);
-					}, parent);
-				}
-				
-				if (editorUi.notion != null)
-				{
-					menu.addSeparator(parent);
-					menu.addItem(mxResources.get('notion') + '...', null, function()
-					{
-						editorUi.pickLibrary(App.MODE_NOTION);
 					}, parent);
 				}
 
@@ -3862,17 +3874,12 @@
 
 			this.addMenuItems(menu, ['copyConnect', 'collapseExpand', '-'], parent);
 			
-			if (urlParams['embed'] != '1' && (isLocalStorage || mxClient.IS_CHROMEAPP))
-			{
-				this.addMenuItems(menu, ['showStartScreen'], parent);
-			}
-
 			if (urlParams['embed'] != '1')
 			{
 				var file = editorUi.getCurrentFile();
 
 				if (graph.isEnabled() && graph.isSelectionEmpty() && file != null &&
-					file.isFastSyncEnabled() && file.isFastSyncSupported())
+					file.isRealtimeEnabled() && file.isRealtimeSupported())
 				{
 					this.addMenuItems(menu, ['shareCursor'], parent);
 				}
@@ -3894,7 +3901,14 @@
 				this.addMenuItems(menu, ['diagramLanguage']);
 			}
 			
-			this.addMenuItems(menu, ['-', 'configuration'], parent);
+			menu.addSeparator(parent);
+
+			if (urlParams['embed'] != '1' && (isLocalStorage || mxClient.IS_CHROMEAPP))
+			{
+				this.addMenuItems(menu, ['showStartScreen'], parent);
+			}
+
+			this.addMenuItems(menu, ['configuration'], parent);
 			
 			// Adds trailing separator in case new plugin entries are added
 			menu.addSeparator(parent);
@@ -4105,8 +4119,9 @@
 					var filename = (file.getTitle() != null) ?
 						file.getTitle() : editorUi.defaultFilename;
 					
-					if (!/(\.html)$/i.test(filename) &&
-						!/(\.svg)$/i.test(filename))
+					if ((file.constructor == DriveFile && file.sync != null &&
+						file.sync.isConnected()) || (!/(\.html)$/i.test(filename) &&
+						!/(\.svg)$/i.test(filename)))
 					{
 						this.addMenuItems(menu, ['-', 'properties']);
 					}

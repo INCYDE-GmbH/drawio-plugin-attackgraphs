@@ -34,8 +34,8 @@ if (!mxIsElectron && location.protocol !== 'http:')
 			'; ';
 
 		var styleHashes = '\'sha256-JjkxVHHCCVO0nllPD6hU8bBYSlsikA8TM/o3fhr0bas=\' ' + // index.html
-			'\'sha256-1F7QEyp3oiW4n2eXlhilLpu+H5Wdj4t90pKtEyK/mFE=\' ' + // Minimal.js/Light
-			'\'sha256-V8wOMdVocmGIO0DHZHJsKN6viAFJOJRbsJ7UhdJlmng=\' ' + // Minimal.js/Dark
+			'\'sha256-3qaXuhL5i6KOreQtB0j5WOoUPb+vctEKKRcY1hGLenk=\' ' + // Minimal.js/Light
+			'\'sha256-ZK1F2paY4WDLYRp1tMs3Ryv4k3NYaqRXyWmk1o5KXzI=\' ' + // Minimal.js/Dark
 			'\'sha256-7kY8ozVqKLIIBwZ24dhdmZkM26PsOlZmEi72RhmZKoM=\' ' + // mxTooltipHandler.js
 			'\'sha256-01chdey79TzZe4ihnvvUXXI5y8MklIcKH+vzDdQvsuU=\' ' + // Editor.js/mathJaxWebkitCss
 			'\'sha256-fGbXK7EYpvNRPca81zPnqJHi2y+34KSgAcZv8mhaSzI=\' ' + // MathJax.js
@@ -53,7 +53,7 @@ if (!mxIsElectron && location.protocol !== 'http:')
 			'\'unsafe-hashes\'; '; // Required for hashes for style attribute
 		
 		var directives = 'connect-src %connect-src% \'self\' https://*.draw.io https://*.diagrams.net ' +
-			'https://*.googleapis.com wss://app.diagrams.net/rt wss://*.pusher.com https://*.pusher.com ' +
+			'https://*.googleapis.com wss://app.diagrams.net wss://*.pusher.com https://*.pusher.com ' +
 			'https://api.github.com https://raw.githubusercontent.com https://gitlab.com ' +
 			'https://graph.microsoft.com https://*.sharepoint.com  https://*.1drv.com https://api.onedrive.com ' +
 			'https://dl.dropboxusercontent.com ' +
@@ -95,7 +95,7 @@ if (!mxIsElectron && location.protocol !== 'http:')
 
 			var se_diagrams_net = hashes.replace(/%script-src%/g, '') +
 				'connect-src \'self\' https://*.diagrams.net ' +
-				'https://*.googleapis.com wss://*.pusher.com https://*.pusher.com ' +
+				'https://*.googleapis.com wss://app.diagrams.net wss://*.pusher.com https://*.pusher.com ' +
 				'https://*.google.com https://fonts.gstatic.com https://fonts.googleapis.com; ' +
 				'img-src * data: blob:; media-src * data:; font-src * about:; ' +
 				'frame-src \'self\' https://viewer.diagrams.net https://*.google.com; ' +
@@ -110,14 +110,16 @@ if (!mxIsElectron && location.protocol !== 'http:')
 					replace(/%frame-src%/g, 'https://www.lucidchart.com https://app.lucidchart.com https://lucid.app blob:').
 					replace(/%style-src%/g, 'https://aui-cdn.atlassian.com https://*.atlassian.net').
 					replace(/%connect-src%/g, '').
-					replace(/  /g, ' ');
+					replace(/  /g, ' ') +
+					'worker-src https://ac.draw.io/service-worker.js;';
 			console.log('ac.draw.io:', ac_draw_io);
 
-			var aj_draw_io = csp.replace(/%script-src%/g, 'https://connect-cdn.atl-paas.net').
+			var aj_draw_io = csp.replace(/%script-src%/g, 'https://aui-cdn.atlassian.com https://cdnjs.cloudflare.com https://connect-cdn.atl-paas.net').
 					replace(/%frame-src%/g, 'blob:').
 					replace(/%style-src%/g, 'https://aui-cdn.atlassian.com https://*.atlassian.net').
 					replace(/%connect-src%/g, 'https://api.atlassian.com https://api.media.atlassian.com').
-					replace(/  /g, ' ');
+					replace(/  /g, ' ') +
+					'worker-src https://aj.draw.io/service-worker.js;';
 			console.log('aj.draw.io:', aj_draw_io);
 
 			console.log('import.diagrams.net:', 'default-src \'self\'; worker-src blob:; img-src \'self\' blob: data: https://www.lucidchart.com ' +
@@ -135,7 +137,7 @@ if (!mxIsElectron && location.protocol !== 'http:')
 					"Access-Control-Allow-Origin": "https://se.diagrams.net"
 				},
 				teams: {
-					"Content-Security-Policy" : app_diagrams_net.replace(/ 'sha256-[^']+'/g, ''),
+					"Content-Security-Policy" : app_diagrams_net.replace(/ 'sha256-[^']+'/g, '') + 'worker-src https://app.diagrams.net/service-worker.js;',
 					"Permissions-Policy" : "microphone=()"
 				},
 				jira: {
@@ -158,6 +160,7 @@ mxscript(drawDevUrl + 'js/deflate/base64.js');
 mxscript(drawDevUrl + 'js/jscolor/jscolor.js');
 mxscript(drawDevUrl + 'js/sanitizer/sanitizer.min.js');
 mxscript(drawDevUrl + 'js/rough/rough.min.js');
+mxscript(drawDevUrl + 'js/freehand/perfect-freehand.js');
 
 // Uses grapheditor from devhost
 mxscript(geBasePath +'/Editor.js');
@@ -276,9 +279,6 @@ mxscript(drawDevUrl + 'js/diagramly/TrelloClient.js');
 mxscript(drawDevUrl + 'js/diagramly/GitLabFile.js');
 mxscript(drawDevUrl + 'js/diagramly/GitLabLibrary.js');
 mxscript(drawDevUrl + 'js/diagramly/GitLabClient.js');
-mxscript(drawDevUrl + 'js/diagramly/NotionFile.js');
-mxscript(drawDevUrl + 'js/diagramly/NotionLibrary.js');
-mxscript(drawDevUrl + 'js/diagramly/NotionClient.js');
 
 mxscript(drawDevUrl + 'js/diagramly/App.js');
 mxscript(drawDevUrl + 'js/diagramly/Menus.js');

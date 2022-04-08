@@ -1,8 +1,8 @@
-function P2PCollab(ui, sync)
+function P2PCollab(ui, sync, channelId)
 {
 	var graph = ui.editor.graph;
-	var socket = null;
 	var sessionCount = 0;
+	var socket = null;
 	var colors = [
 		//White font
 		'#e6194b', '#3cb44b', '#4363d8', '#f58231', '#911eb4', 
@@ -21,26 +21,36 @@ function P2PCollab(ui, sync)
 	// TODO: Avoid negation, move to Editor.ENABLE_P2P and use p2p=1 URL parameter
 	// add to Editor.configure
 	var NO_P2P = urlParams['no-p2p'] != '0';
-
-	function sendReply(action, msg)
+	var joinInProgress = false, joinId = 0;
+	var lastError = null;
+	
+	var sendReply = mxUtils.bind(this, function(action, msg)
   	{
 		if (destroyed) return;
 
 		try
 		{
-			if (!NO_P2P)
+			if (socket != null)
 			{
-				EditorUi.debug('P2PCollab: sending to socket server', [action], [msg]);
-			}
+				socket.send(JSON.stringify({action: action, msg: msg}));
 
-			socket.send(JSON.stringify({action: action, msg: msg}));
+				if (!NO_P2P)
+				{
+					EditorUi.debug('P2PCollab: sending to socket server', [action], [msg]);
+				}
+			}
+			else
+			{
+				this.joinFile(true);
+			}
 		}
 		catch (e)
 		{
-			// TODO: Reconnect if socket is null
+			lastError = e;
+			sync.file.fireEvent(new mxEventObject('realtimeStateChanged'));
 			EditorUi.debug('P2PCollab:', 'sendReply error', arguments, e);
 		}
-	}
+	});
 
 	function createCursorImage(color)
 	{
@@ -51,15 +61,17 @@ function P2PCollab(ui, sync)
 	{
 		if (destroyed) return;
 
-		var user = ui.getCurrentUser();
+		var user = sync.file.getCurrentUser();
 
 		if (!fileJoined || user == null || user.email == null) return;
 		
 		//Converting to a string such that webRTC works also
 		var msg = JSON.stringify({from: myClientId, id: messageId,
 			type: type, sessionId: sync.clientId, userId: user.id,
-			username: user.displayName, data: data});
-
+			username: user.displayName, data: data,
+			protocol: DrawioFileSync.PROTOCOL,
+			editor: EditorUi.VERSION});
+		
 		if (NO_P2P && type != 'cursor')
 		{
 			EditorUi.debug('P2PCollab: sending to socket server', [msg]);
@@ -91,7 +103,17 @@ function P2PCollab(ui, sync)
 			patch: diff
 		});
 	};
-	
+
+	this.getState = function()
+	{
+		return socket != null ? socket.readyState : 3 /* CLOSED */;
+	};
+
+	this.getLastError = function()
+	{
+		return lastError;
+	};
+
 	function debounce(func, wait) 
     {
         var timeout, lastInvocation = -1;
@@ -118,75 +140,72 @@ function P2PCollab(ui, sync)
         };
     };
 
-	if (urlParams['remote-cursors'] != '0')
+	function sendCursor(me)
 	{
-		function sendCursor(me)
+		if (ui.shareCursorPosition && !graph.isMouseDown)
 		{
-			if (ui.shareCursorPosition && !graph.isMouseDown)
-			{
-				var offset = mxUtils.getOffset(graph.container);
-				var tr = graph.view.translate;
-				var s = graph.view.scale;
-
-				var pageId = (ui.currentPage != null) ?
-					ui.currentPage.getId() : null;
-				sendMessage('cursor', {pageId: pageId,
-					x: Math.round((me.getX() - offset.x +
-						graph.container.scrollLeft) / s - tr.x),
-					y: Math.round((me.getY() - offset.y +
-						graph.container.scrollTop) / s - tr.y)});
-			}
-		};
-
-		this.mouseListeners = {
-			startX: 0,
-			startY: 0,
-			scrollLeft: 0,
-			scrollTop: 0,
-			mouseDown: function(sender, me) {},
-			mouseMove: debounce(function(sender, me)
-			{
-				sendCursor(me);
-			}, cursorDelay), // 5 frame/sec approx TODO with 100 milli (10 fps), the cursor is smoother
-			mouseUp: function(sender, me)
-			{
-				sendCursor(me);
-			}
-		};
-
-		graph.addMouseListener(this.mouseListeners);
-
-		this.shareCursorPositionListener = function()
-		{
-			if (!ui.isShareCursorPosition())
-			{
-				sendMessage('cursor', {hide: true});
-			}
-		};
-
-		ui.addListener('shareCursorPositionChanged', this.shareCursorPositionListener);
-
-		this.selectionChangeListener = function(sender, evt)
-		{
-			var mapToIds = function(c)
-			{
-				return c.id;
-			};
+			var offset = mxUtils.getOffset(graph.container);
+			var tr = graph.view.translate;
+			var s = graph.view.scale;
 
 			var pageId = (ui.currentPage != null) ?
 				ui.currentPage.getId() : null;
-			var added = evt.getProperty('added'),
-				removed = evt.getProperty('removed');
+			sendMessage('cursor', {pageId: pageId,
+				x: Math.round((me.getX() - offset.x +
+					graph.container.scrollLeft) / s - tr.x),
+				y: Math.round((me.getY() - offset.y +
+					graph.container.scrollTop) / s - tr.y)});
+		}
+	};
 
-			//Added/removed looks like inverted
-			sendMessage('selectionChange', {pageId: pageId,
-				removed: added? added.map(mapToIds) : [],
-				added: removed? removed.map(mapToIds) : []
-			});
+	this.mouseListeners = {
+		startX: 0,
+		startY: 0,
+		scrollLeft: 0,
+		scrollTop: 0,
+		mouseDown: function(sender, me) {},
+		mouseMove: debounce(function(sender, me)
+		{
+			sendCursor(me);
+		}, cursorDelay), // 5 frame/sec approx TODO with 100 milli (10 fps), the cursor is smoother
+		mouseUp: function(sender, me)
+		{
+			sendCursor(me);
+		}
+	};
+
+	graph.addMouseListener(this.mouseListeners);
+
+	this.shareCursorPositionListener = function()
+	{
+		if (!ui.isShareCursorPosition())
+		{
+			sendMessage('cursor', {hide: true});
+		}
+	};
+
+	ui.addListener('shareCursorPositionChanged', this.shareCursorPositionListener);
+
+	this.selectionChangeListener = function(sender, evt)
+	{
+		var mapToIds = function(c)
+		{
+			return c.id;
 		};
 
-		graph.getSelectionModel().addListener(mxEvent.CHANGE, this.selectionChangeListener);
-	}
+		var pageId = (ui.currentPage != null) ?
+			ui.currentPage.getId() : null;
+		var added = evt.getProperty('added'),
+			removed = evt.getProperty('removed');
+
+		//Added/removed looks like inverted
+		sendMessage('selectionChange', {pageId: pageId,
+			removed: added? added.map(mapToIds) : [],
+			added: removed? removed.map(mapToIds) : []
+		});
+	};
+
+	graph.getSelectionModel().addListener(mxEvent.CHANGE, this.selectionChangeListener);
 
 	function updateCursor(entry, transition)
 	{
@@ -330,7 +349,7 @@ function P2PCollab(ui, sync)
 				name.style.whiteSpace = 'nowrap';
 				
 				mxUtils.write(name, username);
-				cursor.append(name);
+				cursor.appendChild(name);
 
 				ui.diagramContainer.appendChild(cursor);
 				selection = connectedSessions[sessionId].selection;
@@ -356,12 +375,9 @@ function P2PCollab(ui, sync)
 		switch (msg.type)
 		{
 			case 'cursor':
-				if (urlParams['remote-cursors'] != '0')
-				{
-					createCursor();
-					connectedSessions[sessionId].lastCursor = msgData;
-					updateCursor(connectedSessions[sessionId], true);
-				}
+				createCursor();
+				connectedSessions[sessionId].lastCursor = msgData;
+				updateCursor(connectedSessions[sessionId], true);
 			break;
 			case 'diff':
 				try
@@ -375,11 +391,11 @@ function P2PCollab(ui, sync)
 				}
 			break;
 			case 'selectionChange':
-				if (urlParams['remote-cursors'] != '0')
+				if (urlParams['remote-selection'] != '0')
 				{
 					var pageId = (ui.currentPage != null) ?
 						ui.currentPage.getId() : null;
-
+					
 					if (pageId == null ||
 						(msgData.pageId != null &&
 						msgData.pageId == pageId))
@@ -402,16 +418,20 @@ function P2PCollab(ui, sync)
 						{
 							var id = msgData.added[i];
 							var cell = graph.model.getCell(id);
-							selection[id] = graph.highlightCell(cell,
-								connectedSessions[sessionId].color, 60000,
-								SELECTION_OPACITY, 3);
+
+							if (cell != null)
+							{	
+								selection[id] = graph.highlightCell(cell,
+									connectedSessions[sessionId].color, 60000,
+									SELECTION_OPACITY, 3);
+							}
 						}
 					}
 				}
 			break;
 		}
 
-		sync.file.fireEvent(new mxEventObject('messageReceived', 'message', msg));
+		sync.file.fireEvent(new mxEventObject('realtimeMessage', 'message', msg));
 	};
 	
 	function createPeer(id, initiator)
@@ -541,9 +561,7 @@ function P2PCollab(ui, sync)
 		}
 	};
 
-	var joinInProgress = false, joinId = 0;
-	
-	this.joinFile = function(channelId, callback, onError)
+	this.joinFile = function(check)
 	{
 		if (destroyed) return;
 
@@ -552,11 +570,7 @@ function P2PCollab(ui, sync)
 			if (joinInProgress)
 			{
 				EditorUi.debug('P2PCollab: joinInProgress on', joinInProgress);
-				if (onError)
-				{
-					onError('busy');
-				}
-				return; //TODO what if the current join failed. We need a way to initiate join from the file sync	
+				lastError = 'busy';
 			}
 			
 			joinInProgress = ++joinId;
@@ -582,11 +596,12 @@ function P2PCollab(ui, sync)
 				socket = ws;
 				socket.joinId = joinInProgress;
 				joinInProgress = false;
+				sync.file.fireEvent(new mxEventObject('realtimeStateChanged'));
 				EditorUi.debug('P2PCollab: open socket', socket.joinId);
-				
-				if (callback)
+
+				if (check)
 				{
-					callback(); //TODO delay until join is done?
+					sync.scheduleCleanup();
 				}
 			});
 		
@@ -646,15 +661,11 @@ function P2PCollab(ui, sync)
 					{
 						EditorUi.debug('P2PCollab: calling rejoin on', ws.joinId);
 						rejoinCalled = true;
-
-						if (onError)
-						{
-							onError();
-						}
-
-						this.joinFile(channelId, callback, onError);
+						this.joinFile(true);
 					}
 				}
+
+				sync.file.fireEvent(new mxEventObject('realtimeStateChanged'));
 			}));
 
 			ws.addEventListener('error', mxUtils.bind(this, function(event)
@@ -674,23 +685,19 @@ function P2PCollab(ui, sync)
 					{
 						EditorUi.debug('P2PCollab: calling rejoin on', ws.joinId);
 						rejoinCalled = true;
-
-						if (onError)
-						{
-							onError();
-						}
-
-						this.joinFile(channelId, callback, onError);
+						this.joinFile(true);
 					}
 				}
+
+				sync.file.fireEvent(new mxEventObject('realtimeStateChanged'));
 			}));
+
+			sync.file.fireEvent(new mxEventObject('realtimeStateChanged'));
 		}
 		catch (e)
 		{
-			if (onError)
-			{
-				onError(e);
-			}
+			lastError = e;
+			sync.file.fireEvent(new mxEventObject('realtimeStateChanged'));
 		}
 	};
 
@@ -704,7 +711,10 @@ function P2PCollab(ui, sync)
 
 			for (var id in selection)
 			{
-				selection[id].destroy();
+				if (selection[id] != null)
+				{
+					selection[id].destroy();
+				}
 			}
 
 			if (user.cursor != null && user.cursor.parentNode != null)
@@ -769,5 +779,7 @@ function P2PCollab(ui, sync)
 				p2pClients[id].destroy();
 			}
 		}
+
+		sync.file.fireEvent(new mxEventObject('realtimeStateChanged'));
 	};
 };

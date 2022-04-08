@@ -141,6 +141,16 @@
 	/**
 	 *
 	 */
+	Editor.cloudImage = 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIGhlaWdodD0iMjRweCIgdmlld0JveD0iMCAwIDI0IDI0IiB3aWR0aD0iMjRweCIgZmlsbD0iIzAwMDAwMCI+PHBhdGggZD0iTTAgMGgyNHYyNEgwVjB6IiBmaWxsPSJub25lIi8+PHBhdGggZD0iTTEyIDZjMi42MiAwIDQuODggMS44NiA1LjM5IDQuNDNsLjMgMS41IDEuNTMuMTFjMS41Ni4xIDIuNzggMS40MSAyLjc4IDIuOTYgMCAxLjY1LTEuMzUgMy0zIDNINmMtMi4yMSAwLTQtMS43OS00LTQgMC0yLjA1IDEuNTMtMy43NiAzLjU2LTMuOTdsMS4wNy0uMTEuNS0uOTVDOC4wOCA3LjE0IDkuOTQgNiAxMiA2bTAtMkM5LjExIDQgNi42IDUuNjQgNS4zNSA4LjA0IDIuMzQgOC4zNiAwIDEwLjkxIDAgMTRjMCAzLjMxIDIuNjkgNiA2IDZoMTNjMi43NiAwIDUtMi4yNCA1LTUgMC0yLjY0LTIuMDUtNC43OC00LjY1LTQuOTZDMTguNjcgNi41OSAxNS42NCA0IDEyIDR6Ii8+PC9zdmc+';
+
+	/**
+	 *
+	 */
+	Editor.cloudOffImage = 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIGhlaWdodD0iMjRweCIgdmlld0JveD0iMCAwIDI0IDI0IiB3aWR0aD0iMjRweCIgZmlsbD0iIzAwMDAwMCI+PHBhdGggZD0iTTAgMGgyNHYyNEgwVjB6IiBmaWxsPSJub25lIi8+PHBhdGggZD0iTTI0IDE1YzAtMi42NC0yLjA1LTQuNzgtNC42NS00Ljk2QzE4LjY3IDYuNTkgMTUuNjQgNCAxMiA0Yy0xLjMzIDAtMi41Ny4zNi0zLjY1Ljk3bDEuNDkgMS40OUMxMC41MSA2LjE3IDExLjIzIDYgMTIgNmMzLjA0IDAgNS41IDIuNDYgNS41IDUuNXYuNUgxOWMxLjY2IDAgMyAxLjM0IDMgMyAwIC45OS0uNDggMS44NS0xLjIxIDIuNGwxLjQxIDEuNDFjMS4wOS0uOTIgMS44LTIuMjcgMS44LTMuODF6TTQuNDEgMy44NkwzIDUuMjdsMi43NyAyLjc3aC0uNDJDMi4zNCA4LjM2IDAgMTAuOTEgMCAxNGMwIDMuMzEgMi42OSA2IDYgNmgxMS43M2wyIDIgMS40MS0xLjQxTDQuNDEgMy44NnpNNiAxOGMtMi4yMSAwLTQtMS43OS00LTRzMS43OS00IDQtNGgxLjczbDggOEg2eiIvPjwvc3ZnPg==';
+
+	/**
+	 *
+	 */
 	Editor.syncDisabledImage = 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgdmlld0JveD0iMCAwIDI0IDI0Ij48cGF0aCBkPSJNMTAgNi4zNVY0LjI2Yy0uOC4yMS0xLjU1LjU0LTIuMjMuOTZsMS40NiAxLjQ2Yy4yNS0uMTIuNS0uMjQuNzctLjMzem0tNy4xNC0uOTRsMi4zNiAyLjM2QzQuNDUgOC45OSA0IDEwLjQ0IDQgMTJjMCAyLjIxLjkxIDQuMiAyLjM2IDUuNjRMNCAyMGg2di02bC0yLjI0IDIuMjRDNi42OCAxNS4xNSA2IDEzLjY2IDYgMTJjMC0xIC4yNS0xLjk0LjY4LTIuNzdsOC4wOCA4LjA4Yy0uMjUuMTMtLjUuMjUtLjc3LjM0djIuMDljLjgtLjIxIDEuNTUtLjU0IDIuMjMtLjk2bDIuMzYgMi4zNiAxLjI3LTEuMjdMNC4xNCA0LjE0IDIuODYgNS40MXpNMjAgNGgtNnY2bDIuMjQtMi4yNEMxNy4zMiA4Ljg1IDE4IDEwLjM0IDE4IDEyYzAgMS0uMjUgMS45NC0uNjggMi43N2wxLjQ2IDEuNDZDMTkuNTUgMTUuMDEgMjAgMTMuNTYgMjAgMTJjMC0yLjIxLS45MS00LjItMi4zNi01LjY0TDIwIDR6Ii8+PC9zdmc+';
 
 	/**
@@ -1786,6 +1796,12 @@
 			StyleFormatPanel.prototype.defaultColorSchemes = config.defaultColorSchemes || StyleFormatPanel.prototype.defaultColorSchemes;
 			Graph.prototype.defaultEdgeLength = config.defaultEdgeLength || Graph.prototype.defaultEdgeLength;
 			DrawioFile.prototype.autosaveDelay = config.autosaveDelay || DrawioFile.prototype.autosaveDelay;
+
+			// Enables debug output
+			if (config.debug)
+			{
+				urlParams['test'] = '1'
+			}
 			
 			if (config.templateFile != null)
 			{
@@ -2436,7 +2452,7 @@
 		if (typeof(window.MathJax) === 'undefined')
 		{
 			src = ((src != null) ? src : DRAW_MATH_URL + '/MathJax.js') + '?config=TeX-MML-AM_' +
-				((urlParams['math-output'] == 'html') ? 'HTMLorMML' : 'SVG') + '-full';
+				((urlParams['math-output'] == 'html') ? 'HTMLorMML' : 'SVG') + '-full,Safe';
 			Editor.mathJaxQueue = [];
 
 			Editor.doMathJaxRender = function(container)
@@ -7882,6 +7898,22 @@
 	};
 
 	/**
+	 * Adds style to mark stencils as lines.
+	 */
+	var mxStencilDrawShape = mxStencil.prototype.drawShape;
+		
+	mxStencil.prototype.drawShape = function(canvas, shape, x, y, w, h)
+	{
+		if (mxUtils.getValue(shape.style, 'lineShape', null) == '1')
+		{
+			canvas.setFillColor(mxUtils.getValue(shape.style,
+				mxConstants.STYLE_STROKECOLOR, this.stroke));
+		}
+
+		return mxStencilDrawShape.apply(this, arguments);
+	};
+
+	/**
 	 * Constructs a new print dialog.
 	 */
 	PrintDialog.prototype.create = function(editorUi, titleText)
@@ -7917,7 +7949,7 @@
 
 		mxUtils.br(pagesSection);
 
-		// Pages ... to ...
+		// Page range
 		var pagesRadio = allPagesRadio.cloneNode(true);
 		allPagesRadio.setAttribute('checked', 'checked');
 		pagesRadio.setAttribute('value', 'range');
@@ -7992,11 +8024,47 @@
 			div.appendChild(pagesSection);
 			pagesRadio.checked = true;
 		}
+
+		mxUtils.br(pagesSection);
 		
+		// Selection only
+		var selectionOnlyRadio = document.createElement('input');
+		selectionOnlyRadio.setAttribute('value', 'all');
+		selectionOnlyRadio.setAttribute('type', 'radio');
+		selectionOnlyRadio.style.marginRight = '8px';
+		
+		if (graph.isSelectionEmpty())
+		{
+			selectionOnlyRadio.setAttribute('disabled', 'disabled');
+		}
+
 		// Adjust to ...
 		var adjustSection = document.createElement('div');
 		adjustSection.style.marginBottom = '10px';
+
+		if (pageCount == 1)
+		{
+			selectionOnlyRadio.setAttribute('type', 'checkbox');
+			selectionOnlyRadio.style.marginBottom = '12px';
+			adjustSection.appendChild(selectionOnlyRadio);
+		}
+		else
+		{
+
+			selectionOnlyRadio.setAttribute('name', 'pages-printdialog');
+			selectionOnlyRadio.style.marginBottom = '8px';
+			pagesSection.appendChild(selectionOnlyRadio);
+		}
 		
+		var span = document.createElement('span');
+		mxUtils.write(span, mxResources.get('selectionOnly'));
+		selectionOnlyRadio.parentNode.appendChild(span);
+
+		if (pageCount == 1)
+		{
+			mxUtils.br(selectionOnlyRadio.parentNode);
+		}
+
 		var adjustRadio = document.createElement('input');
 		adjustRadio.style.marginRight = '8px';
 		
@@ -8148,14 +8216,18 @@
 			
 			// Disables dark mode while printing
 			var darkStylesheet = null;
-			
+			var darkFg = graph.shapeForegroundColor;
+			var darkBg = graph.shapeBackgroundColor;
+
 			if (graph.themes != null && graph.defaultThemeName == 'darkTheme')
 			{
 				darkStylesheet = graph.stylesheet;
 				graph.stylesheet = graph.getDefaultStylesheet()
+				graph.shapeForegroundColor = '#000000';
+				graph.shapeBackgroundColor = '#ffffff';
 				graph.refresh();
 			}
-			
+
 			function printGraph(thisGraph, pv, forcePageBreaks)
 			{
 				// Workaround for CSS transforms affecting the print output
@@ -8227,6 +8299,14 @@
 					pv = PrintDialog.createPrintPreview(thisGraph, scale, pf, border, x0, y0, autoOrigin);
 					pv.pageSelector = false;
 					pv.mathEnabled = false;
+
+					if (selectionOnlyRadio.checked)
+					{
+						pv.isCellVisible = function(cell)
+						{
+							return thisGraph.isCellSelected(cell);
+						};
+					}
 					
 					var file = editorUi.getCurrentFile();
 					
@@ -8319,15 +8399,19 @@
 					
 					// Switches stylesheet for print output in dark mode
 					var temp = null;
+					var tempFg = graph.shapeForegroundColor;
+					var tempBg = graph.shapeBackgroundColor;
 					
 					// Disables dashed printing of flowAnimation
 					var enableFlowAnimation = graph.enableFlowAnimation;
 					graph.enableFlowAnimation = false;
-					
+
 					if (graph.themes != null && graph.defaultThemeName == 'darkTheme')
 					{
 						temp = graph.stylesheet;
 						graph.stylesheet = graph.getDefaultStylesheet()
+						graph.shapeForegroundColor = '#000000';
+						graph.shapeBackgroundColor = '#ffffff';
 						graph.refresh();
 					}
 					
@@ -8340,6 +8424,8 @@
 					// Restores the stylesheet
 					if (temp != null)
 					{
+						graph.shapeForegroundColor = tempFg;
+						graph.shapeBackgroundColor = tempBg;
 						graph.stylesheet = temp;
 						graph.refresh();
 					}
@@ -8401,7 +8487,7 @@
 			var pagesTo = pagesToInput.value;
 			var ignorePages = !allPagesRadio.checked;
 			var pv = null;
-			
+
 			if (EditorUi.isElectronApp)
 			{
 				PrintDialog.electronPrint(editorUi, allPagesRadio.checked, pagesFrom, pagesTo,  fitRadio.checked,
@@ -8413,7 +8499,9 @@
 			
 			if (ignorePages)
 			{
-				ignorePages = pagesFrom == currentPage && pagesTo == currentPage;
+				ignorePages = selectionOnlyRadio.checked ||
+					(pagesFrom == currentPage &&
+					pagesTo == currentPage);
 			}
 			
 			if (!ignorePages && editorUi.pages != null && editorUi.pages.length)
@@ -8435,6 +8523,8 @@
 					if (tempGraph == null)
 					{
 						tempGraph = editorUi.createTemporaryGraph(graph.stylesheet);
+						tempGraph.shapeForegroundColor = graph.shapeForegroundColor;
+						tempGraph.shapeBackgroundColor = graph.shapeBackgroundColor;
 
 						// Restores graph settings that are relevant for printing
 						var pageVisible = true;
@@ -8461,12 +8551,43 @@
 							bgImage = page.viewState.backgroundImage;
 							tempGraph.extFonts = page.viewState.extFonts;
 						}
-					
+
+						// Forces update of background page image in offscreen page
+						if (bgImage != null && bgImage.originalSrc != null)
+						{
+							bgImage = editorUi.createImageForPageLink(
+								bgImage.originalSrc, page);
+						}
+						
 						tempGraph.background = bg;
-						tempGraph.backgroundImage = (bgImage != null) ? new mxImage(bgImage.src, bgImage.width, bgImage.height) : null;
+						tempGraph.backgroundImage = (bgImage != null) ? new mxImage(
+							bgImage.src, bgImage.width, bgImage.height,
+							bgImage.x, bgImage.y) : null;
 						tempGraph.pageVisible = pageVisible;
 						tempGraph.mathEnabled = mathEnabled;
-						
+
+						// Overrides graph bounds to include background images
+						var graphGetGraphBounds = tempGraph.getGraphBounds;
+
+						tempGraph.getGraphBounds = function()
+						{
+							var bounds = graphGetGraphBounds.apply(this, arguments);
+							var img = this.backgroundImage;
+							
+							if (img != null && img.width != null && img.height != null)
+							{
+								var t = this.view.translate;
+								var s = this.view.scale;
+
+								bounds = mxRectangle.fromRectangle(bounds);
+								bounds.add(new mxRectangle(
+									(t.x + img.x) * s, (t.y + img.y) * s,
+									img.width * s, img.height * s));
+							}
+
+							return bounds;
+						};
+
 						// Redirects placeholders to current page
 						var graphGetGlobalVariable = tempGraph.getGlobalVariable;
 		
@@ -8538,6 +8659,8 @@
 			// Restores dark mode
 			if (darkStylesheet != null)
 			{
+				graph.shapeForegroundColor = darkFg;
+				graph.shapeBackgroundColor = darkBg;
 				graph.stylesheet = darkStylesheet;
 				graph.refresh();
 			}
