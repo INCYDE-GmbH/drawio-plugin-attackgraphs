@@ -12,7 +12,7 @@ export type ChildCellDataCollection = {
 
 export type GlobalAttributeDict = { [name: string]: {name: string, value: string, min: string, max: string} }
 export type ChildCellData = {
-  edgeWeight: number,
+  edgeWeight: number | null,
   attributes: KeyValuePairs,
   computedAttribute: string,
 };
