@@ -118,7 +118,7 @@ test.describe('attributes and default attributes', () => {
     icon.click();
     await drawio.applyDialog();
     expect(path).toEqual(
-      await page.locator('table.properties').locator('tr').locator('td').locator('path').getAttribute('d')
+      await page.locator('table.properties').locator('tr').locator('td[name="icon_picker"]').locator('path').getAttribute('d')
     );
   });
 
@@ -172,7 +172,7 @@ test.describe('attributes and default attributes', () => {
     icon2.click();
     const path = await icon2.locator('path').getAttribute('d');
     await drawio.applyDialog();
-    expect(path).toEqual(await page.locator('td').locator('path').getAttribute('d'));
+    expect(path).toEqual(await page.locator('td[name="icon_picker"]').locator('path').getAttribute('d'));
 
   });
 

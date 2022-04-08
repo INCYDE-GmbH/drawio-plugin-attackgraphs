@@ -162,9 +162,11 @@ export class DefaultAttributesDialog extends SettingsDialog<true> {
     super.addRowToForm(form, attribute.name, attribute.value);
 
     const index = form.table.rows.length - 1;
+    const row = form.table.rows[index];
 
-    this.addIconPickerToRow(form.table.rows[index], () => this.setIconPickerCallback(index, this.values[index].name), Framework7Icons.Icons[this.values[index].iconName]);
-    this.addMinMaxInputToRow(form.table.rows[index]);
+    this.addIconPickerToRow(row, () => this.setIconPickerCallback(row), Framework7Icons.Icons[this.values[index].iconName]);
+    this.addMinMaxInputToRow(row);
+    this.addUpDownBtnToRow(row);
     this.minTextAreas[index].value = attribute.min || '';
     this.maxTextAreas[index].value = attribute.max || '';
   }
@@ -223,6 +225,62 @@ export class DefaultAttributesDialog extends SettingsDialog<true> {
     this.maxTextAreas.push(max);
   }
 
+  private addUpDownBtnToRow(row: HTMLTableRowElement) {
+    const tdUp = document.createElement('td');
+    tdUp.appendChild(this.createUpDownBtn(() => {
+      const table = row.parentElement as HTMLTableElement;
+      const idx = row.rowIndex;
+
+      if (idx !== null && idx > 0) {
+        [this.minTextAreas[idx], this.minTextAreas[idx-1]] = [this.minTextAreas[idx-1], this.minTextAreas[idx]];
+        [this.maxTextAreas[idx], this.maxTextAreas[idx-1]] = [this.maxTextAreas[idx-1], this.maxTextAreas[idx]];
+        [this.textAreas[idx], this.textAreas[idx-1]] = [this.textAreas[idx-1], this.textAreas[idx]];
+        [this.values[idx], this.values[idx-1]] = [this.values[idx-1], this.values[idx]];
+
+        table.insertBefore(table.rows[idx], table.rows[idx-1]);
+      }
+    }, Framework7Icons.Icons.control));
+    tdUp.title = 'Up';
+
+    const tdDown = document.createElement('td');
+    tdDown.appendChild(this.createUpDownBtn(() => {
+      const table = row.parentElement as HTMLTableElement;
+      const idx = row.rowIndex;
+
+      if (idx !== null && idx < table.rows.length - 1) {
+        [this.minTextAreas[idx], this.minTextAreas[idx+1]] = [this.minTextAreas[idx+1], this.minTextAreas[idx]];
+        [this.maxTextAreas[idx], this.maxTextAreas[idx+1]] = [this.maxTextAreas[idx+1], this.maxTextAreas[idx]];
+        [this.textAreas[idx], this.textAreas[idx+1]] = [this.textAreas[idx+1], this.textAreas[idx]];
+        [this.values[idx], this.values[idx+1]] = [this.values[idx+1], this.values[idx]];
+
+        table.insertBefore(table.rows[idx], table.rows[idx+2] || null);
+      }
+    }, Framework7Icons.Icons.control));
+    tdDown.title = 'Down';
+    tdDown.style.transform = 'rotate(180deg)';
+
+    row.insertBefore(tdUp, row.children[row.children.length - 1]);
+    row.insertBefore(tdDown, row.children[row.children.length - 1]);
+  }
+
+  private createUpDownBtn(callback: () => void, icon?: string): HTMLElement {
+    const btn = mxUtils.button('', callback) as HTMLElement;
+    if (icon !== undefined) {
+      btn.innerHTML = icon;
+    } else {
+      btn.innerHTML = Framework7Icons.Icons.question;
+    }
+    btn.style.width = `24px`;
+    btn.style.height = `24px`;
+    btn.style.cursor = 'pointer';
+    if (btn.children[0] !== undefined) {
+      this.resizeSVG(btn.children[0], '100%', '100%');
+    }
+    btn.style.position = 'relative';
+    btn.style.display = 'inline-block';
+    return btn;
+  }
+
   protected override removeRowFromForm(form: import('mxgraph').mxForm, row: HTMLTableRowElement): number | null {
     const index = super.removeRowFromForm(form, row);
     if (index !== null) {
@@ -234,6 +292,7 @@ export class DefaultAttributesDialog extends SettingsDialog<true> {
 
   private addIconPickerToRow(row: HTMLTableRowElement, callback: () => void, icon?: string): void {
     const td = document.createElement('td');
+    td.setAttribute('name', 'icon_picker');
     if (row.firstChild !== null) {
       row.insertBefore(td, row.firstChild);
     } else {
@@ -247,9 +306,11 @@ export class DefaultAttributesDialog extends SettingsDialog<true> {
     element.setAttribute('height', height);
   }
 
-  private setIconPickerCallback(index: number, title: string) {
+  private setIconPickerCallback(row: HTMLTableRowElement) {
     void (async () => {
       if (this.ui !== null) {
+        const index = row.rowIndex;
+        const title = this.values[index].name;
         const dialog = new IconPickerDialog(this.ui, 600, 400, this.icons, title).init();
         if (await dialog.show()) {
           const result = dialog.result;
