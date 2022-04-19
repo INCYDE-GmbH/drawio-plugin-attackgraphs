@@ -205,14 +205,14 @@ export class DefaultAttributesDialog extends SettingsDialog<true> {
     const tdTextMin = document.createElement('td');
     const min = document.createElement('input');
     min.setAttribute('name', 'min');
-    min.style.width = '50pt';
+    min.style.width = '4ch';
     tdTextMin.innerHTML = 'Min:';
     tdMin.appendChild(min);
     const tdMax = document.createElement('td');
     const tdTextMax = document.createElement('td');
     const max = document.createElement('input');
     max.setAttribute('name', 'max');
-    max.style.width = '50pt';
+    max.style.width = '4ch';
     tdTextMax.innerHTML = 'Max:';
     tdMax.appendChild(max);
 
