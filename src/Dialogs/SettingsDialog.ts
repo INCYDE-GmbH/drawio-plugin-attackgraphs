@@ -105,7 +105,7 @@ export abstract class SettingsDialog<TValue> {
     const label = document.createElement('td');
     label.innerHTML = `${mxResources.get('attackGraphs.value')}:`;
     textArea.value = value;
-    textArea.style.width = '50pt';
+    textArea.style.width = '4ch';
     if (parentNode) {
       parentNode.removeChild(oldTextArea);
       parentNode.appendChild(textArea);
