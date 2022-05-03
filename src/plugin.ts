@@ -67,6 +67,7 @@ Draw.loadPlugin(ui => {
   ConversionHelpTool.register(ui.editor.graph);
 
   mxResources.parse(`setDefaultAttributes=${mxResources.get('attackGraphs.setDefaultAttributes')}`);
+  mxResources.parse(`setAttackGraphShape=${mxResources.get('attackGraphs.setAttackGraphShape')}`);
   // eslint-disable-next-line @typescript-eslint/unbound-method
   const uiCreatePopupMenu = ui.menus.createPopupMenu;
   ui.menus.createPopupMenu = function (...args) {
@@ -74,13 +75,17 @@ Draw.loadPlugin(ui => {
     const graph = ui.editor.graph;
 
     if (graph.model.isVertex(graph.getSelectionCell())) {
-      this.addMenuItems(args[0], ['-', 'setDefaultAttributes'], null, args[2]);
+      this.addMenuItems(args[0], ['-', 'setDefaultAttributes', 'setAttackGraphShape'], null, args[2], args[2]);
     }
 
   };
 
   ui.actions.addAction('setDefaultAttributes', () => {
     ConversionHelpTool.setDefaultAttributes();
+    ui.editor.graph.refresh();
+  });
+  ui.actions.addAction('setAttackGraphShape', () => {
+    ConversionHelpTool.setAttackGraphShape();
     ui.editor.graph.refresh();
   });
 
