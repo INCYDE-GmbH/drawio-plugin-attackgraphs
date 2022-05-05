@@ -12,10 +12,11 @@ Open draw.io Desktop and load the plugin file using the `Extras > Plugins...` di
 
 ### AttackGraph Diagram Template
 
-If you want to use the default functions that come shipped with this plugin, you can use the **Attack Graph Template** to create new files already containing the default functions. To do so, you will need to navigate to `File > New > From Template URL` and use the following URL:
+If you want to use the default functions that come shipped with this plugin, you can use the **Attack Graph Template** to create new files already containing the default functions. To do so, you will need to navigate to `File > New > From Template URL` and use one of the following URLs:
 
 ```
-https://incyde-gmbh.github.io/drawio-plugin-attackgraphs/app/templates/basic/attackgraph.xml
+https://incyde-gmbh.github.io/drawio-plugin-attackgraphs/app/templates/basic/attackgraph_RKL.xml
+https://incyde-gmbh.github.io/drawio-plugin-attackgraphs/app/templates/basic/attackgraph_TS50701.xml
 ```
 
 ### User Guide
