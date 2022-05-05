@@ -158,7 +158,7 @@ mxscript(drawDevUrl + 'js/spin/spin.min.js');
 mxscript(drawDevUrl + 'js/deflate/pako.min.js');
 mxscript(drawDevUrl + 'js/deflate/base64.js');
 mxscript(drawDevUrl + 'js/jscolor/jscolor.js');
-mxscript(drawDevUrl + 'js/sanitizer/sanitizer.min.js');
+mxscript(drawDevUrl + 'js/sanitizer/purify.min.js');
 mxscript(drawDevUrl + 'js/rough/rough.min.js');
 mxscript(drawDevUrl + 'js/freehand/perfect-freehand.js');
 
@@ -309,3 +309,6 @@ if (urlParams['orgChartDev'] == '1')
 	mxscript(drawDevUrl + 'js/orgchart/OrgChart.Layout.min.js');
 	mxscript(drawDevUrl + 'js/orgchart/mxOrgChartLayout.js');
 }
+
+// Miro Import
+mxscript(drawDevUrl + 'js/diagramly/miro/MiroImporter.js');
