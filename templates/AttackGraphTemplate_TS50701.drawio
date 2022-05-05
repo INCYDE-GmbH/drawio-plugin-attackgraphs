@@ -1,0 +1,29 @@
+<mxfile host="Electron" modified="2022-05-05T09:30:28.712Z" agent="5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) draw.io/18.0.0 Chrome/100.0.4896.143 Electron/18.2.0 Safari/537.36" etag="hIfs5Exlp4EaFsm1D-8Q" compressed="false" version="18.0.0" type="device">
+  <diagram id="zNMCXYOBYckHPa1j1fsk" name="Seite-1">
+    <mxGraphModel dx="1102" dy="857" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
+      <root>
+        <object tooltip="" id="0">
+          <ag_global_attributes>
+            <ag_global_attribute name="Exposure" value="" iconName="lock_circle" min="1" max="3" />
+            <ag_global_attribute name="Vulnerability" value="" iconName="shield" min="1" max="3" />
+          </ag_global_attributes>
+          <ag_attributes />
+          <ag_computed_attributes />
+          <ag_aggregation_functions>
+            <ag_aggregation_function name="default" id="6b1d22791hih8" fn="function (collection) {&#xa;    var worstNodeLike = collection.childAttributes[0];&#xa;    var worstNodeRisk = collection.childAttributes[0];&#xa;    var maxLikelihood = 0;&#xa;    var maxRisk = &quot;L&quot;;&#xa;    var maxImpact = &quot;E&quot;;&#xa;    var hadEdgeWeight = false;&#xa;    var riskMatrix = {&#xa;        &quot;D&quot;: [&quot;L&quot;, &quot;L&quot;, &quot;L&quot;, &quot;M&quot;, &quot;S&quot;],&#xa;        &quot;C&quot;: [&quot;L&quot;, &quot;L&quot;, &quot;M&quot;, &quot;S&quot;, &quot;H&quot;],&#xa;        &quot;B&quot;: [&quot;L&quot;, &quot;M&quot;, &quot;S&quot;, &quot;H&quot;, &quot;E&quot;],&#xa;        &quot;A&quot;: [&quot;M&quot;, &quot;S&quot;, &quot;H&quot;, &quot;H&quot;, &quot;V&quot;]&#xa;    };&#xa;    var edgeWeights = [&quot;D&quot;, &quot;C&quot;, &quot;B&quot;, &quot;A&quot;];&#xa;&#xa;    /*&#xa;    Returns&#xa;        - &lt; 0 if risk1 &lt; risk2&#xa;        - = 0 if risk1 = risk2&#xa;        - &gt; 0 if risk1 &gt; risk2&#xa;        - null if either risk is not in [&quot;L&quot;, &quot;M&quot;, &quot;S&quot;, &quot;H&quot;, &quot;V&quot;]&#xa;    */&#xa;    var compareRisk = function(risk1, risk2) {&#xa;        var values = [&quot;L&quot;, &quot;M&quot;, &quot;S&quot;, &quot;H&quot;, &quot;V&quot;];&#xa;        var index_risk1 = values.indexOf(risk1);&#xa;        var index_risk2 = values.indexOf(risk2);&#xa;&#xa;        if (index_risk1 == -1 || index_risk2 == -1) {&#xa;            return null;&#xa;        }&#xa;        return index_risk1 - index_risk2;&#xa;&#xa;    }&#xa;    collection.childAttributes.forEach(function(child) {&#xa;        var likelihood = 0;&#xa;&#xa;        if (&quot;_likelihood&quot; in child.attributes) {&#xa;            likelihood = child.attributes[&quot;_likelihood&quot;];&#xa;        } else if (&quot;Exposure&quot; in child.attributes &amp;&amp; &quot;Vulnerability&quot; in child.attributes) {&#xa;            likelihood = parseInt(child.attributes[&quot;Exposure&quot;]) + parseInt(child.attributes[&quot;Vulnerability&quot;]) - 1;&#xa;        }&#xa;&#xa;        if (edgeWeights.indexOf(child.edgeWeight) &gt;= 0) {&#xa;            hadEdgeWeight = true;&#xa;            var impact = child.edgeWeight;&#xa;            var risk = riskMatrix[impact][likelihood - 1];&#xa;            if(compareRisk(risk, maxRisk) &gt; 0) {&#xa;                maxRisk = risk;&#xa;                maxImpact = impact;&#xa;                maxLikelihood = likelihood;&#xa;                worstNodeRisk = child;&#xa;            }&#xa;        } else {&#xa;            if (likelihood &gt; maxLikelihood) {&#xa;                maxLikelihood = likelihood;&#xa;                worstNodeLike = child;&#xa;            }&#xa;        }&#xa;    });&#xa;&#xa;    var result = worstNodeLike.attributes;&#xa;    if(hadEdgeWeight) {&#xa;        result = worstNodeRisk.attributes;&#xa;        result._risk = maxRisk;&#xa;    }&#xa;    result._likelihood = maxLikelihood;&#xa;    return result;&#xa;}" />
+            <ag_aggregation_function name="AND" id="gf0d4f199018" fn="function(collection){&#xa;&#xa;    var product = 1;&#xa;    var n = 0;&#xa;&#xa;    collection.childAttributes.forEach(function(child){        &#xa;        var likelihood =  parseInt(child.attributes[&quot;Exposure&quot;]) + parseInt(child.attributes[&quot;Vulnerability&quot;]) - 1;&#xa;        n += 1;&#xa;        product *= likelihood;&#xa;    });&#xa;&#xa;    product = Math.ceil(product / Math.pow(5, n-1));&#xa;&#xa;    return {&quot;_likelihood&quot;: product}&#xa;}" />
+          </ag_aggregation_functions>
+          <ag_computed_attributes_functions>
+            <ag_computed_attributes_function name="default" id="dbg60ff69g9a" fn="function(collection){ &#xa;    if (&quot;_risk&quot; in collection.cellAttributes) {  &#xa;        return collection.cellAttributes[&quot;_risk&quot;];  &#xa;    } else if (&quot;_likelihood&quot; in collection.cellAttributes){&#xa;        return collection.cellAttributes[&quot;_likelihood&quot;];&#xa;    } else { &#xa;        return parseInt(collection.cellAttributes[&quot;Exposure&quot;]) + parseInt(collection.cellAttributes[&quot;Vulnerability&quot;]) - 1; &#xa;    } &#xa;}" />
+          </ag_computed_attributes_functions>
+          <mxCell />
+        </object>
+        <object tooltip="" id="1">
+          <ag_attributes />
+          <ag_computed_attributes />
+          <mxCell parent="0" />
+        </object>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
