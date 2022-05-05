@@ -4,3 +4,4 @@ dist/
 playwright-report/
 
 *.dtmp
+*.drawio.bkp
