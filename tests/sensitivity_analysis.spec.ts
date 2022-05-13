@@ -61,7 +61,7 @@ test.describe('sensitivity analysis', () => {
           <mxCell id="NRvaHTUMJR8sC2KhB2nQ-3" value="5" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeWidth=2;exitX=0.5;exitY=0;exitDx=0;exitDy=0;" edge="1" parent="1" source="NRvaHTUMJR8sC2KhB2nQ-2" target="NRvaHTUMJR8sC2KhB2nQ-1">
             <mxGeometry relative="1" as="geometry" />
           </mxCell>
-          <object label="Activity" id="NRvaHTUMJR8sC2KhB2nQ-2">
+          <object label="Attack Step" id="NRvaHTUMJR8sC2KhB2nQ-2">
             <mxCell style="shape=attackgraphs.node;" vertex="1" parent="1">
               <mxGeometry x="200" y="300" width="150" height="75" as="geometry" />
             </mxCell>
@@ -101,7 +101,7 @@ test.describe('sensitivity analysis', () => {
           <mxCell id="NRvaHTUMJR8sC2KhB2nQ-3" value="5" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeWidth=2;exitX=0.5;exitY=0;exitDx=0;exitDy=0;" edge="1" parent="1" source="NRvaHTUMJR8sC2KhB2nQ-2" target="NRvaHTUMJR8sC2KhB2nQ-1">
             <mxGeometry relative="1" as="geometry" />
           </mxCell>
-          <object label="Activity" id="NRvaHTUMJR8sC2KhB2nQ-2">
+          <object label="Attack Step" id="NRvaHTUMJR8sC2KhB2nQ-2">
             <mxCell style="shape=attackgraphs.node;" vertex="1" parent="1">
               <mxGeometry x="200" y="300" width="150" height="75" as="geometry" />
             </mxCell>
@@ -148,7 +148,7 @@ test.describe('sensitivity analysis', () => {
           <mxCell id="NRvaHTUMJR8sC2KhB2nQ-3" value="5" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeWidth=2;exitX=0.5;exitY=0;exitDx=0;exitDy=0;" edge="1" parent="1" source="NRvaHTUMJR8sC2KhB2nQ-2" target="NRvaHTUMJR8sC2KhB2nQ-1">
             <mxGeometry relative="1" as="geometry" />
           </mxCell>
-          <object label="Activity" id="NRvaHTUMJR8sC2KhB2nQ-2">
+          <object label="Attack Step" id="NRvaHTUMJR8sC2KhB2nQ-2">
             <mxCell style="shape=attackgraphs.node;" vertex="1" parent="1">
               <mxGeometry x="200" y="300" width="150" height="75" as="geometry" />
             </mxCell>
@@ -414,7 +414,7 @@ test.describe('sensitivity analysis', () => {
         <mxGeometry x="200" y="140" width="150" height="75" as="geometry" />
       </mxCell>
     </object>
-    <object label="Activity" Knowledge="1" tooltip="" id="NRvaHTUMJR8sC2KhB2nQ-2">
+    <object label="Attack Step" Knowledge="1" tooltip="" id="NRvaHTUMJR8sC2KhB2nQ-2">
       <ag_computed_attributes_custom_function ag_computed_attributes_custom_function="function() { return 2 }" />
       <ag_attributes />
       <ag_computed_attributes custom="2" />
@@ -488,7 +488,7 @@ test.describe('sensitivity analysis', () => {
         <mxGeometry x="200" y="140" width="150" height="75" as="geometry" />
       </mxCell>
     </object>
-    <object label="Activity" Knowledge="1" tooltip="" id="NRvaHTUMJR8sC2KhB2nQ-2">
+    <object label="Attack Step" Knowledge="1" tooltip="" id="NRvaHTUMJR8sC2KhB2nQ-2">
       <ag_computed_attributes_custom_function ag_computed_attributes_custom_function="function() { return 2 }" />
       <ag_attributes />
       <ag_computed_attributes custom="2" />

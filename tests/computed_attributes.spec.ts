@@ -76,7 +76,7 @@ test.describe('computed attributes', () => {
     await drawio.applyDialog();
 
     await drawio.addActivityNode();
-    await drawio.expectToFindCellAttribute('Activity');
+    await drawio.expectToFindCellAttribute('Attack Step');
 
     // Knowledge
     await drawio.expectToFindCellAttribute('2');
@@ -147,7 +147,7 @@ test.describe('computed attributes', () => {
     await drawio.applyDialog();
 
     await drawio.addActivityNode();
-    await drawio.expectToFindCellAttribute('Activity');
+    await drawio.expectToFindCellAttribute('Attack Step');
 
     await drawio.openComputedAttributesFunctionDialogOnActivityNode();
     await drawio.selectDialogRadioButton('Feasibility1');
@@ -189,7 +189,7 @@ test.describe('computed attributes', () => {
           <ag_computed_attributes />
           <mxCell parent="0" />
         </object>
-        <object label="Activity" Ressources="5" Knowledge="5" Location="1" id="5Ll6MHg5bFQaW9sslJ5G-1">
+        <object label="Attack Step" Ressources="5" Knowledge="5" Location="1" id="5Ll6MHg5bFQaW9sslJ5G-1">
           <ag_attributes />
           <ag_computed_attributes_custom_function ag_computed_attributes_custom_function="function (attrs) { &#xa;    return Math.max( &#xa;        Math.max( &#xa;            11-attrs[&quot;Knowledge&quot;], &#xa;            11-attrs[&quot;Ressources&quot;] &#xa;        ) - attrs[&quot;Location&quot;], 0); &#xa;}" />
           <ag_computed_attributes custom="5" />
@@ -204,7 +204,7 @@ test.describe('computed attributes', () => {
             <mxGeometry relative="1" as="geometry" />
           </mxCell>
         </object>
-        <object label="Activity" Ressources="" Knowledge="" Location="" id="5Ll6MHg5bFQaW9sslJ5G-2">
+        <object label="Attack Step" Ressources="" Knowledge="" Location="" id="5Ll6MHg5bFQaW9sslJ5G-2">
           <ag_attributes />
           <ag_computed_attributes_custom_function ag_computed_attributes_custom_function="function (attrs) { &#xa;    return Math.max( &#xa;        Math.max( &#xa;            11-attrs[&quot;Knowledge&quot;], &#xa;            11-attrs[&quot;Ressources&quot;] &#xa;        ) - attrs[&quot;Location&quot;], 0); &#xa;}" />
           <ag_aggregation_function_reference ag_aggregation_function_reference="AND" />
@@ -237,7 +237,7 @@ test.describe('computed attributes', () => {
     await drawio.applyDialog();
 
     await drawio.addActivityNode();
-    await drawio.expectToFindCellAttribute('Activity');
+    await drawio.expectToFindCellAttribute('Attack Step');
 
     await drawio.openComputedAttributesFunctionDialogOnActivityNode();
     await drawio.selectDialogRadioButton('Feasibility1');

@@ -14,7 +14,7 @@ export class DrawioPage {
   }
 
   async addActivityNode() {
-    await this.page.locator('.geSidebarContainer').locator('text=Activity').last().click();
+    await this.page.locator('.geSidebarContainer').locator('text=Attack Step').last().click();
   }
 
   async applyStringToAceEditor(text: string) {
@@ -24,7 +24,7 @@ export class DrawioPage {
   }
 
   async focusCellInDiagramContainer() {
-    await this.page.locator('.geDiagramContainer').locator('text=Activity').click();
+    await this.page.locator('.geDiagramContainer').locator('text=Attack Step').click();
   }
 
   async openAggregationFunctionDialogOnActivityNode() {

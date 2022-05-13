@@ -29,8 +29,8 @@ test.describe('attributes and default attributes', () => {
     await page.click('text=Apply');
 
     // First activity vertex (white node) shall not have a default value
-    await page.locator('.geSidebarContainer').locator('text=Activity').nth(2).click();
-    const activity = page.locator('.geDiagramContainer').locator('text=Activity');
+    await page.locator('.geSidebarContainer').locator('text=Attack Step').nth(2).click();
+    const activity = page.locator('.geDiagramContainer').locator('text=Attack Step');
     await expect(activity).toBeVisible();
     await page.press('body', 'Control+m');
 
@@ -61,8 +61,8 @@ test.describe('attributes and default attributes', () => {
     await page.locator('text="Open in This Window"').click();
 
     // First activity vertex (white node) shall not have a default value
-    await page.locator('.geSidebarContainer').locator('text=Activity').nth(2).click();
-    const activity = page.locator('.geDiagramContainer').locator('text=Activity');
+    await page.locator('.geSidebarContainer').locator('text=Attack Step').nth(2).click();
+    const activity = page.locator('.geDiagramContainer').locator('text=Attack Step');
     await expect(activity).toBeVisible();
     await page.press('body', 'Control+m');
 
@@ -73,8 +73,8 @@ test.describe('attributes and default attributes', () => {
 
   test('renders attributes of diagram nodes', async ({ page }) => {
 
-    await page.locator('.geSidebarContainer').locator('text=Activity').first().click();
-    const activity = page.locator('.geDiagramContainer').locator('text=Activity');
+    await page.locator('.geSidebarContainer').locator('text=Attack Step').first().click();
+    const activity = page.locator('.geDiagramContainer').locator('text=Attack Step');
     await expect(activity).toBeVisible();
     await page.press('body', 'Control+m');
 
@@ -153,8 +153,8 @@ test.describe('attributes and default attributes', () => {
 
     await page.locator('.geDialog').last().locator('text=Apply').click();
     await page.locator('.geDialog').last().locator('text=Apply').click();
-    await page.locator('.geSidebarContainer').locator('text=Activity').first().click();
-    const href = await page.locator('.geDiagramContainer').locator('text=Activity')
+    await page.locator('.geSidebarContainer').locator('text=Attack Step').first().click();
+    const href = await page.locator('.geDiagramContainer').locator('text=Attack Step')
       .locator('xpath=..').locator('xpath=..').locator('xpath=..').locator('image').getAttribute('xlink:href');
 
     const regex = RegExp(path, 'gm');
@@ -199,7 +199,7 @@ test.describe('attributes and default attributes', () => {
     await drawio.applyDialog();
 
     await drawio.addActivityNode();
-    const href = await page.locator('.geDiagramContainer').locator('text=Activity')
+    const href = await page.locator('.geDiagramContainer').locator('text=Attack Step')
       .locator('xpath=..').locator('xpath=..').locator('xpath=..').locator('image').first().getAttribute('xlink:href');
 
     const regex = RegExp(path, 'gm');

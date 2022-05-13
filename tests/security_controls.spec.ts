@@ -5,8 +5,8 @@ test.describe('security controls', () => {
 
   test('renders overwritten attributes of diagram nodes', async ({ page }) => {
 
-    await page.locator('.geSidebarContainer').locator('text=Activity').first().click();
-    const activity = page.locator('.geDiagramContainer').locator('text=Activity');
+    await page.locator('.geSidebarContainer').locator('text=Attack Step').first().click();
+    const activity = page.locator('.geDiagramContainer').locator('text=Attack Step');
     await expect(activity).toBeVisible();
 
     // Fill in some data
@@ -19,7 +19,7 @@ test.describe('security controls', () => {
     await dialog.locator('text=Apply').click();
 
     // Overwrite the data using an aggregation function
-    const activityLabel = page.locator('.geDiagramContainer').locator('text=Activity');
+    const activityLabel = page.locator('.geDiagramContainer').locator('text=Attack Step');
     activityLabel.click();
     await page.locator('img.ag_function_handle').last().click();
     await page.click('span:has-text("custom")');
@@ -45,12 +45,12 @@ test.describe('security controls', () => {
         <mxCell id="5TitfXBCX5atIBFB_Qtg-6" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeWidth=2;exitX=0.5;exitY=1;exitDx=0;exitDy=0;" edge="1" parent="1" source="5TitfXBCX5atIBFB_Qtg-4" target="5TitfXBCX5atIBFB_Qtg-5">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <object label="Activity" Knowledge="5" id="5TitfXBCX5atIBFB_Qtg-4">
+        <object label="Attack Step" Knowledge="5" id="5TitfXBCX5atIBFB_Qtg-4">
           <mxCell style="shape=attackgraphs.node;" vertex="1" parent="1">
             <mxGeometry x="260" y="200" width="150" height="75" as="geometry" />
           </mxCell>
         </object>
-        <object label="Control" Knowledge="3" id="5TitfXBCX5atIBFB_Qtg-5">
+        <object label="Security Control" Knowledge="3" id="5TitfXBCX5atIBFB_Qtg-5">
           <mxCell style="shape=attackgraphs.node;fillColor=#DAE8FC" vertex="1" parent="1">
             <mxGeometry x="260" y="380" width="150" height="75" as="geometry" />
           </mxCell>
