@@ -1,5 +1,7 @@
 # Attack Graphs Plugin for draw.io
 
+![AttackGraphs Icon](attackgraphs.svg)
+
 ## Installation and User Guide
 
 Please find the detailed documentation [here](https://incyde-gmbh.github.io/drawio-plugin-attackgraphs/).

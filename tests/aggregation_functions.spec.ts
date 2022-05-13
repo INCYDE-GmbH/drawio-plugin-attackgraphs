@@ -106,7 +106,7 @@ test.describe('aggregation functions', () => {
         await drawio.openAggregationFunctionDialogOnActivityNode();
         await page.click('span:has-text("custom")');
         await drawio.applyStringToAceEditor('A');
-        await page.locator('.geDiagramContainer').locator('text=Activity').click();
+        await page.locator('.geDiagramContainer').locator('text=Attack Step').click();
         await page.locator('img.ag_function_handle').last().click();
         await expect(page.locator('.ace_content').locator('text=A')).toBeVisible();
     });

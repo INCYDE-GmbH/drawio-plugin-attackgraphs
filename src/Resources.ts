@@ -15,8 +15,8 @@ export class Resources {
 
   private static registerEn() {
     mxResources.parse(`
-attackGraphs.activity=Activity
-attackGraphs.control=Control
+attackGraphs.activity=Attack Step
+attackGraphs.control=Security Control
 attackGraphs.addFurther=Add further
 attackGraphs.addIconLegend=Add icon legend
 attackGraphs.aggregationFunction=Aggregation Function
@@ -64,7 +64,7 @@ attackGraphs.documentation=Documentation...
 
   private static registerDe() {
     mxResources.parse(`
-attackGraphs.activity=Aktivität
+attackGraphs.activity=Angriffsschritt
 attackGraphs.control=Kontrollmaßnahme
 attackGraphs.addFurther=Weiteres hinzufügen
 attackGraphs.addIconLegend=Icon-Legende hinzufügen

@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   width="51.73077mm"
+   height="59.129215mm"
+   viewBox="0 0 51.73077 59.129215"
+   version="1.1"
+   id="svg5"
+   inkscape:version="1.1 (c68e22c387, 2021-05-23)"
+   sodipodi:docname="attackgraphs.svg"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:xlink="http://www.w3.org/1999/xlink"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <sodipodi:namedview
+     id="namedview7"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:pageshadow="2"
+     inkscape:pageopacity="0.0"
+     inkscape:pagecheckerboard="0"
+     inkscape:document-units="mm"
+     showgrid="false"
+     showguides="true"
+     inkscape:guide-bbox="true"
+     inkscape:zoom="0.47433592"
+     inkscape:cx="-762.11812"
+     inkscape:cy="64.300423"
+     inkscape:window-width="1920"
+     inkscape:window-height="1009"
+     inkscape:window-x="-8"
+     inkscape:window-y="-8"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="layer1"
+     fit-margin-top="0"
+     fit-margin-left="0"
+     fit-margin-right="0"
+     fit-margin-bottom="0">
+    <sodipodi:guide
+       position="-6.253327,42.000189"
+       orientation="1,0"
+       id="guide2035" />
+  </sodipodi:namedview>
+  <defs
+     id="defs2">
+    <inkscape:path-effect
+       effect="mirror_symmetry"
+       start_point="81.717317,26.905264"
+       end_point="81.717317,82.618782"
+       center_point="81.717317,54.762023"
+       id="path-effect2322"
+       is_visible="true"
+       lpeversion="1.1"
+       mode="free"
+       discard_orig_path="false"
+       fuse_paths="false"
+       oposite_fuse="false"
+       split_items="false"
+       split_open="false" />
+  </defs>
+  <g
+     inkscape:label="Ebene 1"
+     inkscape:groupmode="layer"
+     id="layer1"
+     transform="translate(-55.851933,-25.172764)">
+    <rect
+       style="fill:#000000;stroke:none;stroke-width:0.396875"
+       id="rect1300"
+       width="9.9591637"
+       height="5.7191234"
+       x="74.155205"
+       y="38.381752" />
+    <path
+       style="fill:none;stroke:#000000;stroke-width:1.265;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       d="m 79.167168,43.532137 5.628378,7.508037"
+       id="path1551"
+       sodipodi:nodetypes="cc" />
+    <path
+       style="fill:none;stroke:#000000;stroke-width:1.265;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       d="m 75.525593,62.693577 9.414364,-6.503014 4.200221,6.729107"
+       id="path1553"
+       sodipodi:nodetypes="ccc" />
+    <path
+       style="fill:none;stroke:#000000;stroke-width:3.465;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       d="m 81.717317,26.905264 c -4.646382,5.503393 -11.751528,8.739163 -23.226176,11.923522 9.974677,16.921555 2.613281,35.909534 23.226176,43.740693 m 0,-55.664215 c 4.646382,5.503393 11.751528,8.739163 23.226173,11.923522 -9.974674,16.921555 -2.61328,35.909534 -23.226173,43.740693"
+       id="path1953"
+       sodipodi:nodetypes="ccc"
+       inkscape:path-effect="#path-effect2322"
+       inkscape:original-d="m 81.717317,26.905264 c -4.646382,5.503393 -11.751528,8.739163 -23.226176,11.923522 9.974677,16.921555 2.613281,35.909534 23.226176,43.740693" />
+    <use
+       x="0"
+       y="0"
+       xlink:href="#rect1300"
+       id="use4307"
+       transform="translate(5.3614504,12.286904)"
+       width="100%"
+       height="100%" />
+    <use
+       x="0"
+       y="0"
+       xlink:href="#rect1300"
+       id="use4311"
+       transform="translate(9.3675303,23.961156)"
+       width="100%"
+       height="100%" />
+    <use
+       x="0"
+       y="0"
+       xlink:href="#rect1300"
+       id="use4313"
+       transform="translate(-3.4144449,23.922362)"
+       width="100%"
+       height="100%" />
+  </g>
+</svg>
