@@ -1,4 +1,4 @@
-<mxfile host="Electron" modified="2022-05-05T09:30:28.712Z" agent="5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) draw.io/18.0.0 Chrome/100.0.4896.143 Electron/18.2.0 Safari/537.36" etag="hIfs5Exlp4EaFsm1D-8Q" compressed="false" version="18.0.0" type="device">
+<mxfile host="Electron" modified="2022-05-13T19:35:33.908Z" agent="5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) draw.io/18.0.1 Chrome/100.0.4896.143 Electron/18.2.0 Safari/537.36" etag="uGs58WaQc4UTnNKAr8il" compressed="false" version="18.0.1" type="device">
   <diagram id="zNMCXYOBYckHPa1j1fsk" name="Seite-1">
     <mxGraphModel dx="1102" dy="857" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
       <root>
@@ -22,6 +22,168 @@
           <ag_attributes />
           <ag_computed_attributes />
           <mxCell parent="0" />
+        </object>
+        <object label="Asset" id="746xIQmpy0CREaIetn3r-1">
+          <ag_attributes />
+          <ag_computed_attributes />
+          <mxCell style="whiteSpace=wrap;shape=trapezoid;size=0.075;" vertex="1" parent="1">
+            <mxGeometry x="240" y="50" width="300" height="60" as="geometry" />
+          </mxCell>
+        </object>
+        <object label="A" id="746xIQmpy0CREaIetn3r-2">
+          <ag_attributes />
+          <ag_computed_attributes />
+          <mxCell style="rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeWidth=2;fontSize=13;fontStyle=1" edge="1" parent="1" source="746xIQmpy0CREaIetn3r-3" target="746xIQmpy0CREaIetn3r-6">
+            <mxGeometry relative="1" as="geometry" />
+          </mxCell>
+        </object>
+        <object label="Consequence" id="746xIQmpy0CREaIetn3r-3">
+          <ag_aggregation_function_reference ag_aggregation_function_reference="6b1d22791hih8" />
+          <ag_computed_attributes_function_reference ag_computed_attributes_function_reference="dbg60ff69g9a" />
+          <ag_attributes label="Sub-Step 1" Exposure="1" Vulnerability="1" _likelihood="1" _risk="M" />
+          <ag_computed_attributes default="M" />
+          <mxCell style="shape=attackgraphs.node;rounded=1" vertex="1" parent="1">
+            <mxGeometry x="180" y="170" width="150" height="75" as="geometry" />
+          </mxCell>
+        </object>
+        <object id="746xIQmpy0CREaIetn3r-4">
+          <ag_attributes />
+          <ag_computed_attributes />
+          <mxCell style="rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeWidth=2;" edge="1" parent="1" source="746xIQmpy0CREaIetn3r-6" target="746xIQmpy0CREaIetn3r-7">
+            <mxGeometry relative="1" as="geometry" />
+          </mxCell>
+        </object>
+        <object id="746xIQmpy0CREaIetn3r-5">
+          <ag_attributes />
+          <ag_computed_attributes />
+          <mxCell style="edgeStyle=none;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeWidth=2;" edge="1" parent="1" source="746xIQmpy0CREaIetn3r-6" target="746xIQmpy0CREaIetn3r-9">
+            <mxGeometry relative="1" as="geometry" />
+          </mxCell>
+        </object>
+        <object label="Attack Step" id="746xIQmpy0CREaIetn3r-6">
+          <ag_aggregation_function_reference ag_aggregation_function_reference="6b1d22791hih8" />
+          <ag_computed_attributes_function_reference ag_computed_attributes_function_reference="dbg60ff69g9a" />
+          <ag_attributes label="Sub-Step 1" Exposure="1" Vulnerability="1" _likelihood="1" />
+          <ag_computed_attributes default="1" />
+          <mxCell style="shape=attackgraphs.node;" vertex="1" parent="1">
+            <mxGeometry x="315" y="330" width="150" height="75" as="geometry" />
+          </mxCell>
+        </object>
+        <object label="Sub-Step 1" Exposure="1" Vulnerability="1" id="746xIQmpy0CREaIetn3r-7">
+          <ag_aggregation_function_reference ag_aggregation_function_reference="6b1d22791hih8" />
+          <ag_computed_attributes_function_reference ag_computed_attributes_function_reference="dbg60ff69g9a" />
+          <ag_attributes />
+          <ag_computed_attributes default="1" />
+          <mxCell style="shape=attackgraphs.node;fillColor=#FEE599" vertex="1" parent="1">
+            <mxGeometry x="200" y="510" width="150" height="75" as="geometry" />
+          </mxCell>
+        </object>
+        <object id="746xIQmpy0CREaIetn3r-8">
+          <ag_attributes />
+          <ag_computed_attributes />
+          <mxCell style="edgeStyle=none;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeWidth=2;" edge="1" parent="1" source="746xIQmpy0CREaIetn3r-9" target="746xIQmpy0CREaIetn3r-17">
+            <mxGeometry relative="1" as="geometry" />
+          </mxCell>
+        </object>
+        <object label="Sup-Step 2" id="746xIQmpy0CREaIetn3r-9">
+          <ag_aggregation_function_reference ag_aggregation_function_reference="6b1d22791hih8" />
+          <ag_computed_attributes_function_reference ag_computed_attributes_function_reference="dbg60ff69g9a" />
+          <ag_attributes _likelihood="1" />
+          <ag_computed_attributes default="1" />
+          <mxCell style="shape=attackgraphs.node;" vertex="1" parent="1">
+            <mxGeometry x="450" y="510" width="150" height="75" as="geometry" />
+          </mxCell>
+        </object>
+        <object id="746xIQmpy0CREaIetn3r-10">
+          <ag_attributes />
+          <ag_computed_attributes />
+          <mxCell style="edgeStyle=none;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeWidth=2;startArrow=diamondThin;startFill=1;endArrow=none;endFill=0;" edge="1" parent="1" source="746xIQmpy0CREaIetn3r-11" target="746xIQmpy0CREaIetn3r-18">
+            <mxGeometry relative="1" as="geometry" />
+          </mxCell>
+        </object>
+        <object label="Sub-Step 21" Exposure="1" Vulnerability="2" id="746xIQmpy0CREaIetn3r-11">
+          <ag_aggregation_function_reference ag_aggregation_function_reference="73f575i0ghij5" />
+          <ag_computed_attributes_function_reference ag_computed_attributes_function_reference="dbg60ff69g9a" />
+          <ag_attributes />
+          <ag_computed_attributes default="2" />
+          <mxCell style="shape=attackgraphs.node;fillColor=#D7E3BF" vertex="1" parent="1">
+            <mxGeometry x="350" y="760" width="150" height="75" as="geometry" />
+          </mxCell>
+        </object>
+        <object id="746xIQmpy0CREaIetn3r-12">
+          <ag_attributes />
+          <ag_computed_attributes />
+          <mxCell style="edgeStyle=none;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeWidth=2;endArrow=none;startArrow=diamondThin;startFill=1;endFill=0;" edge="1" parent="1" source="746xIQmpy0CREaIetn3r-14" target="746xIQmpy0CREaIetn3r-19">
+            <mxGeometry relative="1" as="geometry" />
+          </mxCell>
+        </object>
+        <object id="746xIQmpy0CREaIetn3r-13">
+          <ag_attributes />
+          <ag_computed_attributes />
+          <mxCell style="edgeStyle=none;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeWidth=2;fontSize=13;startArrow=diamondThin;startFill=1;endArrow=none;endFill=0;" edge="1" parent="1" source="746xIQmpy0CREaIetn3r-14" target="746xIQmpy0CREaIetn3r-18">
+            <mxGeometry relative="1" as="geometry" />
+          </mxCell>
+        </object>
+        <object label="Sub-Step 22" Exposure="2" Vulnerability="1" id="746xIQmpy0CREaIetn3r-14">
+          <ag_aggregation_function_reference ag_aggregation_function_reference="73f575i0ghij5" />
+          <ag_computed_attributes_function_reference ag_computed_attributes_function_reference="dbg60ff69g9a" />
+          <ag_attributes />
+          <ag_computed_attributes default="2" />
+          <mxCell style="shape=attackgraphs.node;fillColor=#D7E3BF" vertex="1" parent="1">
+            <mxGeometry x="560" y="760" width="150" height="75" as="geometry" />
+          </mxCell>
+        </object>
+        <object id="746xIQmpy0CREaIetn3r-15">
+          <ag_attributes />
+          <ag_computed_attributes />
+          <mxCell style="edgeStyle=none;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeWidth=2;" edge="1" parent="1" source="746xIQmpy0CREaIetn3r-17" target="746xIQmpy0CREaIetn3r-11">
+            <mxGeometry relative="1" as="geometry" />
+          </mxCell>
+        </object>
+        <object id="746xIQmpy0CREaIetn3r-16">
+          <ag_attributes />
+          <ag_computed_attributes />
+          <mxCell style="edgeStyle=none;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeWidth=2;" edge="1" parent="1" source="746xIQmpy0CREaIetn3r-17" target="746xIQmpy0CREaIetn3r-14">
+            <mxGeometry relative="1" as="geometry" />
+          </mxCell>
+        </object>
+        <object id="746xIQmpy0CREaIetn3r-17">
+          <ag_aggregation_function_reference ag_aggregation_function_reference="gf0d4f199018" />
+          <ag_attributes _likelihood="1" />
+          <ag_computed_attributes />
+          <mxCell style="shape=or;whiteSpace=wrap;html=1;rotation=-90;" vertex="1" parent="1">
+            <mxGeometry x="502.5" y="630" width="45" height="60" as="geometry" />
+          </mxCell>
+        </object>
+        <object label="Security Control 1" Exposure="" Vulnerability="" id="746xIQmpy0CREaIetn3r-18">
+          <ag_attributes />
+          <ag_computed_attributes />
+          <mxCell style="shape=attackgraphs.node;fillColor=#DAE8FC" vertex="1" parent="1">
+            <mxGeometry x="350" y="930" width="150" height="75" as="geometry" />
+          </mxCell>
+        </object>
+        <object label="Security Control 2" Exposure="" Vulnerability="" id="746xIQmpy0CREaIetn3r-19">
+          <ag_attributes />
+          <ag_computed_attributes />
+          <mxCell style="shape=attackgraphs.node;fillColor=#DAE8FC" vertex="1" parent="1">
+            <mxGeometry x="560" y="930" width="150" height="75" as="geometry" />
+          </mxCell>
+        </object>
+        <object label="D" id="746xIQmpy0CREaIetn3r-20">
+          <ag_attributes />
+          <ag_computed_attributes />
+          <mxCell style="edgeStyle=none;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeWidth=2;fontSize=13;startArrow=none;startFill=0;endArrow=classic;endFill=0;fontStyle=1;" edge="1" parent="1" source="746xIQmpy0CREaIetn3r-21" target="746xIQmpy0CREaIetn3r-6">
+            <mxGeometry relative="1" as="geometry" />
+          </mxCell>
+        </object>
+        <object label="Consequence" id="746xIQmpy0CREaIetn3r-21">
+          <ag_aggregation_function_reference ag_aggregation_function_reference="6b1d22791hih8" />
+          <ag_computed_attributes_function_reference ag_computed_attributes_function_reference="dbg60ff69g9a" />
+          <ag_attributes label="Sub-Step 1" Exposure="1" Vulnerability="1" _likelihood="0" _risk="L" />
+          <ag_computed_attributes default="L" />
+          <mxCell style="shape=attackgraphs.node;rounded=1" vertex="1" parent="1">
+            <mxGeometry x="450" y="170" width="150" height="75" as="geometry" />
+          </mxCell>
         </object>
       </root>
     </mxGraphModel>
