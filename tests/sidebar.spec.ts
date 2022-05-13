@@ -12,10 +12,10 @@ test.describe('the sidebar', () => {
     test('sidebar contains a white activity template', async ({ page }) => {
 
         // Create a consequence node in the drawing area by double clicking the sidebar element
-        await page.locator('.geSidebarContainer').locator('text=Activity').first().click();
+        await page.locator('.geSidebarContainer').locator('text=Attack Step').first().click();
 
         // Find the element in the drawing area
-        const activity = page.locator('.geDiagramContainer').locator('text=Activity');
+        const activity = page.locator('.geDiagramContainer').locator('text=Attack Step');
         await expect(activity).toBeVisible();
 
         const backgroundRect = activity.locator('../../..').locator('g rect');
@@ -26,10 +26,10 @@ test.describe('the sidebar', () => {
     test('sidebar contains a green activity template', async ({ page }) => {
 
         // Create a consequence node in the drawing area by double clicking the sidebar element
-        await page.locator('.geSidebarContainer').locator('text=Activity').nth(1).click();
+        await page.locator('.geSidebarContainer').locator('text=Attack Step').nth(1).click();
 
         // Find the element in the drawing area
-        const activity = page.locator('.geDiagramContainer').locator('text=Activity');
+        const activity = page.locator('.geDiagramContainer').locator('text=Attack Step');
         await expect(activity).toBeVisible();
 
         const backgroundRect = activity.locator('../../..').locator('g rect');
