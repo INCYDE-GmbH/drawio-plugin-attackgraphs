@@ -191,11 +191,11 @@ export class Sidebar {
 
         const andAggregationFunction = aggregationFunctions.find(x => x.name === 'AND') || null;
         if (andAggregationFunction) {
-          content.appendChild(this.createVertexTemplate(sidebar, 'shape=or;whiteSpace=wrap;html=1;rotation=-90;', 60, 80, andAggregationFunction, null));
+          content.appendChild(this.createVertexTemplate(sidebar, 'shape=or;whiteSpace=wrap;html=1;rotation=-90;', 45, 60, andAggregationFunction, null));
         }
         const orAggregationFunction = aggregationFunctions.find(x => x.name === 'OR') || defaultAggregationFunction;
         if (orAggregationFunction) {
-          content.appendChild(this.createVertexTemplate(sidebar, 'shape=xor;whiteSpace=wrap;html=1;rotation=-90;', 60, 80, orAggregationFunction, null));
+          content.appendChild(this.createVertexTemplate(sidebar, 'shape=xor;whiteSpace=wrap;html=1;rotation=-90;', 45, 60, orAggregationFunction, null));
         }
       });
     }
