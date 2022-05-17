@@ -153,7 +153,8 @@ test.describe('attributes and default attributes', () => {
 
     await page.locator('.geDialog').last().locator('text=Apply').click();
     await page.locator('.geDialog').last().locator('text=Apply').click();
-    await page.locator('.geSidebarContainer').locator('text=Attack Step').first().click();
+    // First activity vertex (white node) shall not have default attributes
+    await page.locator('.geSidebarContainer').locator('text=Attack Step').nth(2).click();
     const href = await page.locator('.geDiagramContainer').locator('text=Attack Step')
       .locator('xpath=..').locator('xpath=..').locator('xpath=..').locator('image').getAttribute('xlink:href');
 
