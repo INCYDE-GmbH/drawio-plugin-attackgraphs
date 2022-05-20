@@ -85,13 +85,15 @@ mxStencilRegistry.allowEval = false;
 	var oldWindowOpen = window.open;
 	window.open = async function(url)
 	{
-		if (url != null && url.startsWith('http'))
+		// Only open a native electron window when url is empty. We use this in our code in several places.
+		if (url == null)
 		{
-			await requestSync({action: 'openExternal', url: url});
+			return oldWindowOpen(url);
 		}
 		else
 		{
-			return oldWindowOpen(url);
+			// Open external will filter urls based on their protocol
+			await requestSync({action: 'openExternal', url: url});
 		}
 	}
 
@@ -105,43 +107,58 @@ mxStencilRegistry.allowEval = false;
 
 		if (plugins != null && plugins.length > 0)
 		{
-			for (var i = 0; i < plugins.length; i++)
+			// Workaround for body not defined if plugins are used in dev mode
+			if (urlParams['dev'] == '1')
 			{
-				try
+				EditorUi.debug('App.main', 'Skipped plugins', plugins);
+			}
+			else
+			{
+				for (var i = 0; i < plugins.length; i++)
 				{
-					if (plugins[i].startsWith('/plugins/'))
+					try
 					{
-						plugins[i] = '.' + plugins[i];
+						if (plugins[i].startsWith('/plugins/'))
+						{
+							plugins[i] = '.' + plugins[i];
+						}
+						else if (plugins[i].startsWith('plugins/'))
+						{
+							plugins[i] = './' + plugins[i];
+						}
+						//Support old plugins added using file:// workaround
+						else if (!plugins[i].startsWith('file://'))
+						{
+							let appFolder = await requestSync('getAppDataFolder');
+							
+							let pluginsFile = await requestSync({
+								action: 'checkFileExists',
+								pathParts: [appFolder, '/plugins', plugins[i]]
+							});
+							
+							if (pluginsFile.exists)
+							{
+								plugins[i] = 'file://' + pluginsFile.path;
+							}
+							else
+							{
+								continue; //skip not found files
+							}
+						}
+
+						try
+						{
+							mxscript(plugins[i]);
+						}
+						catch (e)
+						{
+							// ignore
+						}
 					}
-					else if (plugins[i].startsWith('plugins/'))
+					catch (e)
 					{
-						plugins[i] = './' + plugins[i];
+						// ignore
 					}
-					//Support old plugins added using file:// workaround
-					else if (!plugins[i].startsWith('file://'))
-					{
-						let appFolder = await requestSync('getAppDataFolder');
-						
-			        	let pluginsFile = await requestSync({
-							action: 'checkFileExists',
-							pathParts: [appFolder, '/plugins', plugins[i]]
-						});
-			        	
-			        	if (pluginsFile.exists)
-			        	{
-			        		plugins[i] = 'file://' + pluginsFile.path;
-			        	}
-			        	else
-		        		{
-			        		continue; //skip not found files
-		        		}
-					}
-						
-					mxscript(plugins[i]);
-				}
-				catch (e)
-				{
-					// ignore
 				}
 			}
 		}
@@ -159,7 +176,7 @@ mxStencilRegistry.allowEval = false;
 			break;
 		}
 
-		mxmeta(null, 'default-src \'self\'; connect-src \'self\' https://*.draw.io https://fonts.googleapis.com https://fonts.gstatic.com; img-src * data:; media-src *; font-src *; style-src \'self\' \'unsafe-inline\' https://fonts.googleapis.com', 'Content-Security-Policy');
+		mxmeta(null, 'default-src \'self\'; connect-src \'self\' https://fonts.googleapis.com https://fonts.gstatic.com; img-src * data:; media-src *; font-src *; style-src \'self\' \'unsafe-inline\' https://fonts.googleapis.com', 'Content-Security-Policy');
 
 		//Disable web plugins loading
 		urlParams['plugins'] = '0';
@@ -605,6 +622,18 @@ mxStencilRegistry.allowEval = false;
 		
 		editorUi.actions.addAction('plugins...', function()
 		{
+			var pluginsMap = {};
+			//Initialize it with plugins in settings
+			var plugins = (mxSettings.settings != null) ? mxSettings.getPlugins() : null;
+
+			if (plugins != null)
+			{
+				for (var i = 0; i < plugins.length; i++)
+				{
+					pluginsMap[plugins[i]] = true;
+				}
+			}
+
 			editorUi.showDialog(new PluginsDialog(editorUi, function(callback)
 			{
 				var div = document.createElement('div');
@@ -619,9 +648,13 @@ mxStencilRegistry.allowEval = false;
 				
 				for (var i = 0; i < App.publicPlugin.length; i++)
 				{
+					var p = App.publicPlugin[i];
+
+					if  (pluginsMap[App.pluginRegistry[p]]) continue;
+
 					var option = document.createElement('option');
-					mxUtils.write(option, App.publicPlugin[i]);
-					option.value = App.publicPlugin[i];
+					mxUtils.write(option, p);
+					option.value = p;
 					pluginsSelect.appendChild(option);
 				}
 				
@@ -679,17 +712,21 @@ mxStencilRegistry.allowEval = false;
 							
 				var dlg = new CustomDialog(editorUi, div, mxUtils.bind(this, function()
 				{
-	        		callback(App.pluginRegistry[pluginsSelect.value]);
+					var newP = App.pluginRegistry[pluginsSelect.value];
+					pluginsMap[newP] = true;
+	        		callback(newP);
 				}));
 				editorUi.showDialog(dlg.container, 300, 125, true, true);
 			},
 			async function(plugin)
 			{
+				delete pluginsMap[plugin];
+				
 				await requestSync({
 					action: 'uninstallPlugin',
 					plugin: plugin
 				});
-			}).container, 360, 225, true, false);
+			}, true).container, 360, 225, true, false);
 		});
 	}
 	
@@ -1284,6 +1321,12 @@ mxStencilRegistry.allowEval = false;
 
 	LocalFile.prototype.save = function(revision, success, error, unloading, overwrite)
 	{
+		if (!this.isEditable())
+		{
+			this.saveAs(this.title, success, error);
+			return;
+		}
+
 		DrawioFile.prototype.save.apply(this, [revision, mxUtils.bind(this, function()
 		{
 			this.saveFile(revision, mxUtils.bind(this, function() 
@@ -1733,7 +1776,17 @@ mxStencilRegistry.allowEval = false;
 	{
 		electron.sendMessage('toggleSpellCheck');
 	}
+
+	App.prototype.toggleStoreBkp = function()
+	{
+		electron.sendMessage('toggleStoreBkp');
+	}
 	
+	App.prototype.openDevTools = function()
+	{
+		electron.sendMessage('openDevTools');
+	}
+
 	var origUpdateHeader = App.prototype.updateHeader;
 	
 	App.prototype.updateHeader = function()

@@ -210,24 +210,7 @@
 		
 		showRemoteCursorsAction.setToggleAction(true);
 		showRemoteCursorsAction.setSelectedCallback(function() { return editorUi.isShowRemoteCursors(); });
-
-		// Adds context menu items
-		var menuCreatePopupMenu = Menus.prototype.createPopupMenu;
 		
-		Menus.prototype.createPopupMenu = function(menu, cell, evt)
-		{
-			menuCreatePopupMenu.apply(this, arguments);
-
-			var file = editorUi.getCurrentFile();
-
-			if ((urlParams['embed'] != '1' || urlParams['embedRT'] == '1') && graph.isSelectionEmpty() &&
-				file != null && file.isRealtimeEnabled() && file.isRealtimeSupported())
-			{
-				this.addMenuItems(menu, ['-', 'showRemoteCursors',
-					'shareCursor'], null, evt);
-			}
-		};
-
 		var pointAction = editorUi.actions.addAction('points', function()
 		{
 			editorUi.editor.graph.view.setUnit(mxConstants.POINTS);
@@ -3850,6 +3833,22 @@
 			
 			spellCheckAction.setToggleAction(true);
 			spellCheckAction.setSelectedCallback(function() { return enableSpellCheck; });
+
+			var enableStoreBkp = urlParams['enableStoreBkp'] == '1';
+
+			var storeBkpAction = editorUi.actions.addAction('autoBkp', function()
+			{
+				editorUi.toggleStoreBkp();
+				enableStoreBkp = !enableStoreBkp;
+			});
+			
+			storeBkpAction.setToggleAction(true);
+			storeBkpAction.setSelectedCallback(function() { return enableStoreBkp; });
+
+			editorUi.actions.addAction('openDevTools', function()
+			{
+				editorUi.openDevTools();
+			});
 		}
 
 		this.put('extras', new Menu(mxUtils.bind(this, function(menu, parent)
@@ -3878,7 +3877,7 @@
 	
 			if (EditorUi.isElectronApp)
 			{
-				this.addMenuItems(menu, ['spellCheck'], parent);	
+				this.addMenuItems(menu, ['spellCheck', 'autoBkp'], parent);	
 			}
 
 			this.addMenuItems(menu, ['copyConnect', 'collapseExpand', '-'], parent);
@@ -3919,6 +3918,11 @@
 
 			this.addMenuItems(menu, ['configuration'], parent);
 			
+			if (EditorUi.isElectronApp)
+			{
+				this.addMenuItems(menu, ['openDevTools'], parent);	
+			}
+
 			// Adds trailing separator in case new plugin entries are added
 			menu.addSeparator(parent);
 			

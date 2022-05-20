@@ -127,7 +127,11 @@ var StorageDialog = function(editorUi, fn, rowLimit)
 						editorUi.spinner.stop();
 						editorUi.setMode(mode, true);
 						fn();
-					}));
+					}), function(err)
+					{
+						editorUi.spinner.stop();
+						editorUi.handleError(err);
+					});
 				}
 				else
 				{
@@ -7440,6 +7444,7 @@ var FindWindow = function(ui, x, y, w, h, withReplace)
 			
 			if (replaceInput.value)
 			{
+				lastSearch = null; // Reset last search to check all matches
 				var currentPage = ui.currentPage;
 				var cells = ui.editor.graph.getSelectionCells();
 				ui.editor.graph.rendering = false;
@@ -8444,7 +8449,7 @@ var MoreShapesDialog = function(editorUi, expanded, entries)
 	this.container = div;
 };
 
-var PluginsDialog = function(editorUi, addFn, delFn) 
+var PluginsDialog = function(editorUi, addFn, delFn, closeOnly) 
 {
 	var div = document.createElement('div');
 	var inner = document.createElement('div');
@@ -8604,7 +8609,7 @@ var PluginsDialog = function(editorUi, addFn, delFn)
 	
 	cancelBtn.className = 'geBtn';
 	
-	var applyBtn = mxUtils.button(mxResources.get('apply'), function()
+	var applyBtn = mxUtils.button(closeOnly? mxResources.get('close') : mxResources.get('apply'), function()
 	{
 		if (changed)
 		{
@@ -8641,7 +8646,11 @@ var PluginsDialog = function(editorUi, addFn, delFn)
 	
 	if (editorUi.editor.cancelFirst)
 	{
-		buttons.appendChild(cancelBtn);
+		if (!closeOnly)
+		{
+			buttons.appendChild(cancelBtn);
+		}
+
 		buttons.appendChild(addBtn);
 		buttons.appendChild(applyBtn);
 	}
@@ -8649,7 +8658,10 @@ var PluginsDialog = function(editorUi, addFn, delFn)
 	{
 		buttons.appendChild(addBtn);
 		buttons.appendChild(applyBtn);
-		buttons.appendChild(cancelBtn);
+		if (!closeOnly)
+		{
+			buttons.appendChild(cancelBtn);
+		}
 	}
 
 	div.appendChild(buttons);

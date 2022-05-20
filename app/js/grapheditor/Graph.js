@@ -1381,6 +1381,70 @@ Graph.createSvgImage = function(w, h, data, coordWidth, coordHeight)
 
     return new mxImage('data:image/svg+xml;base64,' + ((window.btoa) ? btoa(tmp) : Base64.encode(tmp, true)), w, h)
 };
+ 
+/**
+ * Helper function for creating an SVG node.
+ */
+Graph.createSvgNode = function(x, y, w, h, background)
+{
+	var svgDoc = mxUtils.createXmlDocument();
+	var root = (svgDoc.createElementNS != null) ?
+		svgDoc.createElementNS(mxConstants.NS_SVG, 'svg') :
+		svgDoc.createElement('svg');
+	
+	if (background != null)
+	{
+		if (root.style != null)
+		{
+			root.style.backgroundColor = background;
+		}
+		else
+		{
+			root.setAttribute('style', 'background-color:' + background);
+		}
+	}
+	
+	if (svgDoc.createElementNS == null)
+	{
+		root.setAttribute('xmlns', mxConstants.NS_SVG);
+		root.setAttribute('xmlns:xlink', mxConstants.NS_XLINK);
+	}
+	else
+	{
+		// KNOWN: Ignored in IE9-11, adds namespace for each image element instead. No workaround.
+		root.setAttributeNS('http://www.w3.org/2000/xmlns/', 'xmlns:xlink', mxConstants.NS_XLINK);
+	}
+
+	root.setAttribute('version', '1.1');
+	root.setAttribute('width', w + 'px');
+	root.setAttribute('height', h + 'px');
+	root.setAttribute('viewBox', x + ' ' + y + ' ' + w + ' ' + h);
+	svgDoc.appendChild(root);
+
+	return root;
+};
+ 
+/**
+ * Helper function for creating an SVG node.
+ */
+Graph.htmlToPng = function(html, w, h, fn)
+{
+	var canvas = document.createElement('canvas');
+	canvas.width = w;
+	canvas.height = h;
+
+	var img = document.createElement('img');
+	img.onload = mxUtils.bind(this, function()
+	{
+		var ctx = canvas.getContext('2d');
+		ctx.drawImage(img, 0, 0)
+
+		fn(canvas.toDataURL());
+	});
+
+	img.src = 'data:image/svg+xml,' + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100">' +
+		'<foreignObject width="100%" height="100%"><div xmlns="http://www.w3.org/1999/xhtml"><style>em{color:red;}</style><em>I</em> lick <span>cheese</span></div></foreignObject></svg>');
+};
 
 /**
  * Removes all illegal control characters with ASCII code <32 except TAB, LF
@@ -1663,16 +1727,36 @@ Graph.removePasteFormatting = function(elt)
  */
 Graph.sanitizeHtml = function(value, editing)
 {
-	return DOMPurify.sanitize(value, {ADD_ATTR: ['target'],
-		ALLOWED_URI_REGEXP: /^(?:(?:(?:f|ht)tps?|mailto|tel|callto|cid|xmpp|data):|[^a-z]|[a-z+.\-]+(?:[^a-z+.\-:]|$))/i});
+	return Graph.domPurify(value, false);
 };
 
 /**
- * Sanitizes the SVG in the given DOM node in-place.
+ * Returns the size of the page format scaled with the page size.
  */
-Graph.sanitizeSvg = function(div)
+Graph.sanitizeLink = function(href)
 {
-	return DOMPurify.sanitize(div, {IN_PLACE: true});
+	var a = document.createElement('a');
+	a.setAttribute('href', href);
+	Graph.sanitizeNode(a);
+	
+	return a.getAttribute('href');
+};
+
+/**
+ * Sanitizes the given DOM node in-place.
+ */
+Graph.sanitizeNode = function(value)
+{
+	return Graph.domPurify(value, true);
+};
+
+/**
+ * Sanitizes the given value.
+ */
+Graph.domPurify = function(value, inPlace)
+{
+	return DOMPurify.sanitize(value, {IN_PLACE: inPlace, ADD_ATTR: ['target'], FORBID_TAGS: ['form'],
+		ALLOWED_URI_REGEXP: /^(?:(?:https?|mailto|tel|callto|data):|[^a-z]|[a-z+.\-]+(?:[^a-z+.\-:]|$))/i});
 };
 
 /**
@@ -1702,7 +1786,7 @@ Graph.clipSvgDataUri = function(dataUri, ignorePreserveAspect)
 				div.innerHTML = data.substring(idx);
 				
 				// Removes all attributes starting with on
-				Graph.sanitizeSvg(div);
+				Graph.sanitizeNode(div);
 				
 				// Gets the size and removes from DOM
 				var svgs = div.getElementsByTagName('svg');
@@ -2889,35 +2973,40 @@ Graph.prototype.openLink = function(href, target, allowOpener)
 	
 	try
 	{
-		// Workaround for blocking in same iframe
-		if (target == '_self' && window != window.top)
+		href = Graph.sanitizeLink(href);
+
+		if (href != null)
 		{
-			window.location.href = href;
-		}
-		else
-		{
-			// Avoids page reload for anchors (workaround for IE but used everywhere)
-			if (href.substring(0, this.baseUrl.length) == this.baseUrl &&
-				href.charAt(this.baseUrl.length) == '#' &&
-				target == '_top' && window == window.top)
+			// Workaround for blocking in same iframe
+			if (target == '_self' && window != window.top)
 			{
-				var hash = href.split('#')[1];
-	
-				// Forces navigation if on same hash
-				if (window.location.hash == '#' + hash)
-				{
-					window.location.hash = '';
-				}
-				
-				window.location.hash = hash;
+				window.location.href = href;
 			}
 			else
 			{
-				result = window.open(href, (target != null) ? target : '_blank');
-	
-				if (result != null && !allowOpener)
+				// Avoids page reload for anchors (workaround for IE but used everywhere)
+				if (href.substring(0, this.baseUrl.length) == this.baseUrl &&
+					href.charAt(this.baseUrl.length) == '#' &&
+					target == '_top' && window == window.top)
 				{
-					result.opener = null;
+					var hash = href.split('#')[1];
+		
+					// Forces navigation if on same hash
+					if (window.location.hash == '#' + hash)
+					{
+						window.location.hash = '';
+					}
+					
+					window.location.hash = hash;
+				}
+				else
+				{
+					result = window.open(href, (target != null) ? target : '_blank');
+		
+					if (result != null && !allowOpener)
+					{
+						result.opener = null;
+					}
 				}
 			}
 		}
@@ -10056,45 +10145,15 @@ if (typeof mxVertexHandler !== 'undefined')
 				}
 	
 				// Prepares SVG document that holds the output
-				var svgDoc = mxUtils.createXmlDocument();
-				var root = (svgDoc.createElementNS != null) ?
-			    	svgDoc.createElementNS(mxConstants.NS_SVG, 'svg') : svgDoc.createElement('svg');
-			    
-				if (background != null)
-				{
-					if (root.style != null)
-					{
-						root.style.backgroundColor = background;
-					}
-					else
-					{
-						root.setAttribute('style', 'background-color:' + background);
-					}
-				}
-			    
-				if (svgDoc.createElementNS == null)
-				{
-			    	root.setAttribute('xmlns', mxConstants.NS_SVG);
-			    	root.setAttribute('xmlns:xlink', mxConstants.NS_XLINK);
-				}
-				else
-				{
-					// KNOWN: Ignored in IE9-11, adds namespace for each image element instead. No workaround.
-					root.setAttributeNS('http://www.w3.org/2000/xmlns/', 'xmlns:xlink', mxConstants.NS_XLINK);
-				}
-
 				var s = scale / vs;
 				var w = Math.max(1, Math.ceil(bounds.width * s) + 2 * border) +
 					((hasShadow && border == 0) ? 5 : 0);
 				var h = Math.max(1, Math.ceil(bounds.height * s) + 2 * border) +
 					((hasShadow && border == 0) ? 5 : 0);
-				
-				root.setAttribute('version', '1.1');
-				root.setAttribute('width', w + 'px');
-				root.setAttribute('height', h + 'px');
-				root.setAttribute('viewBox', ((crisp) ? '-0.5 -0.5' : '0 0') + ' ' + w + ' ' + h);
-				svgDoc.appendChild(root);
-			
+				var tmp = (crisp) ? -0.5 : 0;
+				var root = Graph.createSvgNode(tmp, tmp, w, h, background);
+				var svgDoc = root.ownerDocument;
+
 			    // Renders graph. Offset will be multiplied with state's scale when painting state.
 				// TextOffset only seems to affect FF output but used everywhere for consistency.
 				var group = (svgDoc.createElementNS != null) ?
@@ -13735,6 +13794,11 @@ if (typeof mxVertexHandler !== 'undefined')
 							this.linkHint.appendChild(div);
 						}
 					}
+				}
+
+				if (this.linkHint != null)
+				{
+					Graph.sanitizeNode(this.linkHint);
 				}
 			}
 			catch (e)

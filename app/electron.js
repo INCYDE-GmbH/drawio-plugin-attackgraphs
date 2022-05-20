@@ -14,6 +14,7 @@ const PDFDocument = require('pdf-lib').PDFDocument;
 const Store = require('electron-store');
 const store = new Store();
 const ProgressBar = require('electron-progressbar');
+const spawn = require('child_process').spawn;
 const disableUpdate = require('./disableUpdate').disableUpdate() || 
 						process.env.DRAWIO_DISABLE_UPDATE === 'true' || 
 						fs.existsSync('/.flatpak-info'); //This file indicates running in flatpak sandbox
@@ -33,9 +34,11 @@ let windowsRegistry = []
 let cmdQPressed = false
 let firstWinLoaded = false
 let firstWinFilePath = null
-let isMac = process.platform === 'darwin'
+const isMac = process.platform === 'darwin'
+const isWin = process.platform === 'win32'
 let enableSpellCheck = store.get('enableSpellCheck');
 enableSpellCheck = enableSpellCheck != null? enableSpellCheck : isMac;
+let enableStoreBkp = store.get('enableStoreBkp') != null? store.get('enableStoreBkp') : true;
 
 //Read config file
 var queryObj = {
@@ -53,7 +56,8 @@ var queryObj = {
 	'export': 'https://convert.diagrams.net/node/export',
 	'disableUpdate': disableUpdate? 1 : 0,
 	'winCtrls': isMac? 0 : 1,
-	'enableSpellCheck': enableSpellCheck? 1 : 0
+	'enableSpellCheck': enableSpellCheck? 1 : 0,
+	'enableStoreBkp': enableStoreBkp? 1 : 0
 };
 
 try
@@ -73,21 +77,28 @@ catch(e)
 	console.log('Error in urlParams.json file: ' + e.message);
 }
 
+// Trying sandboxing the renderer for more protection
+app.enableSandbox();
+
 function createWindow (opt = {})
 {
+	let lastWinSizeStr = store.get('lastWinSize');
+	let lastWinSize = lastWinSizeStr ? lastWinSizeStr.split(',') : [1600, 1200];
+
 	let options = Object.assign(
 	{
 		frame: isMac,
 		backgroundColor: '#FFF',
-		width: 1600,
-		height: 1200,
+		width: parseInt(lastWinSize[0]),
+		height: parseInt(lastWinSize[1]),
 		icon: `${__dirname}/images/drawlogo256.png`,
 		webViewTag: false,
 		'web-security': true,
 		webPreferences: {
 			preload: `${__dirname}/electron-preload.js`,
 			spellcheck: enableSpellCheck,
-			contextIsolation: true
+			contextIsolation: true,
+			disableBlinkFeatures: 'Auxclick' // Is this needed?
 		}
 	}, opt)
 
@@ -118,6 +129,11 @@ function createWindow (opt = {})
 		mainWindow.webContents.openDevTools()
 	}
 
+	ipcMain.on('openDevTools', function()
+	{
+		mainWindow.webContents.openDevTools();
+	});
+
 	mainWindow.on('maximize', function()
 	{
 		mainWindow.webContents.send('maximize')
@@ -130,6 +146,9 @@ function createWindow (opt = {})
 
 	mainWindow.on('resize', function()
 	{
+		const size = mainWindow.getSize();
+		store.set('lastWinSize', size[0] + ',' + size[1]);
+
 		mainWindow.webContents.send('resize')
 	});
 
@@ -285,7 +304,8 @@ app.on('ready', e =>
 			show : false,
 			webPreferences: {
 				preload: `${__dirname}/electron-preload.js`,
-				contextIsolation: true
+				contextIsolation: true,
+				disableBlinkFeatures: 'Auxclick' // Is this needed?
 			}
 		});
     	
@@ -672,6 +692,14 @@ app.on('ready', e =>
 
 	ipcMain.on('toggleSpellCheck', toggleSpellCheck);
 
+	function toggleStoreBkp()
+	{
+		enableStoreBkp = !enableStoreBkp;
+		store.set('enableStoreBkp', enableStoreBkp);
+	};
+
+	ipcMain.on('toggleStoreBkp', toggleStoreBkp);
+
     let updateNoAvailAdded = false;
     
 	function checkForUpdatesFn() 
@@ -838,6 +866,39 @@ app.on('will-finish-launching', function()
 		}
 	});
 });
+ 
+app.on('web-contents-created', (event, contents) => {
+	// Disable navigation
+	contents.on('will-navigate', (event, navigationUrl) => {
+		event.preventDefault()
+	})
+
+	// Limit creation of new windows (we also override window.open)
+	contents.setWindowOpenHandler(({ url }) => {
+		// We allow external absolute URLs to be open externally (check openExternal for details) and also empty windows (url -> about:blank)
+		if (url.startsWith('about:blank'))
+		{
+			return {
+				action: 'allow',
+				overrideBrowserWindowOptions: {
+					fullscreenable: false,
+					webPreferences: {
+						contextIsolation: true
+					}
+				}
+			}
+		} 
+		else if (!openExternal(url))
+		{
+			return {action: 'deny'}
+		}
+	})
+
+	// Disable all webviews
+	contents.on('will-attach-webview', (event, webPreferences, params) => {
+		event.preventDefault()
+	})
+})
 
 autoUpdater.on('error', e => log.error('@error@\n', e))
 
@@ -1216,7 +1277,8 @@ function exportDiagram(event, args, directFinalize)
 			webPreferences: {
 				preload: `${__dirname}/electron-preload.js`,
 				backgroundThrottling: false,
-				contextIsolation: true
+				contextIsolation: true,
+				disableBlinkFeatures: 'Auxclick' // Is this needed?
 			},
 			show : false,
 			frame: false,
@@ -1469,9 +1531,11 @@ ipcMain.on('export', exportDiagram);
 //================================================================
 
 const { O_SYNC, O_CREAT, O_WRONLY, O_TRUNC } = fs.constants;
-const DRAFT_PREFEX = '~$';
+const DRAFT_PREFEX = '.$';
+const OLD_DRAFT_PREFEX = '~$';
 const DRAFT_EXT = '.dtmp';
-const BKP_PREFEX = '~$';
+const BKP_PREFEX = '.$';
+const OLD_BKP_PREFEX = '~$';
 const BKP_EXT = '.bkp';
 
 function isConflict(origStat, stat)
@@ -1505,6 +1569,26 @@ async function getFileDrafts(fileObject)
 		uniquePart = '_' + counter++;
 	} while (fs.existsSync(draftFileName)); //TODO this assume continuous drafts names
 
+	//Port old draft files to new prefex
+	counter = 1;
+	uniquePart = '';
+	let draftExists = false;
+
+	do
+	{
+		draftFileName = path.join(path.dirname(filePath), OLD_DRAFT_PREFEX + path.basename(filePath) + uniquePart + DRAFT_EXT);
+		draftExists = fs.existsSync(draftFileName);
+		
+		if (draftExists)
+		{
+			const newDraftFileName = path.join(path.dirname(filePath), DRAFT_PREFEX + path.basename(filePath) + uniquePart + DRAFT_EXT);
+			await fsProm.rename(draftFileName, newDraftFileName);
+			draftsPaths.push(newDraftFileName);
+		}
+
+		uniquePart = '_' + counter++;
+	} while (draftExists); //TODO this assume continuous drafts names
+
 	//Skip the first null element
 	for (let i = 1; i < draftsPaths.length; i++)
 	{
@@ -1532,6 +1616,16 @@ async function saveDraft(fileObject, data)
 	{
 		var draftFileName = fileObject.draftFileName || getDraftFileName(fileObject);
 		await fsProm.writeFile(draftFileName, data, 'utf8');
+		
+		if (isWin)
+		{
+			try
+			{
+				// Add Hidden attribute:
+				spawn("attrib", ["+h", draftFileName]);
+			} catch(e) {}
+		}
+
 		return draftFileName;
 	}
 }
@@ -1541,6 +1635,7 @@ async function saveFile(fileObject, data, origStat, overwrite, defEnc)
 	var retryCount = 0;
 	var backupCreated = false;
 	var bkpPath = path.join(path.dirname(fileObject.path), BKP_PREFEX + path.basename(fileObject.path) + BKP_EXT);
+	const oldBkpPath = path.join(path.dirname(fileObject.path), OLD_BKP_PREFEX + path.basename(fileObject.path) + BKP_EXT);
 	var writeEnc = defEnc || fileObject.encoding;
 
 	var writeFile = async function()
@@ -1585,10 +1680,16 @@ async function saveFile(fileObject, data, origStat, overwrite, defEnc)
 			else
 			{
 				//We'll keep the backup file in case the original file is corrupted. TODO When should we delete the backup file?
-				/*if (backupCreated)
+				if (backupCreated)
 				{
-					fs.unlink(bkpPath, (err) => {}); //Ignore errors!
-				}*/
+					//fs.unlink(bkpPath, (err) => {}); //Ignore errors!
+
+					//Delete old backup file with old prefix
+					if (fs.existsSync(oldBkpPath))
+					{
+						fs.unlink(oldBkpPath, (err) => {}); //Ignore errors
+					}
+				}
 
 				return stat2;
 			}
@@ -1597,7 +1698,7 @@ async function saveFile(fileObject, data, origStat, overwrite, defEnc)
 	
 	async function doSaveFile(isNew)
 	{
-		if (!isNew)
+		if (enableStoreBkp && !isNew)
 		{
 			//Copy file to backup file (after conflict and stat is checked)
 			let bkpFh;
@@ -1620,6 +1721,15 @@ async function saveFile(fileObject, data, origStat, overwrite, defEnc)
 			finally 
 			{
 				await bkpFh?.close();
+
+				if (isWin)
+				{
+					try
+					{
+						// Add Hidden attribute:
+						spawn("attrib", ["+h", bkpPath]);
+					} catch(e) {}
+				}
 			}
 		}
 
@@ -1823,9 +1933,18 @@ function windowAction(method)
 	}
 }
 
+const allowedUrls = /^(?:https?|mailto|tel|callto):/i;
+
 function openExternal(url)
 {
-	shell.openExternal(url);
+	//Only open http(s), mailto, tel, and callto links
+	if (allowedUrls.test(url))
+	{
+		shell.openExternal(url);
+		return true;
+	}
+
+	return false;
 }
 
 function watchFile(path)
@@ -1851,6 +1970,11 @@ function watchFile(path)
 function unwatchFile(path)
 {
 	fs.unwatchFile(path);
+}
+
+function getCurDir()
+{
+	return __dirname;
 }
 
 ipcMain.on("rendererReq", async (event, args) => 
@@ -1923,6 +2047,9 @@ ipcMain.on("rendererReq", async (event, args) =>
 			break;
 		case 'unwatchFile':	
 			ret = await unwatchFile(args.path);
+			break;
+		case 'getCurDir':
+			ret = await getCurDir();
 			break;
 		};
 

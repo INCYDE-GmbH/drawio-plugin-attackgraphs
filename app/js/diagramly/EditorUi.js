@@ -11099,12 +11099,19 @@
 				
 				if (plain != null && plain.length > 0 && plain.substring(0, 18) == '%3CmxGraphModel%3E')
 				{
-					var tmp = decodeURIComponent(plain);
-							
-					if (this.isCompatibleString(tmp))
+					try
 					{
-						override = true;
-						plain = tmp;
+						var tmp = decodeURIComponent(plain);
+						
+						if (this.isCompatibleString(tmp))
+						{
+							override = true;
+							plain = tmp;
+						}
+					}
+					catch (e)
+					{
+						// ignore
 					}
 				}
 			
@@ -13530,34 +13537,36 @@
 		    				0, 0), style || 'whiteSpace=wrap;html=1;');
     					newCell.vertex = true;
     					newCell.id = id;
+
+						var targetCell = (cell != null) ? cell : newCell;
 						
 						for (var j = 0; j < values.length; j++)
 				    	{
-							graph.setAttributeForCell(newCell, attribs[j], values[j]);
+							graph.setAttributeForCell(targetCell, attribs[j], values[j]);
 				    	}
 						
 						if (labelname != null && labels != null)
 						{
-							var tempLabel = labels[newCell.getAttribute(labelname)];
+							var tempLabel = labels[targetCell.getAttribute(labelname)];
 							
 							if (tempLabel != null)
 							{
-								graph.labelChanged(newCell, tempLabel);
+								graph.labelChanged(targetCell, tempLabel);
 							}
 						}
 
 						if (stylename != null && styles != null)
 						{
-							var tempStyle = styles[newCell.getAttribute(stylename)];
+							var tempStyle = styles[targetCell.getAttribute(stylename)];
 							
 							if (tempStyle != null)
 							{
-								newCell.style = tempStyle;
+								targetCell.style = tempStyle;
 							}
 						}
 
-						graph.setAttributeForCell(newCell, 'placeholders', '1');
-						newCell.style = graph.replacePlaceholders(newCell, newCell.style, vars);
+						graph.setAttributeForCell(targetCell, 'placeholders', '1');
+						targetCell.style = graph.replacePlaceholders(targetCell, targetCell.style, vars);
 
 						if (exists)
 						{

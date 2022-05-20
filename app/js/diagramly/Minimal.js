@@ -686,7 +686,7 @@ EditorUi.initMinimalTheme = function()
 					icon.style.top = '2px';
 					icon.style.width = '12px';
 					icon.style.height = '12px';
-					icon.style.cursor = 'default';
+					// icon.style.cursor = 'default';
 
 					var err = file.getRealtimeError();
 					var state = file.getRealtimeState();
@@ -710,16 +710,7 @@ EditorUi.initMinimalTheme = function()
 							status += ' (' + mxResources.get('disconnected') + ')';
 						}
 					}
-
-					mxEvent.addListener(icon, 'click', mxUtils.bind(this, function(evt)
-					{
-						this.showError(mxResources.get('realtimeCollaboration'),
-							mxUtils.htmlEntities(state == 1 ? mxResources.get('online') :
-								((err != null && err.message != null) ?
-								err.message : mxResources.get('disconnected'))));
-						mxEvent.consume(evt);
-					}));
-		
+					
 					icon.setAttribute('title', status);
 					elt.style.paddingRight = '4px';
 					elt.appendChild(icon);
@@ -1272,12 +1263,6 @@ EditorUi.initMinimalTheme = function()
 			{
 				menu.addSeparator(parent);
 
-				if (file.isRealtimeEnabled() && file.isRealtimeSupported())
-				{
-					this.addMenuItems(menu, ['showRemoteCursors',
-						'shareCursor'], parent);
-				}
-
 				if (file.constructor == DriveFile)
 				{
 					ui.menus.addMenuItems(menu, ['share'], parent);
@@ -1350,13 +1335,7 @@ EditorUi.initMinimalTheme = function()
 					menu.addSeparator(parent);
 
 					if (file != null)
-					{
-						if (file.isRealtimeEnabled() && file.isRealtimeSupported())
-						{
-							this.addMenuItems(menu, ['showRemoteCursors',
-								'shareCursor'], parent);
-						}
-									
+					{		
 						if (file.constructor == DriveFile)
 						{
 							ui.menus.addMenuItems(menu, ['share'], parent);
@@ -1560,13 +1539,21 @@ EditorUi.initMinimalTheme = function()
 				{
 					ui.menus.addMenuItem(menu, 'plugins', parent);
 				}
-	
-				menu.addSeparator(parent);
-				
-				if (ui.mode != App.MODE_ATLAS) 
-				{
-					this.addMenuItems(menu, ['fullscreen'], parent);
-				}	
+			}
+
+			var file = ui.getCurrentFile();
+			
+			if (file != null && file.isRealtimeEnabled() && file.isRealtimeSupported())
+			{
+				this.addMenuItems(menu, ['-', 'showRemoteCursors',
+					'shareCursor', '-'], parent);
+			}
+			
+			menu.addSeparator(parent);
+
+			if (urlParams['sketch'] != '1' && ui.mode != App.MODE_ATLAS) 
+			{
+				this.addMenuItems(menu, ['fullscreen'], parent);
 			}
 
 			if (urlParams['embedInline'] != '1' && Editor.isDarkMode() ||
