@@ -8,6 +8,16 @@ export abstract class FunctionListDialog extends SettingsDialog<AttackgraphFunct
   protected title: string | null = null;
   protected editDialogTitle: string | null = null;
 
+  private vertexTypes: {type: string, name: string, color: string, style: string, html: string}[] = [
+    {type: 'consequence', name: mxResources.get('attackGraphs.consequence'), color: '#FFFFFF', style: 'width:20px;height:12px;border:1px solid black;border-radius:5px;', html: '&nbsp;'},
+    {type: 'activity_w', name: mxResources.get('attackGraphs.activity'), color: '#FFFFFF', style: 'width:20px;height:12px;border:1px solid black;', html: '&nbsp;'},
+    {type: 'activity_g', name: mxResources.get('attackGraphs.activity'), color: '#D7E3BF', style: 'width:20px;height:12px;border:1px solid black;', html: '&nbsp;'},
+    {type: 'activity_y', name: mxResources.get('attackGraphs.activity'), color: '#FEE599', style: 'width:20px;height:12px;border:1px solid black;', html: '&nbsp;'},
+    {type: 'measurement', name: mxResources.get('attackGraphs.control'), color: '#DAE8FC', style: 'width:20px;height:12px;border:1px solid black;', html: '&nbsp;'},
+    {type: 'or', name: 'OR', color: '#FFFFFF', style: '', html: 'OR'},
+    {type: 'and', name: 'AND', color: '#FFFFFF', style: '', html: 'AND'}
+  ];
+
   abstract getFunctionItems(): AttackgraphFunction[];
   abstract setFunctionItems(aggregationFunctions: AttackgraphFunction[]): void;
 
@@ -32,7 +42,18 @@ export abstract class FunctionListDialog extends SettingsDialog<AttackgraphFunct
       } else {
         inner.innerHTML = '';
 
+        const table = document.createElement('table');
+        const thead = document.createElement('thead');
+        const tbody = document.createElement('tbody');
+        table.style.borderCollapse = 'seperate';
+        table.style.borderSpacing = '0';
+
+        this.createDefaultFunctionSelectFormHeader(thead);
+
         for (let i = 0; i < items.length; i++) {
+          const row = document.createElement('tr');
+          const td = document.createElement('td');
+          td.style.padding = '0 5px';
           const span = document.createElement('span');
           span.style.whiteSpace = 'nowrap';
 
@@ -78,10 +99,26 @@ export abstract class FunctionListDialog extends SettingsDialog<AttackgraphFunct
           span.appendChild(imgEdit);
 
           mxUtils.write(span, items[i].name);
-          inner.appendChild(span);
+          td.appendChild(span);
+          row.appendChild(td);
 
-          mxUtils.br(inner, 1);
+          this.appendDefaultFunctionSelectFormToRow(row);
+          tbody.appendChild(row);
+          //mxUtils.br(inner, 1);
         }
+
+        // 'None' function
+        const row = document.createElement('tr');
+        const td = document.createElement('td');
+        td.setAttribute('style', 'padding:5px;')
+        td.innerText = mxResources.get('attackGraphs.none');
+        row.appendChild(td);
+        this.appendDefaultFunctionSelectFormToRow(row);
+        tbody.appendChild(row);
+
+        table.appendChild(thead);
+        table.appendChild(tbody);
+        inner.appendChild(table);
       }
     }
 
@@ -118,5 +155,46 @@ export abstract class FunctionListDialog extends SettingsDialog<AttackgraphFunct
 
     this.container.append(top);
     this.container.appendChild(buttons);
+  }
+
+  private createDefaultFunctionSelectFormHeader(thead: HTMLTableSectionElement) : void {
+    const row = document.createElement('tr');
+    const emptyCell = document.createElement('td'); // Empty cell for title of function
+    emptyCell.style.padding = '5px';
+    emptyCell.innerHTML = '&nbsp;';
+    row.appendChild(emptyCell);
+
+    for (let i = 0; i < this.vertexTypes.length; i++) {
+      const td = document.createElement('td');
+      td.style.background = this.vertexTypes[i].color;
+      td.style.borderLeft = '1px solid #E0E0E0';
+      td.style.padding = '5px';
+
+      const div = document.createElement('div');
+      div.setAttribute('style', this.vertexTypes[i].style);
+      div.setAttribute('title', this.vertexTypes[i].name);
+      div.innerHTML = this.vertexTypes[i].html;
+
+      td.appendChild(div);
+      row.appendChild(td);
+    }
+
+    thead.appendChild(row);
+  }
+
+  private appendDefaultFunctionSelectFormToRow(row: HTMLTableRowElement) :  void {
+    for (let i = 0; i < this.vertexTypes.length; i++) {
+      const td = document.createElement('td');
+      td.style.background = this.vertexTypes[i].color;
+      td.style.borderLeft = '1px solid #E0E0E0';
+      td.style.padding = '0 5px';
+
+      const input = document.createElement('input');
+      input.type = 'radio';
+      input.name = this.vertexTypes[i].type;
+
+      td.appendChild(input);
+      row.appendChild(td);
+    }
   }
 }
