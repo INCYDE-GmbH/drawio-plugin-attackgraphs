@@ -141,7 +141,11 @@ export class SensitivityAnalysisRootAttributeProvider extends RootAttributeProvi
   }
 
   setGlobalFunctions(aggregationFunctions: AttackgraphFunction[], global_function_name: string, global_function_group_name: string): void {
-    this.cache.storeGroupedValuesInCell(global_function_group_name, global_function_name, aggregationFunctions);
+    // TODO: Deleting the default attributes might cause problems for the sensitivity analysis...
+    const fn = aggregationFunctions.map(f => {
+      return { name: f.name, id: f.id, fn: f.fn };
+    });
+    this.cache.storeGroupedValuesInCell(global_function_group_name, global_function_name, fn);
   }
 
   getGlobalFunctions(global_function_name: string, global_function_group_name: string): AttackgraphFunction[] {

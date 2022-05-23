@@ -1,6 +1,15 @@
 import { AttackgraphFunction, getUUID } from '../Model';
 import { EditFunctionDialog } from './EditFunctionDialog';
 import { SettingsDialog } from './SettingsDialog';
+import { STORAGE_ID_NONE_FUNCTION } from '../CellUtils';
+
+type VertexType = {
+  type: string,
+  name: string,
+  color: string,
+  style: string,
+  html: string
+};
 
 export abstract class FunctionListDialog extends SettingsDialog<AttackgraphFunction[]> {
   protected width = 360;
@@ -8,7 +17,8 @@ export abstract class FunctionListDialog extends SettingsDialog<AttackgraphFunct
   protected title: string | null = null;
   protected editDialogTitle: string | null = null;
 
-  private vertexTypes: {type: string, name: string, color: string, style: string, html: string}[] = [
+  private items: AttackgraphFunction[] = [];
+  private vertexTypes: VertexType[] = [
     {type: 'consequence', name: mxResources.get('attackGraphs.consequence'), color: '#FFFFFF', style: 'width:20px;height:12px;border:1px solid black;border-radius:5px;', html: '&nbsp;'},
     {type: 'activity_w', name: mxResources.get('attackGraphs.activity'), color: '#FFFFFF', style: 'width:20px;height:12px;border:1px solid black;', html: '&nbsp;'},
     {type: 'activity_g', name: mxResources.get('attackGraphs.activity'), color: '#D7E3BF', style: 'width:20px;height:12px;border:1px solid black;', html: '&nbsp;'},
@@ -32,12 +42,12 @@ export abstract class FunctionListDialog extends SettingsDialog<AttackgraphFunct
     inner.style.overflow = 'auto';
     top.appendChild(inner);
 
-    const items = this.getFunctionItems()
+    this.items = this.getFunctionItems()
       // Assign UUIDs to items that have not yet received one
       .map(x => x.id === undefined ? { ...x, id: getUUID() } : x);
 
     const refresh = () => {
-      if (items.length === 0) {
+      if (this.items.length === 0) {
         inner.textContent = mxResources.get('attackGraphs.noItems');
       } else {
         inner.innerHTML = '';
@@ -50,7 +60,8 @@ export abstract class FunctionListDialog extends SettingsDialog<AttackgraphFunct
 
         this.createDefaultFunctionSelectFormHeader(thead);
 
-        for (let i = 0; i < items.length; i++) {
+        let defaultTypes: string[] = [];
+        for (let i = 0; i < this.items.length; i++) {
           const row = document.createElement('tr');
           const td = document.createElement('td');
           td.style.padding = '0 5px';
@@ -66,8 +77,8 @@ export abstract class FunctionListDialog extends SettingsDialog<AttackgraphFunct
           imgDelete.style.display = 'inline-block';
           mxEvent.addListener(imgDelete, 'click', (index => {
             return () => {
-              this.ui?.confirm(mxResources.get('delete') + ' "' + items[index].name + '"?', () => {
-                items.splice(index, 1);
+              this.ui?.confirm(mxResources.get('delete') + ' "' + this.items[index].name + '"?', () => {
+                this.items.splice(index, 1);
                 refresh();
               });
             };
@@ -83,14 +94,15 @@ export abstract class FunctionListDialog extends SettingsDialog<AttackgraphFunct
           imgEdit.style.display = 'inline-block';
           mxEvent.addListener(imgEdit, 'click', (index => {
             return async () => {
-              const dialog = new EditFunctionDialog(ui, undefined, undefined, items[index], this.editDialogTitle || '').init();
+              const dialog = new EditFunctionDialog(ui, undefined, undefined, this.items[index], this.editDialogTitle || '').init();
               if (await dialog.show()) {
                 const result = dialog.result;
 
                 if (result !== undefined && result !== null) {
-                  //keep ID of an edited function
-                  result.id = items[index].id;
-                  items[index] = result;
+                  //keep ID and the default types of an edited function
+                  result.id = this.items[index].id;
+                  result.default = this.items[index].default;
+                  this.items[index] = result;
                   refresh();
                 }
               }
@@ -98,13 +110,13 @@ export abstract class FunctionListDialog extends SettingsDialog<AttackgraphFunct
           })(i));
           span.appendChild(imgEdit);
 
-          mxUtils.write(span, items[i].name);
+          mxUtils.write(span, this.items[i].name);
           td.appendChild(span);
           row.appendChild(td);
 
-          this.appendDefaultFunctionSelectFormToRow(row);
+          defaultTypes = defaultTypes.concat(this.items[i].default)
+          this.appendDefaultFunctionSelectFormToRow(row, this.items[i].id, this.items[i].default);
           tbody.appendChild(row);
-          //mxUtils.br(inner, 1);
         }
 
         // 'None' function
@@ -113,7 +125,7 @@ export abstract class FunctionListDialog extends SettingsDialog<AttackgraphFunct
         td.setAttribute('style', 'padding:5px;')
         td.innerText = mxResources.get('attackGraphs.none');
         row.appendChild(td);
-        this.appendDefaultFunctionSelectFormToRow(row);
+        this.appendDefaultFunctionSelectFormToRow(row, STORAGE_ID_NONE_FUNCTION, this.vertexTypes.map(e => e.type).filter(e => !defaultTypes.includes(e)));
         tbody.appendChild(row);
 
         table.appendChild(thead);
@@ -125,13 +137,13 @@ export abstract class FunctionListDialog extends SettingsDialog<AttackgraphFunct
     refresh();
 
     const addBtn = mxUtils.button(mxResources.get('add') + '...', async () => {
-      const newAggregationFunction = { name: '', fn: '', id: '' };
+      const newAggregationFunction = { name: '', fn: '', id: '', default: [] };
       const dialog = new EditFunctionDialog(ui, undefined, undefined, newAggregationFunction, this.editDialogTitle || '').init();
       if (await dialog.show()) {
         const result = dialog.result;
 
         if (result !== undefined && result !== null) {
-          items.push(result);
+          this.items.push(result);
           refresh();
         }
       }
@@ -139,7 +151,7 @@ export abstract class FunctionListDialog extends SettingsDialog<AttackgraphFunct
     addBtn.className = 'geBtn';
 
     const applyBtn = this.getApplyButton(() => {
-      this.apply(items);
+      this.apply(this.items);
       this.closeDialog(ui);
     });
     const cancelBtn = this.getCancelButton(() => {
@@ -182,7 +194,7 @@ export abstract class FunctionListDialog extends SettingsDialog<AttackgraphFunct
     thead.appendChild(row);
   }
 
-  private appendDefaultFunctionSelectFormToRow(row: HTMLTableRowElement) :  void {
+  private appendDefaultFunctionSelectFormToRow(row: HTMLTableRowElement, id: string, types: string[]): void {
     for (let i = 0; i < this.vertexTypes.length; i++) {
       const td = document.createElement('td');
       td.style.background = this.vertexTypes[i].color;
@@ -192,9 +204,33 @@ export abstract class FunctionListDialog extends SettingsDialog<AttackgraphFunct
       const input = document.createElement('input');
       input.type = 'radio';
       input.name = this.vertexTypes[i].type;
+      input.className = id;
+      input.addEventListener('click', () => {
+        this.updateDefaultFunctions();
+      });
+      if (types.includes(this.vertexTypes[i].type)) {
+        input.checked = true;
+      }
 
       td.appendChild(input);
       row.appendChild(td);
+    }
+  }
+
+  private updateDefaultFunctions(): void {
+    this.items = this.items.map(fn => {
+      fn.default = [];
+      return fn;
+    });
+
+    const elements = document.querySelectorAll('input[type=radio]');
+    for (let i = 0; i < elements.length; i++) {
+      const e = elements[i];
+      if (e instanceof HTMLInputElement && e.checked) {
+        for (const fn of this.items.filter(fn => fn.id === e.className)) {
+          fn.default.push(e.name);
+        }
+      }
     }
   }
 }
