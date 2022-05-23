@@ -123,8 +123,16 @@ export class RootAttributeProvider extends AttributeProvider {
     return this.getGlobalFunctions(STORAGE_NAME_GLOBAL_COMPUTED_FUNCTION, STORAGE_NAME_GLOBAL_COMPUTED_FUNCTIONS);
   }
 
+  getDefaultGlobalComputedAttributesFunctionByVertexType(type: string): AttackgraphFunction | null {
+    return this.getGlobalComputedAttributesFunctions().filter(fn => fn.default.includes(type))[0] || null;
+  }
+
   getGlobalAggregationFunctions(): AttackgraphFunction[] {
     return this.getGlobalFunctions(STORAGE_NAME_GLOBAL_AGGREGATION_FUNCTION, STORAGE_NAME_GLOBAL_AGGREGATION_FUNCTIONS);
+  }
+
+  getDefaultGlobalAggregationFunctionByVertexType(type: string): AttackgraphFunction | null {
+    return this.getGlobalAggregationFunctions().filter(fn => fn.default.includes(type))[0] || null;
   }
 
   getGlobalFunctions(global_function_name: string, global_function_group_name: string): AttackgraphFunction[] {
