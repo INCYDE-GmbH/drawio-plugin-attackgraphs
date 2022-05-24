@@ -148,7 +148,12 @@ export class RootAttributeProvider extends AttributeProvider {
     return functionChildren.filter(child => child.tagName === global_function_name)
       .map(fn => {
         const attributes = Object.fromEntries(Object.values(fn.attributes).map(attr => [attr.name, attr.value]));
-        return { name: attributes.name, fn: attributes.fn, id: attributes.id, default: attributes.default.split(';')};
+        return {
+          name: attributes.name,
+          fn: attributes.fn,
+          id: attributes.id,
+          default: ('default' in attributes) ? attributes.default.split(';') : [] // Backwards compatability
+        };
       });
   }
 }
