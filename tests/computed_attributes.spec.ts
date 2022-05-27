@@ -21,7 +21,7 @@ test.describe('computed attributes', () => {
 
     await drawio.fillEditFunctionDialog('default', `function (attrs) {
       return 100;}`);
-
+    await drawio.selectFirstFunctionAsDefaultForVertexType('activity_y');
     await drawio.applyDialog();
 
     await drawio.addActivityNode();
@@ -73,6 +73,7 @@ test.describe('computed attributes', () => {
 
     await drawio.fillEditFunctionDialog('default', `function (collection) {
           return Math.max(Math.max(11 - collection.cellAttributes["Knowledge"], 11 - collection.cellAttributes["Ressourcen"]) - collection.cellAttributes["Ort"], 0);}`);
+    await drawio.selectFirstFunctionAsDefaultForVertexType('activity_y');
     await drawio.applyDialog();
 
     await drawio.addActivityNode();

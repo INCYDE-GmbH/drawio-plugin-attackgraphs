@@ -20,9 +20,8 @@ test.describe('global aggregation functions', () => {
 
     await page.click('text=Add...');
 
-    await page.locator('text=Name').locator('xpath=..').locator('input').fill('default');
-    await drawio.applyStringToAceEditor(`function (childNodes) {return {Knowledge:\'2\',Ressourcen:\'3\',Ort:\'4\'};}`);
-
+    await drawio.fillEditFunctionDialog('default', `function (childNodes) {return {Knowledge:\'2\',Ressourcen:\'3\',Ort:\'4\'};}`);
+    await drawio.selectFirstFunctionAsDefaultForVertexType('activity_y');
     await drawio.applyDialog();
 
     await drawio.addActivityNode();

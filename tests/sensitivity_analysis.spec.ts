@@ -298,6 +298,7 @@ test.describe('sensitivity analysis', () => {
     await drawio.openGlobalAggregationFunctionDialog();
     await page.locator('text=Add...').click();
     await drawio.fillEditFunctionDialog('default', 'function() { return { Knowledge: 5 } }');
+    await drawio.selectFirstFunctionAsDefaultForVertexType('activity_y');
     await drawio.applyDialog();
     await drawio.addActivityNode();
 
@@ -318,6 +319,7 @@ test.describe('sensitivity analysis', () => {
     await drawio.openGlobalAggregationFunctionDialog();
     await page.locator('text=Add...').click();
     await drawio.fillEditFunctionDialog('default', 'function() { return { Knowledge: 5 } }');
+    await drawio.selectFirstFunctionAsDefaultForVertexType('activity_y');
     await drawio.applyDialog();
     await drawio.addActivityNode();
 
