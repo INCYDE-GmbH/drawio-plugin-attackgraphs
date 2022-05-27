@@ -141,9 +141,8 @@ export class SensitivityAnalysisRootAttributeProvider extends RootAttributeProvi
   }
 
   setGlobalFunctions(aggregationFunctions: AttackgraphFunction[], global_function_name: string, global_function_group_name: string): void {
-    // TODO: Deleting the default attributes might cause problems for the sensitivity analysis...
     const fn = aggregationFunctions.map(f => {
-      return { name: f.name, id: f.id, fn: f.fn };
+      return { name: f.name, id: f.id, fn: f.fn, default: f.default.join(';') };
     });
     this.cache.storeGroupedValuesInCell(global_function_group_name, global_function_name, fn);
   }
@@ -151,7 +150,9 @@ export class SensitivityAnalysisRootAttributeProvider extends RootAttributeProvi
   getGlobalFunctions(global_function_name: string, global_function_group_name: string): AttackgraphFunction[] {
     const attributes = SensitivityAnalysisCache.cellValues[this.getCellId()];
     if (attributes && attributes.groups[global_function_group_name] !== undefined) {
-      return attributes.groups[global_function_group_name][0] as unknown as AttackgraphFunction[];
+      return attributes.groups[global_function_group_name][0].map(f => {
+        return { name: f.name, id: f.id, fn: f.fn, default: f.default.split(';') };
+      }) as unknown as AttackgraphFunction[];
     }
 
     return this.realAttributes.getGlobalFunctions(global_function_name, global_function_group_name);
