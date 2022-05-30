@@ -102,9 +102,11 @@ export class AttackGraphNodeShape extends mxRectangleShape {
       } else {
         c.setFontColor(AttributeRenderer.sensitivityAnalysisEnabled() ? '#f00' : '#00f');
         c.setFontStyle(mxConstants.FONT_STRIKETHROUGH.toString());
-        const oldValueWidth = oldValue.toString().length * textWidthPerChar;
-        c.text(currentOffset, h - paddingBelow - iconWidthHeight + iconWidthHeight / 2, oldValueWidth, iconWidthHeight, oldValue.toString(), mxConstants.ALIGN_LEFT, mxConstants.ALIGN_MIDDLE, 0, null, 0, 0, 0);
-        currentOffset += oldValueWidth;
+        if (oldValue !== undefined && currentValue.toString() !== oldValue.toString()) {
+          const oldValueWidth = oldValue.toString().length * textWidthPerChar;
+          c.text(currentOffset, h - paddingBelow - iconWidthHeight + iconWidthHeight / 2, oldValueWidth, iconWidthHeight, oldValue.toString(), mxConstants.ALIGN_LEFT, mxConstants.ALIGN_MIDDLE, 0, null, 0, 0, 0);
+          currentOffset += oldValueWidth;
+        }
       }
     }
   }
