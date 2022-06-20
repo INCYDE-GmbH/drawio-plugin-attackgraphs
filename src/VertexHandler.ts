@@ -3,6 +3,7 @@ import { EditAggregationFunctionDialog, EditComputedAttributesFunctionDialog } f
 import { AsyncWorker } from './AsyncUtils';
 import { AttributeRenderer } from './AttributeRenderer';
 import { AttackGraphSettings } from './AttackGraphSettings';
+import { CellStyles } from './Analysis/CellStyles';
 
 
 const IMAGE_WIDTH = 24;
@@ -81,12 +82,9 @@ export const installVertexHandler = (ui: Draw.UI, worker: AsyncWorker): void => 
       // Highlight incoming and outgoing edges
       const cell = this.state.cell;
       if (cell.edges) {
-        for (const edge of cell.edges) {
-          let styles = edge.getStyle().split(';').filter(x => x !== '').map(x => x.split('='));
-          styles = styles.filter(x => !x.includes('strokeWidth'));
-          styles.push(['strokeWidth', '4']);
-          edge.setStyle(styles.map(x => x.join('=')).join(';') + ';');
-        }
+        const style = new CellStyles(cell);
+        style.setSelected(true);
+        style.updateConnectedEdgesStyle();
         ui.editor.graph.refresh();
       }
 
@@ -140,12 +138,9 @@ export const installVertexHandler = (ui: Draw.UI, worker: AsyncWorker): void => 
       // Remove highlight of incoming and outgoing edges
       const cell = this.state.cell;
       if (cell.edges) {
-        for (const edge of cell.edges) {
-          let styles = edge.getStyle().split(';').filter(x => x !== '').map(x => x.split('='));
-          styles = styles.filter(x => !x.includes('strokeWidth'));
-          styles.push(['strokeWidth', '2']);
-          edge.setStyle(styles.map(x => x.join('=')).join(';') + ';');
-        }
+        const style = new CellStyles(cell);
+        style.setSelected(false);
+        style.updateConnectedEdgesStyle();
         ui.editor.graph.refresh();
       }
 
