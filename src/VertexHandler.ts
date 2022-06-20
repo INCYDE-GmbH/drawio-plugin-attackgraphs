@@ -80,13 +80,15 @@ export const installVertexHandler = (ui: Draw.UI, worker: AsyncWorker): void => 
 
       // Highlight incoming and outgoing edges
       const cell = this.state.cell;
-      for (const edge of cell.edges) {
-        let styles = edge.getStyle().split(';').filter(x => x !== '').map(x => x.split('='));
-        styles = styles.filter(x => !x.includes('strokeWidth'));
-        styles.push(['strokeWidth', '4']);
-        edge.setStyle(styles.map(x => x.join('=')).join(';') + ';');
+      if (cell.edges) {
+        for (const edge of cell.edges) {
+          let styles = edge.getStyle().split(';').filter(x => x !== '').map(x => x.split('='));
+          styles = styles.filter(x => !x.includes('strokeWidth'));
+          styles.push(['strokeWidth', '4']);
+          edge.setStyle(styles.map(x => x.join('=')).join(';') + ';');
+        }
+        ui.editor.graph.refresh();
       }
-      ui.editor.graph.refresh();
 
       this.redrawHandles();
     }
@@ -137,13 +139,15 @@ export const installVertexHandler = (ui: Draw.UI, worker: AsyncWorker): void => 
 
       // Remove highlight of incoming and outgoing edges
       const cell = this.state.cell;
-      for (const edge of cell.edges) {
-        let styles = edge.getStyle().split(';').filter(x => x !== '').map(x => x.split('='));
-        styles = styles.filter(x => !x.includes('strokeWidth'));
-        styles.push(['strokeWidth', '2']);
-        edge.setStyle(styles.map(x => x.join('=')).join(';') + ';');
+      if (cell.edges) {
+        for (const edge of cell.edges) {
+          let styles = edge.getStyle().split(';').filter(x => x !== '').map(x => x.split('='));
+          styles = styles.filter(x => !x.includes('strokeWidth'));
+          styles.push(['strokeWidth', '2']);
+          edge.setStyle(styles.map(x => x.join('=')).join(';') + ';');
+        }
+        ui.editor.graph.refresh();
       }
-      ui.editor.graph.refresh();
 
       this.functionHandles = null;
     }
