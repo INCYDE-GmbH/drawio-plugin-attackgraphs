@@ -22,7 +22,7 @@ const VERTEX_TYPES: VertexType[] = [
 ];
 
 export abstract class FunctionListDialog extends SettingsDialog<AttackgraphFunction[]> {
-  protected width = 360;
+  protected width = 500;
   protected height = 360;
   protected title: string | null = null;
   protected editDialogTitle: string | null = null;
