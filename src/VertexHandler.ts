@@ -3,6 +3,7 @@ import { EditAggregationFunctionDialog, EditComputedAttributesFunctionDialog } f
 import { AsyncWorker } from './AsyncUtils';
 import { AttributeRenderer } from './AttributeRenderer';
 import { AttackGraphSettings } from './AttackGraphSettings';
+import { CellStyles } from './Analysis/CellStyles';
 
 
 const IMAGE_WIDTH = 24;
@@ -77,6 +78,16 @@ export const installVertexHandler = (ui: Draw.UI, worker: AsyncWorker): void => 
     vertexHandlerInit.apply(this, rest);
     if (AttackGraphSettings.isAttackGraph(ui.editor.graph) && this.graph.getSelectionCount() === 1) {
       drawFunctionHandle(this);
+
+      // Highlight incoming and outgoing edges
+      const cell = this.state.cell;
+      if (cell.edges) {
+        const style = new CellStyles(cell);
+        style.setSelected(true);
+        style.updateConnectedEdgesStyle();
+        ui.editor.graph.refresh();
+      }
+
       this.redrawHandles();
     }
   }
@@ -122,6 +133,15 @@ export const installVertexHandler = (ui: Draw.UI, worker: AsyncWorker): void => 
         if (functionHandle.parentNode !== null) {
           functionHandle.parentNode.removeChild(functionHandle);
         }
+      }
+
+      // Remove highlight of incoming and outgoing edges
+      const cell = this.state.cell;
+      if (cell.edges) {
+        const style = new CellStyles(cell);
+        style.setSelected(false);
+        style.updateConnectedEdgesStyle();
+        ui.editor.graph.refresh();
       }
 
       this.functionHandles = null;
