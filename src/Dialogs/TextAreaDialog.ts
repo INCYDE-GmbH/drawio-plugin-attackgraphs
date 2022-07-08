@@ -249,8 +249,8 @@ export abstract class EditCellFunctionDialog extends TextAreaDialog {
 
   updateSelection(): void {
     const cellFunction = this.getCellFunction();
-    this.functionItems.unshift({ name: mxResources.get('attackGraphs.none'), fn: '', id: '' })
-    this.functionItems.push({ name: STORAGE_NAME_CUSTOM_FUNCTION, fn: '', id: '' });
+    this.functionItems.unshift({ name: mxResources.get('attackGraphs.none'), fn: '', id: '', default: [] }) // TODO: empty default array might cause problems...
+    this.functionItems.push({ name: STORAGE_NAME_CUSTOM_FUNCTION, fn: '', id: '', default: [] });
     this.selected = 0;
     if (cellFunction !== null) {
       if (cellFunction.name === STORAGE_NAME_CUSTOM_FUNCTION) {

@@ -30,6 +30,7 @@ export enum CellFunctionType { AGGREGATION, COMPUTED_ATTRIBUTE }
 export type AttackgraphFunction = {
   name: string,
   id: string,
+  default: string[],
   fn: string
 }
 export type AttackgraphFunctionFormat = { format: CellFunctionFormat, inlineFunctionOrReference: string }

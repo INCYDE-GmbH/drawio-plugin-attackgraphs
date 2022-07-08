@@ -30,7 +30,7 @@ export class RootAttributeProvider extends AttributeProvider {
 
   private getGlobalFunctionByID(functions: AttackgraphFunction[]): AttackgraphFunction | null {
     if (functions.length > 0) {
-      return { name: functions[0].name, fn: functions[0].fn, id: functions[0].id };
+      return { name: functions[0].name, fn: functions[0].fn, id: functions[0].id, default: functions[0].default };
     } else {
       return null;
     }
@@ -38,10 +38,10 @@ export class RootAttributeProvider extends AttributeProvider {
 
   resolveGlobalFunction(fn: AttackgraphFunctionFormat, type: CellFunctionType): AttackgraphFunction | null {
     if (fn.format === CellFunctionFormat.CUSTOM) {
-      return { name: STORAGE_NAME_CUSTOM_FUNCTION, fn: fn.inlineFunctionOrReference, id: '' };
+      return { name: STORAGE_NAME_CUSTOM_FUNCTION, fn: fn.inlineFunctionOrReference, id: '', default: [] };
     } else {
       if (fn.inlineFunctionOrReference === STORAGE_ID_NONE_FUNCTION) {
-        return { name: '', id: STORAGE_ID_NONE_FUNCTION, fn: '' };
+        return { name: '', id: STORAGE_ID_NONE_FUNCTION, fn: '', default: []}; // TODO: empty default array might cause problems...
       } else {
         if (type === CellFunctionType.AGGREGATION) {
           return this.getGlobalAggregationFunctionByID(fn.inlineFunctionOrReference);
@@ -98,6 +98,7 @@ export class RootAttributeProvider extends AttributeProvider {
       const fnObject = xml.createElement(global_function_name);
       fnObject.setAttribute('name', fn.name);
       fnObject.setAttribute('id', fn.id);
+      fnObject.setAttribute('default', fn.default.join(';'));
       fnObject.setAttribute('fn', fn.fn);
       return fnObject;
     });
@@ -122,8 +123,16 @@ export class RootAttributeProvider extends AttributeProvider {
     return this.getGlobalFunctions(STORAGE_NAME_GLOBAL_COMPUTED_FUNCTION, STORAGE_NAME_GLOBAL_COMPUTED_FUNCTIONS);
   }
 
+  getDefaultGlobalComputedAttributesFunctionByVertexType(type: string): AttackgraphFunction | null {
+    return this.getGlobalComputedAttributesFunctions().filter(fn => fn.default.includes(type))[0] || null;
+  }
+
   getGlobalAggregationFunctions(): AttackgraphFunction[] {
     return this.getGlobalFunctions(STORAGE_NAME_GLOBAL_AGGREGATION_FUNCTION, STORAGE_NAME_GLOBAL_AGGREGATION_FUNCTIONS);
+  }
+
+  getDefaultGlobalAggregationFunctionByVertexType(type: string): AttackgraphFunction | null {
+    return this.getGlobalAggregationFunctions().filter(fn => fn.default.includes(type))[0] || null;
   }
 
   getGlobalFunctions(global_function_name: string, global_function_group_name: string): AttackgraphFunction[] {
@@ -139,7 +148,12 @@ export class RootAttributeProvider extends AttributeProvider {
     return functionChildren.filter(child => child.tagName === global_function_name)
       .map(fn => {
         const attributes = Object.fromEntries(Object.values(fn.attributes).map(attr => [attr.name, attr.value]));
-        return { name: attributes.name, fn: attributes.fn, id: attributes.id };
+        return {
+          name: attributes.name,
+          fn: attributes.fn,
+          id: attributes.id,
+          default: ('default' in attributes) ? attributes.default.split(';') : [] // Backwards compatability
+        };
       });
   }
 }

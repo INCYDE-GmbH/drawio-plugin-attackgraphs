@@ -87,6 +87,10 @@ export class DrawioPage {
     await this.page.click('text=Computed Attributes...');
   }
 
+  async selectFirstFunctionAsDefaultForVertexType(vertexType: string) {
+    await this.page.locator('input[name=' + vertexType + ']').first().click();
+  }
+
   async applyDialog() {
     const dialog = this.page.locator('.geDialog').last();
     await dialog.locator('text=Apply').last().click();

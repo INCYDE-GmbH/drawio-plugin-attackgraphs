@@ -94,10 +94,11 @@ test.describe('attributes and default attributes', () => {
     await drawio.openGlobalAggregationFunctionDialog();
 
     await page.locator('text=Add...').click();
-    await drawio.fillEditFunctionDialog('default', 'A');
+    await drawio.fillEditFunctionDialog('OR', aggFunc);
+    await drawio.selectFirstFunctionAsDefaultForVertexType('or');
 
     await page.locator('text=Add...').click();
-    await drawio.fillEditFunctionDialog('OR', aggFunc);
+    await drawio.fillEditFunctionDialog('default', 'A');
 
     await drawio.applyDialog();
 

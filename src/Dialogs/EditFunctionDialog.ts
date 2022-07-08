@@ -50,7 +50,8 @@ export class EditFunctionDialog extends SettingsDialog<AttackgraphFunction> {
         this.apply({
           name: nameInput.value || '',
           id: getUUID() || '',
-          fn: this.editor?.getValue() || ''
+          fn: this.editor?.getValue() || '',
+          default: []
         });
         this.closeDialog(ui);
       } else {

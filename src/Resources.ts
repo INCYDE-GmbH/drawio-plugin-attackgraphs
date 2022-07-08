@@ -17,6 +17,8 @@ export class Resources {
     mxResources.parse(`
 attackGraphs.activity=Attack Step
 attackGraphs.control=Security Control
+attackGraphs.orNode=OR
+attackGraphs.andNode=AND
 attackGraphs.addFurther=Add further
 attackGraphs.addIconLegend=Add icon legend
 attackGraphs.aggregationFunction=Aggregation Function
@@ -33,6 +35,7 @@ attackGraphs.consequence=Consequence
 attackGraphs.defaultAttributes=Default Attributes
 attackGraphs.defineAggregationFunction=Define Aggregation Function
 attackGraphs.defineComputedAttributesFunction=Define Computed Attributes Function
+attackGraphs.defaultFunction=Default Function
 attackGraphs.invalidAttributeName=Invalid attribute name
 attackGraphs.labelFunction=Label Function
 attackGraphs.noItems=No items
@@ -66,6 +69,8 @@ attackGraphs.documentation=Documentation...
     mxResources.parse(`
 attackGraphs.activity=Angriffsschritt
 attackGraphs.control=Kontrollmaßnahme
+attackGraphs.orNode=ODER
+attackGraphs.andNode=UND
 attackGraphs.addFurther=Weiteres hinzufügen
 attackGraphs.addIconLegend=Icon-Legende hinzufügen
 attackGraphs.aggregationFunction=Aggregierungsfunktion
@@ -80,6 +85,7 @@ attackGraphs.consequence=Auswirkung
 attackGraphs.defaultAttributes=Standardattribute
 attackGraphs.defineAggregationFunction=Aggregationsfunktion definieren
 attackGraphs.defineComputedAttributesFunction=Berechnetes Attribut definieren
+attackGraphs.defaultFunction=Standard Funktion
 attackGraphs.invalidAttributeName=Ungültiger Attributname
 attackGraphs.labelFunction=Berechnetes Attribut
 attackGraphs.noItems=Keine Einträge

@@ -36,38 +36,4 @@ test.describe('the sidebar', () => {
         const fill = await backgroundRect.getAttribute('fill');
         expect(fill).toEqual('#d7e3bf');
     });
-
-    test('sidebar contains an AND shape if aggregation function was defined', async ({ page, drawio }) => {
-        const templateCountBefore = await page.locator('.geSidebarContainer').locator('.geSidebar').first().locator('a').count();
-
-        // Click text=Attack Graphs
-        await page.click('text=Attack Graphs');
-
-        await page.click('text="Aggregation Functions..."');
-        await page.click('text=Add...');
-
-        await drawio.fillEditFunctionDialog('AND', 'AND');
-
-        await page.click('text=Apply');
-
-        const templateCountAfter = await page.locator('.geSidebarContainer').locator('.geSidebar').first().locator('a').count();
-        expect(templateCountAfter).toBeGreaterThan(templateCountBefore);
-    });
-
-    test('sidebar contains an OR shape if aggregation function was defined', async ({ page, drawio }) => {
-        const templateCountBefore = await page.locator('.geSidebarContainer').locator('.geSidebar').first().locator('a').count();
-
-        // Click text=Attack Graphs
-        await page.click('text=Attack Graphs');
-
-        await page.click('text="Aggregation Functions..."');
-        await page.click('text=Add...');
-
-        await drawio.fillEditFunctionDialog('OR', 'OR');
-
-        await page.click('text=Apply');
-
-        const templateCountAfter = await page.locator('.geSidebarContainer').locator('.geSidebar').first().locator('a').count();
-        expect(templateCountAfter).toBeGreaterThan(templateCountBefore);
-    });
 });
