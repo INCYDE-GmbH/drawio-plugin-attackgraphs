@@ -72,9 +72,9 @@ export class Sidebar {
 
     const attributes = this.getGlobalAttributes();
 
-    if (attributes !== null) {
+    if (defaultValues && attributes !== null) {
       for (const attribute of attributes) {
-        value.setAttribute(attribute['name'], (defaultValues) ? attribute['value'] : '');
+        value.setAttribute(attribute['name'], attribute['value']);
       }
     }
 

@@ -10,6 +10,12 @@ You can obtain the latest version of the plugin from here:
 
 Open draw.io Desktop and load the plugin file using the `Extras > Plugins...` dialog.
 
+**Attention!**
+Starting from v19.0.3, plugins in drawio-desktop are disabled (see <a href="https://github.com/INCYDE-GmbH/drawio-plugin-attackgraphs/issues/72">#72</a> and <a href="https://github.com/jgraph/drawio-desktop/releases/tag/v19.0.3">drawio-desktop Release Notes</a>).
+
+You can either use a version of drawio-desktop before v19.0.3 or start drawio-desktop from the command line including the parameter `--enable-plugins`.
+
+
 ### AttackGraph Diagram Template
 
 If you want to use the default functions that come shipped with this plugin, you can use the **Attack Graph Template** to create new files already containing the default functions. To do so, you will need to navigate to `File > New > From Template URL` and use one of the following URLs:

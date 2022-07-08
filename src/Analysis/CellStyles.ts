@@ -3,6 +3,7 @@ import { AttackGraphNodeShape } from '../AttackGraphNodeShape';
 
 export class CellStyles {
   cell: import('mxgraph').mxCell;
+  private selected = false;
 
   constructor(cell: import('mxgraph').mxCell) {
     this.cell = cell;
@@ -31,6 +32,9 @@ export class CellStyles {
     return 'shape' in styles && (styles['shape'] === AttackGraphNodeShape.ID || styles['shape'] === AttackGraphIconLegendShape.ID || styles['shape'] === 'or' || styles['shape'] === 'xor');
   }
 
+  setSelected(selected: boolean): void {
+    this.selected = selected;
+  }
 
   private encodeStyles(styles: { [key: string]: string }) {
     let style = '';
@@ -38,6 +42,12 @@ export class CellStyles {
       style += `${k}=${v};`;
     }
     return style;
+  }
+
+  renderHighlightedEdge(): void {
+    const styles = this.parseStyles();
+    styles['strokeWidth'] = '4';
+    this.cell.style = this.encodeStyles(styles);
   }
 
   renderFatEdge(): void {
@@ -55,7 +65,11 @@ export class CellStyles {
   updateEdgeStyle(): void {
     if ((this.cell.target !== null && this.cell.source !== null) &&
       (new CellStyles(this.cell.target).isAttackgraphCell() || new CellStyles(this.cell.source).isAttackgraphCell())) {
-      new CellStyles(this.cell).renderFatEdge();
+        if (this.selected) {
+          new CellStyles(this.cell).renderHighlightedEdge();
+        } else {
+          new CellStyles(this.cell).renderFatEdge();
+        }
     } else {
       new CellStyles(this.cell).resetEdge();
     }
@@ -71,7 +85,9 @@ export class CellStyles {
 
   updateConnectedEdgesStyle() {
     for (const edge of this.cell.edges) {
-      new CellStyles(edge).updateEdgeStyle();
+      const style = new CellStyles(edge);
+      style.setSelected(this.selected);
+      style.updateEdgeStyle();
     }
   }
 }
