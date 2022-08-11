@@ -134,8 +134,8 @@ Draw.loadPlugin(ui => {
           }
 
         }
-        ui.editor.graph.refresh();
       }
+      ui.editor.graph.refresh();
     })();
   });
 
