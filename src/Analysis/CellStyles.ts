@@ -111,8 +111,8 @@ export class CellStyles {
 
   updateConnectedEdgesStyle(selected: boolean, shallMark: boolean) {
     if (this.cell.edges) {
-      const values = (shallMark) ? AttributeRenderer.nodeAttributes(this.cell).getAggregatedCellValues() : null;
-      const markings = (values && '_marking' in values) ? values['_marking'].split(';') : null;
+      const values = AttributeRenderer.nodeAttributes(this.cell).getAggregatedCellValues();
+      const markings = ('_marking' in values) ? values['_marking'].split(';') : null;
 
       for (const edge of this.cell.edges) {
         const style = new CellStyles(edge);
@@ -123,9 +123,11 @@ export class CellStyles {
             && edge.source
             && edge.target.id !== this.cell.id
             && edge.source.id === this.cell.id) {
-          const mark = (shallMark && markings && markings.includes(edge.target.id)) as boolean;
-          style.setMarked(mark);
-          new CellStyles(edge.target).updateConnectedEdgesStyle(false, mark);
+          const mark = (markings && markings.includes(edge.target.id)) as boolean;
+          if (mark) {
+            style.setMarked(shallMark);
+            new CellStyles(edge.target).updateConnectedEdgesStyle(false, shallMark);
+          }
         }
 
         style.updateEdgeStyle();
