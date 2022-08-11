@@ -19,26 +19,29 @@ The aggregation function dialog allows to specify a custom aggregation function 
 
 ### Relevant data types
 ```ts
-type ChildCellDataCollection = {
-  globalAttributes: GlobalAttributeDict,
-  childAttributes: ChildCellData[],
-  localAttributes: CellAttributes,
-}
+type KeyValuePairs = { [k: string]: string }
+type GlobalAttributeDict = { [name: string]: GlobalAttribute}
 
 type GlobalAttribute = {
   name: string,
   value: string,
   min: string,
-  max: string
-};
+  max: string,
+}
 
 type ChildCellData = {
-  edgeWeight: number,
-  attributes: CellChildAttributes,
+  edgeWeight: string | null,
+  attributes: KeyValuePairs,
   computedAttribute: string,
-};
+  id: string
+}
 
-type CellAttributes = { [k: string]: string };
+type ChildCellDataCollection = {
+  globalAttributes: GlobalAttributeDict,
+  childAttributes: ChildCellData[],
+  localAttributes: KeyValuePairs,
+  id: string
+}
 ```
 ### Example of an aggregation function accessing a child's attribute's value
 ```js
