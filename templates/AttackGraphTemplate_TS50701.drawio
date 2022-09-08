@@ -87,7 +87,7 @@
             <mxGeometry relative="1" as="geometry" />
           </mxCell>
         </object>
-        <object label="Sup-Step 2" id="746xIQmpy0CREaIetn3r-9">
+        <object label="Sub-Step 2" id="746xIQmpy0CREaIetn3r-9">
           <ag_aggregation_function_reference ag_aggregation_function_reference="6b1d22791hih8" />
           <ag_computed_attributes_function_reference ag_computed_attributes_function_reference="dbg60ff69g9a" />
           <ag_attributes _likelihood="1" _impact="1" />
