@@ -83,7 +83,8 @@ export const installVertexHandler = (ui: Draw.UI, worker: AsyncWorker): void => 
       const cell = this.state.cell;
       if (cell.edges) {
         const style = new CellStyles(cell);
-        style.updateConnectedEdgesStyle(true, true);
+        style.setSelected(true);
+        style.updateConnectedEdgesStyle();
         ui.editor.graph.refresh();
       }
 
@@ -138,7 +139,8 @@ export const installVertexHandler = (ui: Draw.UI, worker: AsyncWorker): void => 
       const cell = this.state.cell;
       if (cell.edges) {
         const style = new CellStyles(cell);
-        style.updateConnectedEdgesStyle(false, false);
+        style.setSelected(false);
+        style.updateConnectedEdgesStyle();
         ui.editor.graph.refresh();
       }
 

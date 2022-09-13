@@ -1,11 +1,9 @@
 import { AttackGraphIconLegendShape } from '../AttackGraphIconLegendShape';
 import { AttackGraphNodeShape } from '../AttackGraphNodeShape';
-import { AttributeRenderer } from '../AttributeRenderer';
 
 export class CellStyles {
   cell: import('mxgraph').mxCell;
   private selected = false;
-  private marked = false;
 
   constructor(cell: import('mxgraph').mxCell) {
     this.cell = cell;
@@ -38,28 +36,12 @@ export class CellStyles {
     this.selected = selected;
   }
 
-  setMarked(marked: boolean): void {
-    this.marked = marked;
-  }
-
   private encodeStyles(styles: { [key: string]: string }) {
     let style = '';
     for (const [k, v] of Object.entries(styles)) {
       style += `${k}=${v};`;
     }
     return style;
-  }
-
-  renderMarkedEdge(): void {
-    const styles = this.parseStyles();
-    styles['strokeColor'] = '#EA6B66';
-    this.cell.style = this.encodeStyles(styles);
-  }
-
-  resetMarkedEdge(): void {
-    const styles = this.parseStyles();
-    delete styles['strokeColor'];
-    this.cell.style = this.encodeStyles(styles);
   }
 
   renderHighlightedEdge(): void {
@@ -77,27 +59,19 @@ export class CellStyles {
   resetEdge(): void {
     const styles = this.parseStyles();
     styles['strokeWidth'] = '1';
-    this.resetMarkedEdge();
     this.cell.style = this.encodeStyles(styles);
   }
 
   updateEdgeStyle(): void {
-    const style = new CellStyles(this.cell);
-
     if ((this.cell.target !== null && this.cell.source !== null) &&
       (new CellStyles(this.cell.target).isAttackgraphCell() || new CellStyles(this.cell.source).isAttackgraphCell())) {
-        if (this.marked) {
-          style.renderHighlightedEdge();
-          style.renderMarkedEdge();
-        } else if (this.selected) {
-          style.renderHighlightedEdge();
-          style.resetMarkedEdge();
+        if (this.selected) {
+          new CellStyles(this.cell).renderHighlightedEdge();
         } else {
-          style.renderFatEdge();
-          style.resetMarkedEdge();
+          new CellStyles(this.cell).renderFatEdge();
         }
     } else {
-      style.resetEdge();
+      new CellStyles(this.cell).resetEdge();
     }
   }
 
@@ -109,29 +83,11 @@ export class CellStyles {
     }
   }
 
-  updateConnectedEdgesStyle(selected: boolean, shallMark: boolean) {
-    if (this.cell.edges) {
-      const values = AttributeRenderer.nodeAttributes(this.cell).getAggregatedCellValues();
-      const markings = ('_marking' in values) ? values['_marking'].split(';') : null;
-
-      for (const edge of this.cell.edges) {
-        const style = new CellStyles(edge);
-        style.setSelected(selected);
-
-        // Mark edge?
-        if (edge.target
-            && edge.source
-            && edge.target.id !== this.cell.id
-            && edge.source.id === this.cell.id) {
-          const mark = (markings && markings.includes(edge.target.id)) as boolean;
-          if (mark) {
-            style.setMarked(shallMark);
-            new CellStyles(edge.target).updateConnectedEdgesStyle(false, shallMark);
-          }
-        }
-
-        style.updateEdgeStyle();
-      }
+  updateConnectedEdgesStyle() {
+    for (const edge of this.cell.edges) {
+      const style = new CellStyles(edge);
+      style.setSelected(this.selected);
+      style.updateEdgeStyle();
     }
   }
 }

@@ -8,7 +8,6 @@ export type ChildCellDataCollection = {
   globalAttributes: GlobalAttributeDict,
   childAttributes: ChildCellData[],
   localAttributes: KeyValuePairs,
-  id: string
 };
 
 export type GlobalAttributeDict = { [name: string]: {name: string, value: string, min: string, max: string} }
@@ -16,7 +15,6 @@ export type ChildCellData = {
   edgeWeight: string | null,
   attributes: KeyValuePairs,
   computedAttribute: string,
-  id: string
 };
 
 export type GlobalAttribute = {

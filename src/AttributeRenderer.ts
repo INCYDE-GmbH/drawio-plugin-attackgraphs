@@ -68,8 +68,7 @@ export class AttributeRenderer {
     const aggregatedValues = await this.aggregateAttributes({
       globalAttributes: globalDefaultAttributesDict,
       childAttributes: childValues,
-      localAttributes: localAttributes,
-      id: cell.getCellId()
+      localAttributes
     }, aggregationFunction, worker);
     cell.setAggregatedCellValues(aggregatedValues);
 
@@ -117,7 +116,7 @@ export class AttributeRenderer {
       const cellValues = target.getCellValues();
       const aggregatedValues = target.getAggregatedCellValues();
       const computedAttribute = Object.values(target.getComputedAttributesForCell() || {})[0];
-      return { edgeWeight, attributes: { ...cellValues, ...aggregatedValues }, computedAttribute: computedAttribute, id: target.getCellId() };
+      return { edgeWeight, attributes: { ...cellValues, ...aggregatedValues }, computedAttribute: computedAttribute };
     }) || [];
   }
 
