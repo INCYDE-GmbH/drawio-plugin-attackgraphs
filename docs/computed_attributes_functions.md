@@ -16,11 +16,7 @@ The computed attributes function dialog allows to specify a custom computed attr
 
 ### Relevant data types
 ```ts
-type CellDataCollection = {
-  globalAttributes: GlobalAttributeDict,
-  cellAttributes: KeyValuePairs,
-}
-
+type KeyValuePairs = { [k: string]: string }
 type GlobalAttributeDict = { [name: string]: GlobalAttribute}
 
 type GlobalAttribute = {
@@ -28,9 +24,12 @@ type GlobalAttribute = {
   value: string,
   min: string,
   max: string,
- }
+}
 
-type KeyValuePairs = { [k: string]: string };
+type CellDataCollection = {
+  globalAttributes: GlobalAttributeDict,
+  cellAttributes: KeyValuePairs,
+}
 ```
 
 ### Example of a computed attributes function accessing the value of a cell attribute
