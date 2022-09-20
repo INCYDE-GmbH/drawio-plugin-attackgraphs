@@ -93,6 +93,7 @@ Draw.loadPlugin(ui => {
   ui.editor.graph.model.addListener(mxEvent.CHANGE, (sender, evt: import('mxgraph').mxEventObject) => {
     const edit = evt.getProperty('edit') as import('mxgraph').mxUndoableEdit;
     void (async () => {
+      let refresh = false;
       for (const change of edit.changes) {
         if (change instanceof mxValueChange) {
           // value of an edge was changed (edge weight)
@@ -123,19 +124,20 @@ Draw.loadPlugin(ui => {
             }
             await AttributeRenderer.refreshCellValuesUpwards(change.cell, ui, worker);
           }
-          // is an edge and changed connection
-
-        } else if (change instanceof mxTerminalChange) {
+          refresh = true;
+        } else if (change instanceof mxTerminalChange) { // is an edge and changed connection
           new CellStyles(change.cell).updateEdgeStyle();
           if (change.terminal !== null) {
             await AttributeRenderer.refreshCellValuesUpwards(change.terminal, ui, worker);
+            refresh = true;
           } else {
-            void AttributeRenderer.recalculateAllCells(ui, worker);
+            void AttributeRenderer.recalculateAllCells(ui, worker); // Already refreshes graph
           }
-
         }
       }
-      ui.editor.graph.refresh();
+      if (refresh) {
+        ui.editor.graph.refresh();
+      }
     })();
   });
 
@@ -223,6 +225,45 @@ Draw.loadPlugin(ui => {
     }
     return graphGetTooltipForCell.apply(this, [cell]);
   }
+
+  /*
+   * Highlight and mark edges connected to the selected node
+   */
+  let activeCell: import('mxgraph').mxCell | undefined = undefined;
+  let cellMoved = false;
+
+  // Fired before mxEvent.CLICK by draw.io
+  ui.editor.graph.addListener(mxEvent.CELLS_MOVED, (_, evt: import('mxgraph').mxEventObject) => {
+    const cells = evt.getProperty('cells') as import('mxgraph').mxCell[];
+
+    if (cells.length === 1) {
+      CellStyles.updateConnectedEdgesStyle(cells[0], true, true);
+      cellMoved = true;
+    }
+  });
+  ui.editor.graph.addListener(mxEvent.CLICK, (_, evt: import('mxgraph').mxEventObject) => {
+    const cell = evt.getProperty('cell') as import('mxgraph').mxCell | null;
+    let refresh = false;
+
+    if (activeCell && !cellMoved) {
+      CellStyles.updateConnectedEdgesStyle(activeCell, false, false);
+      activeCell = undefined;
+      refresh = true;
+    }
+
+    if (cell && !cellMoved) {
+      CellStyles.updateConnectedEdgesStyle(cell, true, true);
+      activeCell = cell;
+      refresh = true;
+    }
+
+    if (refresh || cellMoved) {
+      ui.editor.graph.refresh();
+    }
+
+    cellMoved = false;
+  });
+
 
   installVertexHandler(ui, worker);
 });
