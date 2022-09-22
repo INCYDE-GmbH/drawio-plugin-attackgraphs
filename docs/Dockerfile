@@ -1,4 +1,4 @@
-FROM jgraph/drawio:18.1.3
+FROM jgraph/drawio:20.3.5
 
 # Install plugin
 COPY dist/attackgraphs.js $CATALINA_HOME/webapps/draw/plugins/attackgraphs.js
@@ -16,6 +16,9 @@ RUN cp $CATALINA_HOME/webapps/draw/templates/other/decision_tree.png $CATALINA_H
 
 ENV DRAWIO_BASE_URL=https://incyde-gmbh.github.io/drawio-plugin-attackgraphs/app
 ENV DRAWIO_CONFIG="{\"plugins\": [\"${DRAWIO_BASE_URL}/plugins/attackgraphs.js\"]}"
+
+# Activate custom plugins (TODO: Replace if base image has an option to activate custom plugins)
+RUN sed -i '38a\echo "window.ALLOW_CUSTOM_PLUGINS = true;" >> \$CATALINA_HOME/webapps/draw/js/PreConfig.js' /docker-entrypoint.sh
 
 # Configure draw.io
 RUN /docker-entrypoint.sh
