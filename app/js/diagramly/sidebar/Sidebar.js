@@ -39,7 +39,7 @@
 
 	Sidebar.prototype.gcp = ['Cards', 'Big Data', 'Compute', 'Developer Tools', 'Extras', 'Identity and Security', 'Machine Learning', 'Management Tools', 'Networking', 'Storage Databases'];
 	
-	Sidebar.prototype.gcp2 = ['Paths', 'Zones', 'Service Cards', 'Compute', 'API Management', 'Security', 'Data Analytics', 'Data Transfer', 'Cloud AI', 'Internet of Things', 'Databases', 'Storage', 'Management Tools', 'Networking', 'Developer Tools', 'Expanded Product Cards', 'User Device Cards', 'Product Cards', 'General Icons', 'Icons AI and Machine Learning', 'Icons Compute', 'Icons Data Analytics', 'Icons Management Tools', 'Icons Networking', 'Icons Developer Tools', 'Icons API Management', 'Icons Internet of Things', 'Icons Databases', 'Icons Storage', 'Icons Security', 'Icons Migration', 'Icons Hybrid and Multi Cloud'];
+	Sidebar.prototype.gcp2 = ['Paths', 'Zones', 'Service Cards', 'Compute', 'API Management', 'Security', 'Data Analytics', 'Data Transfer', 'Cloud AI', 'Internet of Things', 'Databases', 'Storage', 'Management Tools', 'Networking', 'Developer Tools', 'Expanded Product Cards', 'User Device Cards', 'Product Cards', 'General Icons', 'Icons AI and Machine Learning', 'Icons Compute', 'Icons Data Analytics', 'Icons Operations', 'Icons Networking', 'Icons CI CD', 'Icons API Management', 'Icons Internet of Things', 'Icons Databases', 'Icons Storage', 'Icons Security', 'Icons Migration', 'Icons Hybrid and Multi Cloud', 'Icons Open Source Icons'];
 	
 	Sidebar.prototype.gcpicons = ['AI and Machine Learning', 'API Management', 'Compute', 'Data Analytics', 'Databases', 'Developer Tools', 'Expanded Product Card Icons', 'Generic', 'Hybrid and Multi Cloud', 'Security', 'Internet of Things', 'Management Tools', 'Migration', 'Networking', 'Open Source Icons', 'Storage'];
 	
@@ -76,7 +76,7 @@
 							  'Database', 'Desktop App Streaming', 'Developer Tools', 'Game Development', 'Internet of Things', 'IoT Things', 'IoT Resources', 'Machine Learning', 'Management Tools',
 							  'Media Services', 'Migration', 'Mobile Services', 'Network Content Delivery', 'Security Identity Compliance', 'Storage'];
 	
-	Sidebar.prototype.aws4 = ['Arrows', 'General Resources', 'Illustrations', 'Groups', 'Analytics', 'Application Integration', 'AR VR', 'Cost Management', 'Blockchain', 
+	Sidebar.prototype.aws4 = ['Arrows', 'General Resources', 'Illustrations', 'Groups', 'Analytics', 'Application Integration', 'AR VR', 'Cloud Financial Management', 'Blockchain', 
 							  'Business Applications', 'Compute', 'Containers', 'Customer Enablement', 'Customer Engagement',
 							  'Database', 'Developer Tools', 'End User Computing', 'Front End Web Mobile', 'Game Tech', 'Internet of Things', 'IoT Things', 'IoT Resources', 'Machine Learning', 'Management Governance',
 							  'Media Services', 'Migration Transfer', 'Network Content Delivery', 'Quantum Technologies', 'Robotics', 'Satellite', 'Serverless', 'Security Identity Compliance', 'Storage'];
@@ -953,7 +953,7 @@
 									if (error != null)
 									{
 										content.style.display = 'block';
-										title.innerHTML = '';
+										title.innerText = '';
 										mxUtils.write(title, this.editorUi.getResource(lib.title));
 										showError(error, content);
 									}
@@ -961,13 +961,13 @@
 									{
 										this.editorUi.addLibraryEntries(data, content);
 										content.style.display = 'block';
-										title.innerHTML = '';
+										title.innerText = '';
 										mxUtils.write(title, this.editorUi.getResource(lib.title));
 									}
 									else
 									{
 										content.style.display = 'none';
-										title.innerHTML = '';
+										title.innerText = '';
 										mxUtils.write(title, mxResources.get('loading') + '...');
 									}
 								}
@@ -987,7 +987,7 @@
 									});
 
 									content.style.display = 'none';
-									title.innerHTML = '';
+									title.innerText = '';
 									mxUtils.write(title, mxResources.get('loading') + '...');
 									
 									var url = lib.url;
@@ -1000,7 +1000,7 @@
 									this.editorUi.editor.loadUrl(url, mxUtils.bind(this, function(data)
 									{
 										content.style.display = 'block';
-										title.innerHTML = '';
+										title.innerText = '';
 										mxUtils.write(title, this.editorUi.getResource(lib.title));
 
 										try
@@ -1417,7 +1417,41 @@
 		
 		sidebarSearchEntries.apply(this, arguments);
 	};
-
+	
+	// Fixes sidebar tooltips (previews)
+	var sidebarGetTooltipOffset = Sidebar.prototype.getTooltipOffset;
+	
+	Sidebar.prototype.getTooltipOffset = function(elt, bounds)
+	{
+		if (Editor.currentTheme == 'simple' || Editor.currentTheme == 'min')
+		{
+			if (this.editorUi.sidebarWindow == null ||
+				mxUtils.isAncestorNode(this.editorUi.sketchPickerMenuElt, elt))
+			{
+				var off = mxUtils.getOffset(this.editorUi.sketchPickerMenuElt);
+				
+				off.x += this.editorUi.sketchPickerMenuElt.offsetWidth + 4;
+				off.y += elt.offsetTop - bounds.height / 2 + 16;
+				
+				return off;
+			}
+			else
+			{
+				var result = sidebarGetTooltipOffset.apply(this, arguments);
+				var off = mxUtils.getOffset(this.editorUi.sidebarWindow.window.div);
+				
+				result.x += off.x - 16;
+				result.y += off.y;
+				
+				return result;
+			}
+		}
+		else
+		{
+			return sidebarGetTooltipOffset.apply(this, arguments);
+		}
+	};
+    
 	/**
 	 * Adds a click handler for inserting the cell as target for dangling edge.
 	 */

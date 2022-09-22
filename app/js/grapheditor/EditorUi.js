@@ -92,7 +92,7 @@ EditorUi = function(editor, container, lightbox)
 		var styles = ['rounded', 'shadow', 'glass', 'dashed', 'dashPattern', 'labelBackgroundColor',
 			'labelBorderColor', 'comic', 'sketch', 'fillWeight', 'hachureGap', 'hachureAngle', 'jiggle',
 			'disableMultiStroke', 'disableMultiStrokeFill', 'fillStyle', 'curveFitting',
-			'simplification', 'sketchStyle', 'pointerEvents'];
+			'simplification', 'sketchStyle', 'pointerEvents', 'strokeColor', 'strokeWidth'];
 		var connectStyles = ['shape', 'edgeStyle', 'curved', 'rounded', 'elbow', 'jumpStyle', 'jumpSize',
 			'comic', 'sketch', 'fillWeight', 'hachureGap', 'hachureAngle', 'jiggle',
 			'disableMultiStroke', 'disableMultiStrokeFill', 'fillStyle', 'curveFitting',
@@ -100,12 +100,23 @@ EditorUi = function(editor, container, lightbox)
 		// Styles to be ignored if applyAll is false
 		var ignoredEdgeStyles = ['curved', 'sourcePerimeterSpacing', 'targetPerimeterSpacing',
 			'startArrow', 'startFill', 'startSize', 'endArrow', 'endFill', 'endSize'];
+		var vertexStyleIgnored = false;
+		var edgeStyleIgnored = false;
 		
 		// Note: Everything that is not in styles is ignored (styles is augmented below)
 		this.setDefaultStyle = function(cell)
 		{
 			try
 			{
+				if (graph.getModel().isEdge(cell))
+				{
+					edgeStyleIgnored = false;
+				}
+				else
+				{
+					vertexStyleIgnored = false;
+				}
+
 				var style = graph.getCellStyle(cell, false);
 				var values = [];
 				var keys = [];
@@ -129,6 +140,17 @@ EditorUi = function(editor, container, lightbox)
 				this.fireEvent(new mxEventObject('styleChanged',
 					'keys', keys, 'values', values,
 					'cells', [cell]));
+				
+				// Blocks update of default style with style changes
+				// once the it was set using this function
+				if (graph.getModel().isEdge(cell))
+				{
+					edgeStyleIgnored = true;
+				}
+				else
+				{
+					vertexStyleIgnored = true;
+				}
 			}
 			catch (e)
 			{
@@ -140,6 +162,8 @@ EditorUi = function(editor, container, lightbox)
 		{
 			graph.currentEdgeStyle = mxUtils.clone(graph.defaultEdgeStyle);
 			graph.currentVertexStyle = mxUtils.clone(graph.defaultVertexStyle);
+			edgeStyleIgnored = false;
+			vertexStyleIgnored = false;
 			
 			// Updates UI
 			this.fireEvent(new mxEventObject('styleChanged', 'keys', [], 'values', [], 'cells', []));
@@ -163,12 +187,11 @@ EditorUi = function(editor, container, lightbox)
 		
 		// Keys that are ignored together (if one appears all are ignored)
 		var keyGroups = [['startArrow', 'startFill', 'endArrow', 'endFill'],
-						 ['startSize', 'endSize'],
-						 ['sourcePerimeterSpacing', 'targetPerimeterSpacing'],
-		                 ['strokeColor', 'strokeWidth'],
-		                 ['fillColor', 'gradientColor', 'gradientDirection'],
-		                 ['opacity'],
-		                 ['html']];
+						['startSize', 'endSize'],
+						['sourcePerimeterSpacing', 'targetPerimeterSpacing'],
+						['fillColor', 'gradientColor', 'gradientDirection'],
+						['opacity'],
+						['html']];
 		
 		// Adds all keys used above to the styles array
 		for (var i = 0; i < keyGroups.length; i++)
@@ -732,6 +755,9 @@ EditorUi = function(editor, container, lightbox)
 				vertex = true;
 				edge = true;
 			}
+
+			vertex = vertex && !vertexStyleIgnored;
+			edge = edge && !edgeStyleIgnored;
 			
 			var keys = evt.getProperty('keys');
 			var values = evt.getProperty('values');
@@ -739,9 +765,9 @@ EditorUi = function(editor, container, lightbox)
 			for (var i = 0; i < keys.length; i++)
 			{
 				var common = mxUtils.indexOf(valueStyles, keys[i]) >= 0;
-				
+
 				// Ignores transparent stroke colors
-				if (keys[i] != 'strokeColor' || values[i] != null && values[i] != 'none')
+				if (keys[i] != 'strokeColor' || (values[i] != null && values[i] != 'none'))
 				{
 					// Special case: Edge style and shape
 					if (mxUtils.indexOf(connectStyles, keys[i]) >= 0)
@@ -859,26 +885,6 @@ EditorUi = function(editor, container, lightbox)
 					{
 						edgeShapeDiv.className = 'geSprite geSprite-connection';
 					}
-				}
-				
-				// Updates icon for optinal line start shape
-				if (this.toolbar.lineStartMenu != null)
-				{
-					var lineStartDiv = this.toolbar.lineStartMenu.getElementsByTagName('div')[0];
-					
-					lineStartDiv.className = this.getCssClassForMarker('start',
-							graph.currentEdgeStyle['shape'], graph.currentEdgeStyle[mxConstants.STYLE_STARTARROW],
-							mxUtils.getValue(graph.currentEdgeStyle, 'startFill', '1'));
-				}
-	
-				// Updates icon for optinal line end shape
-				if (this.toolbar.lineEndMenu != null)
-				{
-					var lineEndDiv = this.toolbar.lineEndMenu.getElementsByTagName('div')[0];
-					
-					lineEndDiv.className = this.getCssClassForMarker('end',
-							graph.currentEdgeStyle['shape'], graph.currentEdgeStyle[mxConstants.STYLE_ENDARROW],
-							mxUtils.getValue(graph.currentEdgeStyle, 'endFill', '1'));
 				}
 			}
 		}));
@@ -2006,108 +2012,170 @@ EditorUi.prototype.isImmediateEditingEvent = function(evt)
 };
 
 /**
- * Private helper method.
+ * Updates the CSS for the given element to match the selection.
  */
-EditorUi.prototype.getCssClassForMarker = function(prefix, shape, marker, fill)
+EditorUi.prototype.updateCssForMarker = function(markerDiv, prefix, shape, marker, fill)
 {
-	var result = '';
+	markerDiv.style.verticalAlign = 'top';
+	markerDiv.style.height = '21px';
+	markerDiv.style.width = '21px';
+	markerDiv.innerText = '';
 
 	if (shape == 'flexArrow')
 	{
-		result = (marker != null && marker != mxConstants.NONE) ?
+		markerDiv.className = (marker != null && marker != mxConstants.NONE) ?
 			'geSprite geSprite-' + prefix + 'blocktrans' : 'geSprite geSprite-noarrow';
 	}
 	else
 	{
-		// SVG marker sprites
-		if (marker == 'box' || marker == 'halfCircle')
+		var src = this.getImageForMarker(marker, fill);
+
+		if (src != null)
 		{
-			result = 'geSprite geSvgSprite geSprite-' + marker + ((prefix == 'end') ? ' geFlipSprite' : '');
-		}
-		else if (marker == mxConstants.ARROW_CLASSIC)
-		{
-			result = (fill == '1') ? 'geSprite geSprite-' + prefix + 'classic' : 'geSprite geSprite-' + prefix + 'classictrans';
-		}
-		else if (marker == mxConstants.ARROW_CLASSIC_THIN)
-		{
-			result = (fill == '1') ? 'geSprite geSprite-' + prefix + 'classicthin' : 'geSprite geSprite-' + prefix + 'classicthintrans';
-		}
-		else if (marker == mxConstants.ARROW_OPEN)
-		{
-			result = 'geSprite geSprite-' + prefix + 'open';
-		}
-		else if (marker == mxConstants.ARROW_OPEN_THIN)
-		{
-			result = 'geSprite geSprite-' + prefix + 'openthin';
-		}
-		else if (marker == mxConstants.ARROW_BLOCK)
-		{
-			result = (fill == '1') ? 'geSprite geSprite-' + prefix + 'block' : 'geSprite geSprite-' + prefix + 'blocktrans';
-		}
-		else if (marker == mxConstants.ARROW_BLOCK_THIN)
-		{
-			result = (fill == '1') ? 'geSprite geSprite-' + prefix + 'blockthin' : 'geSprite geSprite-' + prefix + 'blockthintrans';
-		}
-		else if (marker == mxConstants.ARROW_OVAL)
-		{
-			result = (fill == '1') ? 'geSprite geSprite-' + prefix + 'oval' : 'geSprite geSprite-' + prefix + 'ovaltrans';
-		}
-		else if (marker == mxConstants.ARROW_DIAMOND)
-		{
-			result = (fill == '1') ? 'geSprite geSprite-' + prefix + 'diamond' : 'geSprite geSprite-' + prefix + 'diamondtrans';
-		}
-		else if (marker == mxConstants.ARROW_DIAMOND_THIN)
-		{
-			result = (fill == '1') ? 'geSprite geSprite-' + prefix + 'thindiamond' : 'geSprite geSprite-' + prefix + 'thindiamondtrans';
-		}
-		else if (marker == 'openAsync')
-		{
-			result = 'geSprite geSprite-' + prefix + 'openasync';
-		}
-		else if (marker == 'dash')
-		{
-			result = 'geSprite geSprite-' + prefix + 'dash';
-		}
-		else if (marker == 'cross')
-		{
-			result = 'geSprite geSprite-' + prefix + 'cross';
-		}
-		else if (marker == 'async')
-		{
-			result = (fill == '1') ? 'geSprite geSprite-' + prefix + 'async' : 'geSprite geSprite-' + prefix + 'asynctrans';
-		}
-		else if (marker == 'circle' || marker == 'circlePlus')
-		{
-			result = (fill == '1' || marker == 'circle') ? 'geSprite geSprite-' + prefix + 'circle' : 'geSprite geSprite-' + prefix + 'circleplus';
-		}
-		else if (marker == 'ERone')
-		{
-			result = 'geSprite geSprite-' + prefix + 'erone';
-		}
-		else if (marker == 'ERmandOne')
-		{
-			result = 'geSprite geSprite-' + prefix + 'eronetoone';
-		}
-		else if (marker == 'ERmany')
-		{
-			result = 'geSprite geSprite-' + prefix + 'ermany';
-		}
-		else if (marker == 'ERoneToMany')
-		{
-			result = 'geSprite geSprite-' + prefix + 'eronetomany';
-		}
-		else if (marker == 'ERzeroToOne')
-		{
-			result = 'geSprite geSprite-' + prefix + 'eroneopt';
-		}
-		else if (marker == 'ERzeroToMany')
-		{
-			result = 'geSprite geSprite-' + prefix + 'ermanyopt';
+			var img = document.createElement('img');
+			img.className = 'geAdaptiveAsset';
+			img.style.position = 'absolute';
+			img.style.marginTop = '0.5px';
+			img.setAttribute('src', src);
+			markerDiv.className = '';
+
+			if (prefix == 'end')
+			{
+				mxUtils.setPrefixedStyle(img.style, 'transform', 'scaleX(-1)');
+			}
+
+			markerDiv.appendChild(img);
 		}
 		else
 		{
-			result = 'geSprite geSprite-noarrow';
+			markerDiv.className = 'geSprite geSprite-noarrow';
+			markerDiv.innerHTML = mxUtils.htmlEntities(mxResources.get('none'));
+			markerDiv.style.backgroundImage = 'none';
+			markerDiv.style.verticalAlign = 'top';
+			markerDiv.style.marginTop = '4px';
+			markerDiv.style.fontSize = '10px';
+			markerDiv.style.filter = 'none';
+			markerDiv.style.color = this.defaultStrokeColor;
+			markerDiv.nextSibling.style.marginTop = '0px';
 		}
+	}
+};
+
+/**
+ * Returns true if the given event should start editing. This implementation returns true.
+ */
+EditorUi.prototype.getImageForMarker = function(marker, fill)
+{
+	var result = null;
+
+	if (marker == mxConstants.ARROW_CLASSIC)
+	{
+		result = (fill != '1') ? Format.classicMarkerImage.src :
+			Format.classicFilledMarkerImage.src
+	}
+	else if (marker == mxConstants.ARROW_CLASSIC_THIN)
+	{
+		result = (fill != '1') ? Format.classicThinMarkerImage.src :
+			Format.openThinFilledMarkerImage.src;
+	}
+	else if (marker == mxConstants.ARROW_OPEN)
+	{
+		result = Format.openFilledMarkerImage.src;
+	}
+	else if (marker == mxConstants.ARROW_OPEN_THIN)
+	{
+		result = Format.openThinFilledMarkerImage.src;
+	}
+	else if (marker == mxConstants.ARROW_BLOCK)
+	{
+		result = (fill != '1') ? Format.blockMarkerImage.src :
+			Format.blockFilledMarkerImage.src;
+	}
+	else if (marker == mxConstants.ARROW_BLOCK_THIN)
+	{
+		result = (fill != '1') ? Format.blockThinMarkerImage.src :
+			Format.blockThinFilledMarkerImage.src;
+	}
+	else if (marker == mxConstants.ARROW_OVAL)
+	{
+		result = (fill != '1') ? Format.ovalMarkerImage.src :
+			Format.ovalFilledMarkerImage.src;
+	}
+	else if (marker == mxConstants.ARROW_DIAMOND)
+	{
+		result = (fill != '1') ? Format.diamondMarkerImage.src :
+			Format.diamondFilledMarkerImage.src;
+	}
+	else if (marker == mxConstants.ARROW_DIAMOND_THIN)
+	{
+		result = (fill != '1') ? Format.diamondThinMarkerImage.src :
+			Format.diamondThinFilledMarkerImage.src;
+	}
+	else if (marker == 'doubleBlock')
+	{
+		result = (fill != '1') ? Format.doubleBlockMarkerImage.src :
+			Format.doubleBlockFilledMarkerImage.src;
+	}
+	else if (marker == 'box')
+	{
+		result = Format.boxMarkerImage.src;
+	}
+	else if (marker == 'halfCircle')
+	{
+		result = Format.halfCircleMarkerImage.src;
+	}
+	else if (marker == 'openAsync')
+	{
+		result = Format.openAsyncFilledMarkerImage.src;
+	}
+	else if (marker == 'async')
+	{
+		result = (fill != '1') ? Format.asyncMarkerImage.src :
+			Format.asyncFilledMarkerImage.src;
+	}
+	else if (marker == 'dash')
+	{
+		result = Format.dashMarkerImage.src;
+	}
+	else if (marker == 'baseDash')
+	{
+		result = Format.baseDashMarkerImage.src;
+	}
+	else if (marker == 'cross')
+	{
+		result = Format.crossMarkerImage.src;
+	}
+	else if (marker == 'circle')
+	{
+		result = Format.circleMarkerImage.src;
+	}
+	else if (marker == 'circlePlus')
+	{
+		result = Format.circlePlusMarkerImage.src;
+	}
+	else if (marker == 'ERone')
+	{
+		result = Format.EROneMarkerImage.src;
+	}
+	else if (marker == 'ERmandOne')
+	{
+		result = Format.ERmandOneMarkerImage.src;
+	}
+	else if (marker == 'ERmany')
+	{
+		result = Format.ERmanyMarkerImage.src;
+	}
+	else if (marker == 'ERoneToMany')
+	{
+		result = Format.ERoneToManyMarkerImage.src;
+	}
+	else if (marker == 'ERzeroToOne')
+	{
+		result = Format.ERzeroToOneMarkerImage.src;
+	}
+	else if (marker == 'ERzeroToMany')
+	{
+		result = Format.ERzeroToManyMarkerImage.src;
 	}
 
 	return result;
@@ -2482,11 +2550,16 @@ EditorUi.prototype.initCanvas = function()
 			
 			if (toolbarConfig.backBtn != null)
 			{
-				addButton(mxUtils.bind(this, function(evt)
+				var backUrl = Graph.sanitizeLink(toolbarConfig.backBtn.url);
+
+				if (backUrl != null)
 				{
-					window.location.href = toolbarConfig.backBtn.url;
-					mxEvent.consume(evt);
-				}), Editor.backImage, mxResources.get('back', null, 'Back'));
+					addButton(mxUtils.bind(this, function(evt)
+					{
+						window.location.href = backUrl;
+						mxEvent.consume(evt);
+					}), Editor.backImage, mxResources.get('back', null, 'Back'));
+				}
 			}
 			
 			if (this.isPagesEnabled())
@@ -2526,7 +2599,7 @@ EditorUi.prototype.initCanvas = function()
 				{
 					if (this.pages != null && this.pages.length > 1 && this.currentPage != null)
 					{
-						pageInfo.innerHTML = '';
+						pageInfo.innerText = '';
 						mxUtils.write(pageInfo, (mxUtils.indexOf(this.pages, this.currentPage) + 1) + ' / ' + this.pages.length);
 					}
 				});
@@ -2744,11 +2817,14 @@ EditorUi.prototype.initCanvas = function()
 
 			if (toolbarConfig.refreshBtn != null)
 			{
+				var refreshUrl = (toolbarConfig.refreshBtn.url == null) ? null :
+					Graph.sanitizeLink(toolbarConfig.refreshBtn.url);
+
 				addButton(mxUtils.bind(this, function(evt)
 				{
-					if (toolbarConfig.refreshBtn.url)
+					if (refreshUrl != null)
 					{
-						window.location.href = toolbarConfig.refreshBtn.url;
+						window.location.href = refreshUrl;
 					}
 					else
 					{
@@ -3357,6 +3433,14 @@ EditorUi.prototype.toggleFormatPanel = function(visible)
 };
 
 /**
+ * 
+ */
+EditorUi.prototype.isFormatPanelVisible = function()
+{
+	return this.formatWidth > 0;
+};
+
+/**
  * Adds support for placeholders in labels.
  */
 EditorUi.prototype.lightboxFit = function(maxHeight)
@@ -3514,6 +3598,7 @@ EditorUi.prototype.setCurrentMenu = function(menu, elt)
 {
 	this.currentMenuElt = elt;
 	this.currentMenu = menu;
+	this.hideShapePicker();
 };
 
 /**
@@ -3812,6 +3897,71 @@ EditorUi.prototype.setPageVisible = function(value)
 };
 
 /**
+ * Loads the stylesheet for this graph.
+ */
+EditorUi.prototype.installResizeHandler = function(dialog, resizable, destroy)
+{
+	if (resizable)
+	{
+		dialog.window.setSize = function(w, h)
+		{
+			if (!this.minimized)
+			{
+				var iw = window.innerWidth || document.body.clientWidth || document.documentElement.clientWidth;
+				var ih = window.innerHeight || document.body.clientHeight || document.documentElement.clientHeight;
+				w = Math.min(w, iw - this.getX());
+				h = Math.min(h, ih - this.getY());
+			}
+
+			mxWindow.prototype.setSize.apply(this, arguments);
+		};
+	}	
+
+	dialog.window.setLocation = function(x, y)
+	{
+		var iw = window.innerWidth || document.body.clientWidth || document.documentElement.clientWidth;
+		var ih = window.innerHeight || document.body.clientHeight || document.documentElement.clientHeight;
+		
+		var w = parseInt(this.div.style.width);
+		var h = parseInt(this.div.style.height);
+
+		x = Math.max(0, Math.min(x, iw - w));
+		y = Math.max(0, Math.min(y, ih - h));
+
+		if (this.getX() != x || this.getY() != y)
+		{
+			mxWindow.prototype.setLocation.apply(this, arguments);
+		}
+
+		if (resizable && !this.minimized)
+		{
+			this.setSize(w, h);
+		}
+	};
+	
+	var resizeListener = mxUtils.bind(this, function()
+	{
+		var x = dialog.window.getX();
+		var y = dialog.window.getY();
+		
+		dialog.window.setLocation(x, y);
+	});
+	
+	mxEvent.addListener(window, 'resize', resizeListener);
+
+	dialog.destroy = function()
+	{
+		mxEvent.removeListener(window, 'resize', resizeListener);
+		dialog.window.destroy();
+
+		if (destroy != null)
+		{
+			destroy();
+		}
+	}
+};
+
+/**
  * Class: ChangeGridColor
  *
  * Undoable change to grid color.
@@ -4093,7 +4243,7 @@ EditorUi.prototype.updateActionStates = function()
 	this.actions.get('sendBackward').setEnabled(ss.cells.length == 1);
 	this.actions.get('rotation').setEnabled(ss.vertices.length == 1);
 	this.actions.get('wordWrap').setEnabled(ss.vertices.length == 1);
-	this.actions.get('autosize').setEnabled(ss.vertices.length == 1);
+	this.actions.get('autosize').setEnabled(ss.vertices.length > 0);
 	this.actions.get('copySize').setEnabled(ss.vertices.length == 1);
 	this.actions.get('clearWaypoints').setEnabled(ss.connections);
 	this.actions.get('curved').setEnabled(ss.edges.length > 0);
@@ -4242,7 +4392,7 @@ EditorUi.prototype.refresh = function(sizeDidChange)
 	if (this.tabContainer != null)
 	{
 		this.tabContainer.style.bottom = (this.footerHeight + off) + 'px';
-		this.tabContainer.style.right = this.diagramContainer.style.right;
+		this.tabContainer.style.right = fw + 'px';
 		th = this.tabContainer.clientHeight;
 	}
 	
@@ -4315,6 +4465,23 @@ EditorUi.prototype.createDivs = function()
 	{
 		this.diagramContainer.style.border = 'none';
 	}
+};
+
+/**
+ * Hook for sidebar footer container. This implementation returns null.
+ */
+EditorUi.prototype.createSidebarContainer = function()
+{
+	var div = document.createElement('div');
+	div.className = 'geSidebarContainer';
+	div.style.position = 'absolute';
+	div.style.width = '100%';
+	div.style.height = '100%';
+	div.style.border = '1px solid whiteSmoke';
+	div.style.overflowX = 'hidden';
+	div.style.overflowY = 'auto';
+
+	return div;
 };
 
 /**
@@ -4436,7 +4603,7 @@ EditorUi.prototype.setStatusText = function(value)
 	// Wraps simple status messages in a div for styling
 	if (this.statusContainer.getElementsByTagName('div').length == 0)
 	{
-		this.statusContainer.innerHTML = '';
+		this.statusContainer.innerText = '';
 		var div = this.createStatusDiv(value);
 		this.statusContainer.appendChild(div);
 	}
@@ -5215,40 +5382,23 @@ EditorUi.prototype.executeLayouts = function(layouts, post)
 EditorUi.prototype.executeLayout = function(exec, animate, post)
 {
 	var graph = this.editor.graph;
-
-	if (graph.isEnabled())
+	graph.getModel().beginUpdate();
+	try
 	{
-		graph.getModel().beginUpdate();
-		try
+		exec();
+	}
+	catch (e)
+	{
+		throw e;
+	}
+	finally
+	{
+		// Animates the changes in the graph model
+		if (this.allowAnimation && animate && graph.isEnabled())
 		{
-			exec();
-		}
-		catch (e)
-		{
-			throw e;
-		}
-		finally
-		{
-			// Animates the changes in the graph model except
-			// for Camino, where animation is too slow
-			if (this.allowAnimation && animate && (navigator.userAgent == null ||
-				navigator.userAgent.indexOf('Camino') < 0))
-			{
-				// New API for animating graph layout results asynchronously
-				var morph = new mxMorphing(graph);
-				morph.addListener(mxEvent.DONE, mxUtils.bind(this, function()
-				{
-					graph.getModel().endUpdate();
-					
-					if (post != null)
-					{
-						post();
-					}
-				}));
-				
-				morph.startAnimation();
-			}
-			else
+			// New API for animating graph layout results asynchronously
+			var morph = new mxMorphing(graph);
+			morph.addListener(mxEvent.DONE, mxUtils.bind(this, function()
 			{
 				graph.getModel().endUpdate();
 				
@@ -5256,6 +5406,17 @@ EditorUi.prototype.executeLayout = function(exec, animate, post)
 				{
 					post();
 				}
+			}));
+			
+			morph.startAnimation();
+		}
+		else
+		{
+			graph.getModel().endUpdate();
+			
+			if (post != null)
+			{
+				post();
 			}
 		}
 	}
@@ -5427,7 +5588,7 @@ EditorUi.prototype.createKeyHandler = function(editor)
 			((!this.isControlDown(evt) || mxEvent.isShiftDown(evt) ||
 			(evt.keyCode != 90 && evt.keyCode != 89 && evt.keyCode != 188 &&
 			evt.keyCode != 190 && evt.keyCode != 85)) && ((evt.keyCode != 66 && evt.keyCode != 73) ||
-			!this.isControlDown(evt) ||  (this.graph.cellEditor.isContentEditing() &&
+			!this.isControlDown(evt) || (this.graph.cellEditor.isContentEditing() &&
 			!mxClient.IS_FF && !mxClient.IS_SF)) && isEventIgnored.apply(this, arguments));
 	};
 	
@@ -5678,7 +5839,7 @@ EditorUi.prototype.createKeyHandler = function(editor)
 			{
 				if (action.isEnabled())
 				{
-					action.funct();
+					action.funct.apply(this, arguments);
 				}
 			};
     		
@@ -5768,7 +5929,7 @@ EditorUi.prototype.createKeyHandler = function(editor)
 		keyHandler.bindAction(73, true, 'italic'); // Ctrl+I
 		keyHandler.bindAction(76, true, 'lockUnlock'); // Ctrl+L
 		keyHandler.bindAction(76, true, 'layers', true); // Ctrl+Shift+L
-		keyHandler.bindAction(80, true, 'formatPanel', true); // Ctrl+Shift+P
+		keyHandler.bindAction(80, true, 'format', true); // Ctrl+Shift+P
 		keyHandler.bindAction(85, true, 'underline'); // Ctrl+U
 		keyHandler.bindAction(85, true, 'ungroup', true); // Ctrl+Shift+U
 		keyHandler.bindAction(190, true, 'superscript'); // Ctrl+.

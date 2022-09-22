@@ -141,6 +141,7 @@ GraphViewer.prototype.init = function(container, xmlNode, graphConfig)
 	this.tagsEnabled = mxUtils.indexOf(this.toolbarItems, 'tags') >= 0;
 	this.lightboxEnabled = mxUtils.indexOf(this.toolbarItems, 'lightbox') >= 0;
 	this.lightboxClickEnabled = this.graphConfig.lightbox != false;
+	this.initialOverflow = document.body.style.overflow;
 	this.initialWidth = (container != null) ? container.style.width : null;
 	this.widthIsEmpty = (this.initialWidth != null) ? this.initialWidth == '' : true;
 	this.currentPage = parseInt(this.graphConfig.page) || 0;
@@ -150,7 +151,7 @@ GraphViewer.prototype.init = function(container, xmlNode, graphConfig)
 	this.pageId = this.graphConfig.pageId;
 	this.editor = null;
 	var self = this;
-				
+	
 	if (this.graphConfig['toolbar-position'] == 'inline')
 	{
 		this.minHeight += this.toolbarHeight;
@@ -1123,7 +1124,6 @@ GraphViewer.prototype.showLayers = function(graph, sourceGraph)
 GraphViewer.prototype.addToolbar = function()
 {
 	var container = this.graph.container;
-	var initialCursor = this.graph.container.style.cursor;
 	
 	if (this.graphConfig['toolbar-position'] == 'bottom')
 	{
@@ -1277,51 +1277,15 @@ GraphViewer.prototype.addToolbar = function()
 	var tokens = this.toolbarItems;
 	var buttonCount = 0;
 	
-	function addButton(fn, imgSrc, tip, enabled)
+	var addButton = mxUtils.bind(this, function(fn, imgSrc, tip, enabled)
 	{
-		var a = document.createElement('div');
-		a.style.borderRight = '1px solid #d0d0d0';
-		a.style.padding = '3px 6px 3px 6px';
-		mxEvent.addListener(a, 'click', fn);
-
-		if (tip != null)
-		{
-			a.setAttribute('title', tip);
-		}
-		
-		a.style.display = 'inline-block';
-		var img = document.createElement('img');
-		img.setAttribute('border', '0');
-		img.setAttribute('src', imgSrc);
-		img.style.width = '18px';
-
-		if (enabled == null || enabled)
-		{
-			mxEvent.addListener(a, 'mouseenter', function()
-			{
-				a.style.backgroundColor = '#ddd';
-			});
-			
-			mxEvent.addListener(a, 'mouseleave', function()
-			{
-				a.style.backgroundColor = '#eee';
-			});
-
-			mxUtils.setOpacity(img, 60);
-			a.style.cursor = 'pointer';
-		}
-		else
-		{
-			mxUtils.setOpacity(a, 30);
-		}
-		
-		a.appendChild(img);
+		var a = this.createToolbarButton(fn, imgSrc, tip, enabled);
 		toolbar.appendChild(a);
 		
 		buttonCount++;
 		
 		return a;
-	};
+	});
 
 	var layersDialog = null;
 	var tagsComponent = null;
@@ -1361,7 +1325,7 @@ GraphViewer.prototype.addToolbar = function()
 			
 			var update = mxUtils.bind(this, function()
 			{
-				pageInfo.innerHTML = '';
+				pageInfo.innerText = '';
 				mxUtils.write(pageInfo, (this.currentPage + 1) + ' / ' + this.diagrams.length);
 				pageInfo.style.display = (this.diagrams.length > 1) ? 'inline-block' : 'none';
 				prevButton.style.display = pageInfo.style.display;
@@ -1692,6 +1656,52 @@ GraphViewer.prototype.addToolbar = function()
 	}
 };
 
+/**
+ * 
+ */
+GraphViewer.prototype.createToolbarButton = function(fn, imgSrc, tip, enabled)
+{
+	var a = document.createElement('div');
+	a.style.borderRight = '1px solid #d0d0d0';
+	a.style.padding = '3px 6px 3px 6px';
+	mxEvent.addListener(a, 'click', fn);
+
+	if (tip != null)
+	{
+		a.setAttribute('title', tip);
+	}
+	
+	a.style.display = 'inline-block';
+	var img = document.createElement('img');
+	img.setAttribute('border', '0');
+	img.setAttribute('src', imgSrc);
+	img.style.width = '18px';
+
+	if (enabled == null || enabled)
+	{
+		mxEvent.addListener(a, 'mouseenter', function()
+		{
+			a.style.backgroundColor = '#ddd';
+		});
+		
+		mxEvent.addListener(a, 'mouseleave', function()
+		{
+			a.style.backgroundColor = '#eee';
+		});
+
+		mxUtils.setOpacity(img, 60);
+		a.style.cursor = 'pointer';
+	}
+	else
+	{
+		mxUtils.setOpacity(a, 30);
+	}
+	
+	a.appendChild(img);
+
+	return a;
+};
+
 GraphViewer.prototype.disableButton = function(token)
 {
 	var def = this.graphConfig['toolbar-buttons']? this.graphConfig['toolbar-buttons'][token] : null;
@@ -1934,13 +1944,15 @@ GraphViewer.prototype.showLocalLightbox = function()
 		}
 	});
 
+	var overflow = this.initialOverflow;
 	var destroy = ui.destroy;
+	
 	ui.destroy = function()
 	{
 		mxEvent.removeListener(document.documentElement, 'keydown', keydownHandler);
 		document.body.removeChild(backdrop);
 		document.body.removeChild(closeImg);
-		document.body.style.overflow = 'auto';
+		document.body.style.overflow = overflow;
 		GraphViewer.resizeSensorEnabled = true;
 		
 		destroy.apply(this, arguments);
@@ -2059,7 +2071,7 @@ GraphViewer.prototype.updateTitle = function(title)
 	
 	if (this.filename != null)
 	{
-		this.filename.innerHTML = '';
+		this.filename.innerText = '';
 		mxUtils.write(this.filename, title);
 		this.filename.setAttribute('title', title);
 	}
@@ -2074,12 +2086,12 @@ GraphViewer.processElements = function(classname)
 	{
 		try
 		{
-			div.innerHTML = '';
+			div.innerText = '';
 			GraphViewer.createViewerForElement(div);
 		}
 		catch (e)
 		{
-			div.innerHTML = e.message;
+			div.innerText = e.message;
 			
 			if (window.console != null)
 			{

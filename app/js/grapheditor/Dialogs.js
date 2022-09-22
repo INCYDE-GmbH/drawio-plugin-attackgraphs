@@ -12,6 +12,7 @@ var OpenDialog = function()
 	iframe.style.borderStyle = 'none';
 	iframe.style.borderWidth = '0px';
 	iframe.style.overflow = 'hidden';
+	iframe.style.maxWidth = '100%';
 	iframe.frameBorder = '0';
 	
 	var dx = 0;
@@ -844,11 +845,14 @@ var ExportDialog = function(editorUi)
 	mxUtils.write(jpgOption, mxResources.get('formatJpg'));
 	imageFormatSelect.appendChild(jpgOption);
 
-	var pdfOption = document.createElement('option');
-	pdfOption.setAttribute('value', 'pdf');
-	mxUtils.write(pdfOption, mxResources.get('formatPdf'));
-	imageFormatSelect.appendChild(pdfOption);
-	
+	if (!editorUi.printPdfExport)
+	{
+		var pdfOption = document.createElement('option');
+		pdfOption.setAttribute('value', 'pdf');
+		mxUtils.write(pdfOption, mxResources.get('formatPdf'));
+		imageFormatSelect.appendChild(pdfOption);
+	}
+
 	var svgOption = document.createElement('option');
 	svgOption.setAttribute('value', 'svg');
 	mxUtils.write(svgOption, mxResources.get('formatSvg'));
@@ -1499,7 +1503,8 @@ var EditDataDialog = function(ui, cell)
 
 	for (var i = 0; i < attrs.length; i++)
 	{
-		if ((isLayer || attrs[i].nodeName != 'label') && attrs[i].nodeName != 'placeholders')
+		if ((attrs[i].nodeName != 'label' || Graph.translateDiagram ||
+			isLayer) && attrs[i].nodeName != 'placeholders')
 		{
 			temp.push({name: attrs[i].nodeName, value: attrs[i].nodeValue});
 		}
@@ -1975,38 +1980,12 @@ var OutlineWindow = function(editorUi, x, y, w, h)
 	this.window.setClosable(true);
 	this.window.setVisible(true);
 	
-	this.window.setLocation = function(x, y)
-	{
-		var iw = window.innerWidth || document.body.clientWidth || document.documentElement.clientWidth;
-		var ih = window.innerHeight || document.body.clientHeight || document.documentElement.clientHeight;
-		
-		x = Math.max(0, Math.min(x, iw - this.table.clientWidth));
-		y = Math.max(0, Math.min(y, ih - this.table.clientHeight - ((urlParams['sketch'] == '1') ? 3 : 48)));
-
-		if (this.getX() != x || this.getY() != y)
-		{
-			mxWindow.prototype.setLocation.apply(this, arguments);
-		}
-	};
-	
-	var resizeListener = mxUtils.bind(this, function()
-	{
-		var x = this.window.getX();
-		var y = this.window.getY();
-		
-		this.window.setLocation(x, y);
-	});
-	
-	mxEvent.addListener(window, 'resize', resizeListener);
-	
 	var outline = editorUi.createOutline(this.window);
 
-	this.destroy = function()
+	editorUi.installResizeHandler(this, true, function()
 	{
-		mxEvent.removeListener(window, 'resize', resizeListener);
-		this.window.destroy();
 		outline.destroy();
-	}
+	});
 
 	this.window.addListener(mxEvent.SHOW, mxUtils.bind(this, function()
 	{
@@ -2030,10 +2009,7 @@ var OutlineWindow = function(editorUi, x, y, w, h)
 	}));
 
 	outline.init(div);
-
-	var zoomInAction = editorUi.actions.get('zoomIn');
-	var zoomOutAction = editorUi.actions.get('zoomOut');
-
+	
 	mxEvent.addMouseWheelListener(function(evt, up)
 	{
 		var outlineWheel = false;
@@ -2370,7 +2346,7 @@ var LayersWindow = function(editorUi, x, y, w, h)
 	function refresh()
 	{
 		layerCount = graph.model.getChildCount(graph.model.root)
-		listDiv.innerHTML = '';
+		listDiv.innerText = '';
 		layerDivs.clear();
 		
 		function addLayer(index, label, child, defaultParent)
@@ -2716,34 +2692,5 @@ var LayersWindow = function(editorUi, x, y, w, h)
 	
 	// Make refresh available via instance
 	this.refreshLayers = refresh;
-	
-	this.window.setLocation = function(x, y)
-	{
-		var iw = window.innerWidth || document.body.clientWidth || document.documentElement.clientWidth;
-		var ih = window.innerHeight || document.body.clientHeight || document.documentElement.clientHeight;
-		
-		x = Math.max(0, Math.min(x, iw - this.table.clientWidth));
-		y = Math.max(0, Math.min(y, ih - this.table.clientHeight - ((urlParams['sketch'] == '1') ? 3 : 48)));
-
-		if (this.getX() != x || this.getY() != y)
-		{
-			mxWindow.prototype.setLocation.apply(this, arguments);
-		}
-	};
-	
-	var resizeListener = mxUtils.bind(this, function()
-	{
-		var x = this.window.getX();
-		var y = this.window.getY();
-		
-		this.window.setLocation(x, y);
-	});
-	
-	mxEvent.addListener(window, 'resize', resizeListener);
-
-	this.destroy = function()
-	{
-		mxEvent.removeListener(window, 'resize', resizeListener);
-		this.window.destroy();
-	}
+	editorUi.installResizeHandler(this, true);
 };

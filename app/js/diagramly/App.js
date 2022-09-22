@@ -274,7 +274,7 @@ App.TRELLO_URL = 'https://api.trello.com/1/client.js';
 /**
  * Trello JQuery dependency
  */
-App.TRELLO_JQUERY_URL = window.DRAWIO_BASE_URL + '/js/jquery/jquery-3.3.1.min.js';
+App.TRELLO_JQUERY_URL = window.DRAWIO_BASE_URL + '/js/jquery/jquery-3.6.0.min.js';
 
 /**
  * Specifies the key for the pusher project.
@@ -563,7 +563,7 @@ App.getStoredMode = function()
 /**
  * Clears the PWA cache.
  */
-App.clearServiceWorker = function(success)
+App.clearServiceWorker = function(success, error)
 {
 	navigator.serviceWorker.getRegistrations().then(function(registrations)
 	{
@@ -579,7 +579,41 @@ App.clearServiceWorker = function(success)
 				success();
 			}
 		}
+	})['catch'](function()
+	{
+		if (error != null)
+		{
+			error();
+		}
 	});
+};
+
+/**
+ * Returns true if the given link is on the same domain as this app.
+ */
+App.isSameDomain = function(link)
+{
+	var a = document.createElement('a');
+	a.href = link;
+
+	return a.protocol === window.location.protocol ||
+		a.host === window.location.host;
+};
+
+/**
+ * Returns true if the given relative path is a built-in plugin.
+ */
+App.isBuiltInPlugin = function(path)
+{
+	for (var key in App.pluginRegistry)
+	{
+		if (App.pluginRegistry[key] == path)
+		{
+			return true;
+		}
+	}
+
+	return false;
 };
 
 /**
@@ -598,9 +632,9 @@ App.main = function(callback, createUi)
 
 	// Blocks stand-alone mode for certain subdomains
 	if (window.top == window.self &&
-		(/ac\.draw\.io$/.test(window.location.hostname) ||
-		/ac-ent\.draw\.io$/.test(window.location.hostname) ||
-		/aj\.draw\.io$/.test(window.location.hostname)))
+		('import.diagrams.net' === window.location.hostname ||
+		'ac.draw.io' === window.location.hostname ||
+		'aj.draw.io' === window.location.hostname))
 	{
 		document.body.innerHTML = '<div style="margin-top:10%;text-align:center;">Stand-alone mode not allowed for this domain.</div>';
 		
@@ -676,7 +710,7 @@ App.main = function(callback, createUi)
 			else if (Editor.enableServiceWorker)
 			{
 				// Runs as progressive web app if service workers are supported
-				navigator.serviceWorker.register('/service-worker.js');
+				navigator.serviceWorker.register('service-worker.js');
 			}
 		}
 		catch (e)
@@ -740,43 +774,39 @@ App.main = function(callback, createUi)
 			
 			if (plugins != null && plugins.length > 0 && urlParams['plugins'] != '0')
 			{
-				// Loading plugins inside the asynchronous block below stops the page from loading so a 
-				// hardcoded message for the warning dialog is used since the resources are loadd below
-				var warning = 'The page has requested to load the following plugin(s):\n \n {1}\n \n Would you like to load these plugin(s) now?\n \n NOTE : Only allow plugins to run if you fully understand the security implications of doing so.\n';
-				var tmp = window.location.protocol + '//' + window.location.host;
-				var local = true;
-				
-				for (var i = 0; i < plugins.length && local; i++)
+				for (var i = 0; i < plugins.length; i++)
 				{
-					if (plugins[i].charAt(0) != '/' && plugins[i].substring(0, tmp.length) != tmp)
+					try
 					{
-						local = false;
-					}
-				}
-				
-				if (local || mxUtils.confirm(mxResources.replacePlaceholders(warning, [plugins.join('\n')]).replace(/\\n/g, '\n')))
-				{
-					for (var i = 0; i < plugins.length; i++)
-					{
-						try
+						if (plugins[i].charAt(0) == '/')
 						{
-							if (App.pluginsLoaded[plugins[i]] == null)
+							plugins[i] = PLUGINS_BASE_PATH + plugins[i];
+						}
+
+						if (!App.isSameDomain(plugins[i]))
+						{
+							if (window.console != null)
 							{
-								App.pluginsLoaded[plugins[i]] = true;
-								App.embedModePluginsCount++;
-								
-								if (plugins[i].charAt(0) == '/')
-								{
-									plugins[i] = PLUGINS_BASE_PATH + plugins[i];
-								}
-								
-								mxscript(plugins[i]);
+								console.log('Blocked plugin:', plugins[i]);
 							}
 						}
-						catch (e)
+						else if (!ALLOW_CUSTOM_PLUGINS && !App.isBuiltInPlugin(plugins[i]))
 						{
-							// ignore
+							if (window.console != null)
+							{
+								console.log('Unknown plugin:', plugins[i]);
+							}
 						}
+						else if (App.pluginsLoaded[plugins[i]] == null)
+						{
+							App.pluginsLoaded[plugins[i]] = true;
+							App.embedModePluginsCount++;
+							mxscript(plugins[i]);
+						}
+					}
+					catch (e)
+					{
+						// ignore
 					}
 				}
 			}
@@ -823,33 +853,9 @@ App.main = function(callback, createUi)
 			{
 				try
 				{
-					var trustedPlugins = {};
-					
-					for (var key in App.pluginRegistry)
-					{
-						trustedPlugins[App.pluginRegistry[key]] = true;
-					}
-					
-					// Only allows trusted plugins
-					function checkPlugins(plugins)
-					{
-						if (plugins != null)
-						{
-							for (var i = 0; i < plugins.length; i++)
-							{
-								if (!trustedPlugins[plugins[i]])
-								{
-									throw new Error(mxResources.get('invalidInput') + ' "' + plugins[i]) + '"';
-								}
-							}
-						}
-						
-						return true;
-					};
-					
 					var value = JSON.parse(Graph.decompress(window.location.hash.substring(9)));
 
-					if (value != null && checkPlugins(value.plugins))
+					if (value != null)
 					{
 						EditorUi.debug('Setting configuration', JSON.stringify(value));
 						
@@ -859,7 +865,6 @@ App.main = function(callback, createUi)
 							
 							if (temp != null)
 							{
-								
 								try
 								{
 									var config = JSON.parse(temp);
@@ -1034,8 +1039,10 @@ App.main = function(callback, createUi)
 		{
 			if (mxSettings.settings != null)
 			{
-				document.body.style.backgroundColor = (uiTheme == 'dark' ||
-					mxSettings.settings.darkMode) ? Editor.darkColor : '#ffffff';
+				document.body.style.backgroundColor = (uiTheme != 'atlas' &&
+					uiTheme != 'kennedy' && (Editor.isDarkMode() ||
+					mxSettings.settings.darkMode)) ?
+						Editor.darkColor : '#ffffff';
 				
 				if (mxSettings.settings.autosaveDelay != null)
 				{
@@ -1115,7 +1122,7 @@ App.main = function(callback, createUi)
 					if (data != null && data.action == 'configure')
 					{
 						mxEvent.removeListener(window, 'message', configHandler);
-						Editor.configure(data.config, true);
+						Editor.configure(data.config);
 						mxSettings.load();
 
 						//To enable transparent iframe in dark mode (e.g, in gitlab)
@@ -1208,31 +1215,10 @@ App.prototype.defaultUserPicture = IMAGE_PATH + '/default-user.jpg';
  * 
  */
 App.prototype.shareImage = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAA2RpVFh0WE1MOmNvbS5hZG9iZS54bXAAAAAAADw/eHBhY2tldCBiZWdpbj0i77u/IiBpZD0iVzVNME1wQ2VoaUh6cmVTek5UY3prYzlkIj8+IDx4OnhtcG1ldGEgeG1sbnM6eD0iYWRvYmU6bnM6bWV0YS8iIHg6eG1wdGs9IkFkb2JlIFhNUCBDb3JlIDUuMC1jMDYwIDYxLjEzNDc3NywgMjAxMC8wMi8xMi0xNzozMjowMCAgICAgICAgIj4gPHJkZjpSREYgeG1sbnM6cmRmPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5LzAyLzIyLXJkZi1zeW50YXgtbnMjIj4gPHJkZjpEZXNjcmlwdGlvbiByZGY6YWJvdXQ9IiIgeG1sbnM6eG1wTU09Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC9tbS8iIHhtbG5zOnN0UmVmPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvc1R5cGUvUmVzb3VyY2VSZWYjIiB4bWxuczp4bXA9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC8iIHhtcE1NOk9yaWdpbmFsRG9jdW1lbnRJRD0ieG1wLmRpZDowOTgwMTE3NDA3MjA2ODExODhDNkFGMDBEQkQ0RTgwOSIgeG1wTU06RG9jdW1lbnRJRD0ieG1wLmRpZDoxMjU2NzdEMTcwRDIxMUUxQjc0MDkxRDhCNUQzOEFGRCIgeG1wTU06SW5zdGFuY2VJRD0ieG1wLmlpZDoxMjU2NzdEMDcwRDIxMUUxQjc0MDkxRDhCNUQzOEFGRCIgeG1wOkNyZWF0b3JUb29sPSJBZG9iZSBQaG90b3Nob3AgQ1M1IFdpbmRvd3MiPiA8eG1wTU06RGVyaXZlZEZyb20gc3RSZWY6aW5zdGFuY2VJRD0ieG1wLmlpZDowNjgwMTE3NDA3MjA2ODExODcxRkM4MUY1OTFDMjQ5OCIgc3RSZWY6ZG9jdW1lbnRJRD0ieG1wLmRpZDowNzgwMTE3NDA3MjA2ODExODhDNkFGMDBEQkQ0RTgwOSIvPiA8L3JkZjpEZXNjcmlwdGlvbj4gPC9yZGY6UkRGPiA8L3g6eG1wbWV0YT4gPD94cGFja2V0IGVuZD0iciI/PrM/fs0AAADgSURBVHjaYmDAA/7//88MwgzkAKDGFiD+BsQ/QWxSNaf9RwN37twpI8WAS+gGfP78+RpQSoRYA36iG/D379+vQClNdLVMOMz4gi7w79+/n0CKg1gD9qELvH379hzIHGK9oA508ieY8//8+fO5rq4uFCilRKwL1JmYmNhhHEZGRiZ+fn6Q2meEbDYG4u3/cYCfP38uA7kOm0ZOIJ7zn0jw48ePPiDFhmzArv8kgi9fvuwB+w5qwH9ykjswbFSZyM4sEMDPBDTlL5BxkFSd7969OwZ2BZKYGhDzkmjOJ4AAAwBhpRqGnEFb8QAAAABJRU5ErkJggg==';
-
-/**
- *
- */
-App.prototype.chevronUpImage = (!mxClient.IS_SVG) ? IMAGE_PATH + '/chevron-up.png' : 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAMAAAAoLQ9TAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAyJpVFh0WE1MOmNvbS5hZG9iZS54bXAAAAAAADw/eHBhY2tldCBiZWdpbj0i77u/IiBpZD0iVzVNME1wQ2VoaUh6cmVTek5UY3prYzlkIj8+IDx4OnhtcG1ldGEgeG1sbnM6eD0iYWRvYmU6bnM6bWV0YS8iIHg6eG1wdGs9IkFkb2JlIFhNUCBDb3JlIDUuMC1jMDYwIDYxLjEzNDc3NywgMjAxMC8wMi8xMi0xNzozMjowMCAgICAgICAgIj4gPHJkZjpSREYgeG1sbnM6cmRmPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5LzAyLzIyLXJkZi1zeW50YXgtbnMjIj4gPHJkZjpEZXNjcmlwdGlvbiByZGY6YWJvdXQ9IiIgeG1sbnM6eG1wPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvIiB4bWxuczp4bXBNTT0iaHR0cDovL25zLmFkb2JlLmNvbS94YXAvMS4wL21tLyIgeG1sbnM6c3RSZWY9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC9zVHlwZS9SZXNvdXJjZVJlZiMiIHhtcDpDcmVhdG9yVG9vbD0iQWRvYmUgUGhvdG9zaG9wIENTNSBNYWNpbnRvc2giIHhtcE1NOkluc3RhbmNlSUQ9InhtcC5paWQ6NDg2NEE3NUY1MUVBMTFFM0I3MUVEMTc0N0YyOUI4QzEiIHhtcE1NOkRvY3VtZW50SUQ9InhtcC5kaWQ6NDg2NEE3NjA1MUVBMTFFM0I3MUVEMTc0N0YyOUI4QzEiPiA8eG1wTU06RGVyaXZlZEZyb20gc3RSZWY6aW5zdGFuY2VJRD0ieG1wLmlpZDo0ODY0QTc1RDUxRUExMUUzQjcxRUQxNzQ3RjI5QjhDMSIgc3RSZWY6ZG9jdW1lbnRJRD0ieG1wLmRpZDo0ODY0QTc1RTUxRUExMUUzQjcxRUQxNzQ3RjI5QjhDMSIvPiA8L3JkZjpEZXNjcmlwdGlvbj4gPC9yZGY6UkRGPiA8L3g6eG1wbWV0YT4gPD94cGFja2V0IGVuZD0iciI/Pg+qUokAAAAMUExURQAAANnZ2b+/v////5bgre4AAAAEdFJOU////wBAKqn0AAAAL0lEQVR42mJgRgMMRAswMKAKMDDARBjg8lARBoR6KImkH0wTbygT6YaS4DmAAAMAYPkClOEDDD0AAAAASUVORK5CYII=';
-
-/**
- *
- */
-App.prototype.chevronDownImage = (!mxClient.IS_SVG) ? IMAGE_PATH + '/chevron-down.png' : 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAMAAAAoLQ9TAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAyJpVFh0WE1MOmNvbS5hZG9iZS54bXAAAAAAADw/eHBhY2tldCBiZWdpbj0i77u/IiBpZD0iVzVNME1wQ2VoaUh6cmVTek5UY3prYzlkIj8+IDx4OnhtcG1ldGEgeG1sbnM6eD0iYWRvYmU6bnM6bWV0YS8iIHg6eG1wdGs9IkFkb2JlIFhNUCBDb3JlIDUuMC1jMDYwIDYxLjEzNDc3NywgMjAxMC8wMi8xMi0xNzozMjowMCAgICAgICAgIj4gPHJkZjpSREYgeG1sbnM6cmRmPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5LzAyLzIyLXJkZi1zeW50YXgtbnMjIj4gPHJkZjpEZXNjcmlwdGlvbiByZGY6YWJvdXQ9IiIgeG1sbnM6eG1wPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvIiB4bWxuczp4bXBNTT0iaHR0cDovL25zLmFkb2JlLmNvbS94YXAvMS4wL21tLyIgeG1sbnM6c3RSZWY9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC9zVHlwZS9SZXNvdXJjZVJlZiMiIHhtcDpDcmVhdG9yVG9vbD0iQWRvYmUgUGhvdG9zaG9wIENTNSBNYWNpbnRvc2giIHhtcE1NOkluc3RhbmNlSUQ9InhtcC5paWQ6NDg2NEE3NUI1MUVBMTFFM0I3MUVEMTc0N0YyOUI4QzEiIHhtcE1NOkRvY3VtZW50SUQ9InhtcC5kaWQ6NDg2NEE3NUM1MUVBMTFFM0I3MUVEMTc0N0YyOUI4QzEiPiA8eG1wTU06RGVyaXZlZEZyb20gc3RSZWY6aW5zdGFuY2VJRD0ieG1wLmlpZDo0ODY0QTc1OTUxRUExMUUzQjcxRUQxNzQ3RjI5QjhDMSIgc3RSZWY6ZG9jdW1lbnRJRD0ieG1wLmRpZDo0ODY0QTc1QTUxRUExMUUzQjcxRUQxNzQ3RjI5QjhDMSIvPiA8L3JkZjpEZXNjcmlwdGlvbj4gPC9yZGY6UkRGPiA8L3g6eG1wbWV0YT4gPD94cGFja2V0IGVuZD0iciI/PsCtve8AAAAMUExURQAAANnZ2b+/v////5bgre4AAAAEdFJOU////wBAKqn0AAAALUlEQVR42mJgRgMMRAkwQEXBNAOcBSPhclB1cNVwfcxI+vEZykSpoSR6DiDAAF23ApT99bZ+AAAAAElFTkSuQmCC';
-
-/**
- *
- */
-App.prototype.formatShowImage = (!mxClient.IS_SVG) ? IMAGE_PATH + '/format-show.png' : 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAMAAAAoLQ9TAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAyJpVFh0WE1MOmNvbS5hZG9iZS54bXAAAAAAADw/eHBhY2tldCBiZWdpbj0i77u/IiBpZD0iVzVNME1wQ2VoaUh6cmVTek5UY3prYzlkIj8+IDx4OnhtcG1ldGEgeG1sbnM6eD0iYWRvYmU6bnM6bWV0YS8iIHg6eG1wdGs9IkFkb2JlIFhNUCBDb3JlIDUuMC1jMDYwIDYxLjEzNDc3NywgMjAxMC8wMi8xMi0xNzozMjowMCAgICAgICAgIj4gPHJkZjpSREYgeG1sbnM6cmRmPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5LzAyLzIyLXJkZi1zeW50YXgtbnMjIj4gPHJkZjpEZXNjcmlwdGlvbiByZGY6YWJvdXQ9IiIgeG1sbnM6eG1wPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvIiB4bWxuczp4bXBNTT0iaHR0cDovL25zLmFkb2JlLmNvbS94YXAvMS4wL21tLyIgeG1sbnM6c3RSZWY9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC9zVHlwZS9SZXNvdXJjZVJlZiMiIHhtcDpDcmVhdG9yVG9vbD0iQWRvYmUgUGhvdG9zaG9wIENTNSBNYWNpbnRvc2giIHhtcE1NOkluc3RhbmNlSUQ9InhtcC5paWQ6ODdCREY5REY1NkQ3MTFFNTkyNjNEMTA5NjgwODUyRTgiIHhtcE1NOkRvY3VtZW50SUQ9InhtcC5kaWQ6ODdCREY5RTA1NkQ3MTFFNTkyNjNEMTA5NjgwODUyRTgiPiA8eG1wTU06RGVyaXZlZEZyb20gc3RSZWY6aW5zdGFuY2VJRD0ieG1wLmlpZDo4N0JERjlERDU2RDcxMUU1OTI2M0QxMDk2ODA4NTJFOCIgc3RSZWY6ZG9jdW1lbnRJRD0ieG1wLmRpZDo4N0JERjlERTU2RDcxMUU1OTI2M0QxMDk2ODA4NTJFOCIvPiA8L3JkZjpEZXNjcmlwdGlvbj4gPC9yZGY6UkRGPiA8L3g6eG1wbWV0YT4gPD94cGFja2V0IGVuZD0iciI/PlnMQ/8AAAAJUExURQAAAP///3FxcTfTiAsAAAACdFJOU/8A5bcwSgAAACFJREFUeNpiYEQDDEQJMMABTAAixcQ00ALoDiPRcwABBgB6DADly9Yx8wAAAABJRU5ErkJggg==';
-
-/**
- *
- */
-App.prototype.formatHideImage = (!mxClient.IS_SVG) ? IMAGE_PATH + '/format-hide.png' : 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAMAAAAoLQ9TAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAyJpVFh0WE1MOmNvbS5hZG9iZS54bXAAAAAAADw/eHBhY2tldCBiZWdpbj0i77u/IiBpZD0iVzVNME1wQ2VoaUh6cmVTek5UY3prYzlkIj8+IDx4OnhtcG1ldGEgeG1sbnM6eD0iYWRvYmU6bnM6bWV0YS8iIHg6eG1wdGs9IkFkb2JlIFhNUCBDb3JlIDUuMC1jMDYwIDYxLjEzNDc3NywgMjAxMC8wMi8xMi0xNzozMjowMCAgICAgICAgIj4gPHJkZjpSREYgeG1sbnM6cmRmPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5LzAyLzIyLXJkZi1zeW50YXgtbnMjIj4gPHJkZjpEZXNjcmlwdGlvbiByZGY6YWJvdXQ9IiIgeG1sbnM6eG1wPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvIiB4bWxuczp4bXBNTT0iaHR0cDovL25zLmFkb2JlLmNvbS94YXAvMS4wL21tLyIgeG1sbnM6c3RSZWY9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC9zVHlwZS9SZXNvdXJjZVJlZiMiIHhtcDpDcmVhdG9yVG9vbD0iQWRvYmUgUGhvdG9zaG9wIENTNSBNYWNpbnRvc2giIHhtcE1NOkluc3RhbmNlSUQ9InhtcC5paWQ6ODdCREY5REI1NkQ3MTFFNTkyNjNEMTA5NjgwODUyRTgiIHhtcE1NOkRvY3VtZW50SUQ9InhtcC5kaWQ6ODdCREY5REM1NkQ3MTFFNTkyNjNEMTA5NjgwODUyRTgiPiA8eG1wTU06RGVyaXZlZEZyb20gc3RSZWY6aW5zdGFuY2VJRD0ieG1wLmlpZDo4N0JERjlEOTU2RDcxMUU1OTI2M0QxMDk2ODA4NTJFOCIgc3RSZWY6ZG9jdW1lbnRJRD0ieG1wLmRpZDo4N0JERjlEQTU2RDcxMUU1OTI2M0QxMDk2ODA4NTJFOCIvPiA8L3JkZjpEZXNjcmlwdGlvbj4gPC9yZGY6UkRGPiA8L3g6eG1wbWV0YT4gPD94cGFja2V0IGVuZD0iciI/PqjT9SMAAAAGUExURQAAAP///6XZn90AAAACdFJOU/8A5bcwSgAAAB9JREFUeNpiYEQDDEQJMMABTAAmNdAC6A4j0XMAAQYAcbwA1Xvj1CgAAAAASUVORK5CYII=';
-
-/**
- *
- */
-App.prototype.fullscreenImage = (!mxClient.IS_SVG) ? IMAGE_PATH + '/fullscreen.png' : 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQAQMAAAAlPW0iAAAABlBMVEUAAAAAAAClZ7nPAAAAAXRSTlMAQObYZgAAABpJREFUCNdjgAAbGxAy4AEh5gNwBBGByoIBAIueBd12TUjqAAAAAElFTkSuQmCC';
+App.prototype.chevronUpImage = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAMAAAAoLQ9TAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAyJpVFh0WE1MOmNvbS5hZG9iZS54bXAAAAAAADw/eHBhY2tldCBiZWdpbj0i77u/IiBpZD0iVzVNME1wQ2VoaUh6cmVTek5UY3prYzlkIj8+IDx4OnhtcG1ldGEgeG1sbnM6eD0iYWRvYmU6bnM6bWV0YS8iIHg6eG1wdGs9IkFkb2JlIFhNUCBDb3JlIDUuMC1jMDYwIDYxLjEzNDc3NywgMjAxMC8wMi8xMi0xNzozMjowMCAgICAgICAgIj4gPHJkZjpSREYgeG1sbnM6cmRmPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5LzAyLzIyLXJkZi1zeW50YXgtbnMjIj4gPHJkZjpEZXNjcmlwdGlvbiByZGY6YWJvdXQ9IiIgeG1sbnM6eG1wPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvIiB4bWxuczp4bXBNTT0iaHR0cDovL25zLmFkb2JlLmNvbS94YXAvMS4wL21tLyIgeG1sbnM6c3RSZWY9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC9zVHlwZS9SZXNvdXJjZVJlZiMiIHhtcDpDcmVhdG9yVG9vbD0iQWRvYmUgUGhvdG9zaG9wIENTNSBNYWNpbnRvc2giIHhtcE1NOkluc3RhbmNlSUQ9InhtcC5paWQ6NDg2NEE3NUY1MUVBMTFFM0I3MUVEMTc0N0YyOUI4QzEiIHhtcE1NOkRvY3VtZW50SUQ9InhtcC5kaWQ6NDg2NEE3NjA1MUVBMTFFM0I3MUVEMTc0N0YyOUI4QzEiPiA8eG1wTU06RGVyaXZlZEZyb20gc3RSZWY6aW5zdGFuY2VJRD0ieG1wLmlpZDo0ODY0QTc1RDUxRUExMUUzQjcxRUQxNzQ3RjI5QjhDMSIgc3RSZWY6ZG9jdW1lbnRJRD0ieG1wLmRpZDo0ODY0QTc1RTUxRUExMUUzQjcxRUQxNzQ3RjI5QjhDMSIvPiA8L3JkZjpEZXNjcmlwdGlvbj4gPC9yZGY6UkRGPiA8L3g6eG1wbWV0YT4gPD94cGFja2V0IGVuZD0iciI/Pg+qUokAAAAMUExURQAAANnZ2b+/v////5bgre4AAAAEdFJOU////wBAKqn0AAAAL0lEQVR42mJgRgMMRAswMKAKMDDARBjg8lARBoR6KImkH0wTbygT6YaS4DmAAAMAYPkClOEDDD0AAAAASUVORK5CYII=';
+App.prototype.chevronDownImage = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAMAAAAoLQ9TAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAyJpVFh0WE1MOmNvbS5hZG9iZS54bXAAAAAAADw/eHBhY2tldCBiZWdpbj0i77u/IiBpZD0iVzVNME1wQ2VoaUh6cmVTek5UY3prYzlkIj8+IDx4OnhtcG1ldGEgeG1sbnM6eD0iYWRvYmU6bnM6bWV0YS8iIHg6eG1wdGs9IkFkb2JlIFhNUCBDb3JlIDUuMC1jMDYwIDYxLjEzNDc3NywgMjAxMC8wMi8xMi0xNzozMjowMCAgICAgICAgIj4gPHJkZjpSREYgeG1sbnM6cmRmPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5LzAyLzIyLXJkZi1zeW50YXgtbnMjIj4gPHJkZjpEZXNjcmlwdGlvbiByZGY6YWJvdXQ9IiIgeG1sbnM6eG1wPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvIiB4bWxuczp4bXBNTT0iaHR0cDovL25zLmFkb2JlLmNvbS94YXAvMS4wL21tLyIgeG1sbnM6c3RSZWY9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC9zVHlwZS9SZXNvdXJjZVJlZiMiIHhtcDpDcmVhdG9yVG9vbD0iQWRvYmUgUGhvdG9zaG9wIENTNSBNYWNpbnRvc2giIHhtcE1NOkluc3RhbmNlSUQ9InhtcC5paWQ6NDg2NEE3NUI1MUVBMTFFM0I3MUVEMTc0N0YyOUI4QzEiIHhtcE1NOkRvY3VtZW50SUQ9InhtcC5kaWQ6NDg2NEE3NUM1MUVBMTFFM0I3MUVEMTc0N0YyOUI4QzEiPiA8eG1wTU06RGVyaXZlZEZyb20gc3RSZWY6aW5zdGFuY2VJRD0ieG1wLmlpZDo0ODY0QTc1OTUxRUExMUUzQjcxRUQxNzQ3RjI5QjhDMSIgc3RSZWY6ZG9jdW1lbnRJRD0ieG1wLmRpZDo0ODY0QTc1QTUxRUExMUUzQjcxRUQxNzQ3RjI5QjhDMSIvPiA8L3JkZjpEZXNjcmlwdGlvbj4gPC9yZGY6UkRGPiA8L3g6eG1wbWV0YT4gPD94cGFja2V0IGVuZD0iciI/PsCtve8AAAAMUExURQAAANnZ2b+/v////5bgre4AAAAEdFJOU////wBAKqn0AAAALUlEQVR42mJgRgMMRAkwQEXBNAOcBSPhclB1cNVwfcxI+vEZykSpoSR6DiDAAF23ApT99bZ+AAAAAElFTkSuQmCC';
+App.prototype.formatShowImage = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAMAAAAoLQ9TAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAyJpVFh0WE1MOmNvbS5hZG9iZS54bXAAAAAAADw/eHBhY2tldCBiZWdpbj0i77u/IiBpZD0iVzVNME1wQ2VoaUh6cmVTek5UY3prYzlkIj8+IDx4OnhtcG1ldGEgeG1sbnM6eD0iYWRvYmU6bnM6bWV0YS8iIHg6eG1wdGs9IkFkb2JlIFhNUCBDb3JlIDUuMC1jMDYwIDYxLjEzNDc3NywgMjAxMC8wMi8xMi0xNzozMjowMCAgICAgICAgIj4gPHJkZjpSREYgeG1sbnM6cmRmPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5LzAyLzIyLXJkZi1zeW50YXgtbnMjIj4gPHJkZjpEZXNjcmlwdGlvbiByZGY6YWJvdXQ9IiIgeG1sbnM6eG1wPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvIiB4bWxuczp4bXBNTT0iaHR0cDovL25zLmFkb2JlLmNvbS94YXAvMS4wL21tLyIgeG1sbnM6c3RSZWY9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC9zVHlwZS9SZXNvdXJjZVJlZiMiIHhtcDpDcmVhdG9yVG9vbD0iQWRvYmUgUGhvdG9zaG9wIENTNSBNYWNpbnRvc2giIHhtcE1NOkluc3RhbmNlSUQ9InhtcC5paWQ6ODdCREY5REY1NkQ3MTFFNTkyNjNEMTA5NjgwODUyRTgiIHhtcE1NOkRvY3VtZW50SUQ9InhtcC5kaWQ6ODdCREY5RTA1NkQ3MTFFNTkyNjNEMTA5NjgwODUyRTgiPiA8eG1wTU06RGVyaXZlZEZyb20gc3RSZWY6aW5zdGFuY2VJRD0ieG1wLmlpZDo4N0JERjlERDU2RDcxMUU1OTI2M0QxMDk2ODA4NTJFOCIgc3RSZWY6ZG9jdW1lbnRJRD0ieG1wLmRpZDo4N0JERjlERTU2RDcxMUU1OTI2M0QxMDk2ODA4NTJFOCIvPiA8L3JkZjpEZXNjcmlwdGlvbj4gPC9yZGY6UkRGPiA8L3g6eG1wbWV0YT4gPD94cGFja2V0IGVuZD0iciI/PlnMQ/8AAAAJUExURQAAAP///3FxcTfTiAsAAAACdFJOU/8A5bcwSgAAACFJREFUeNpiYEQDDEQJMMABTAAixcQ00ALoDiPRcwABBgB6DADly9Yx8wAAAABJRU5ErkJggg==';
+App.prototype.formatHideImage = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAMAAAAoLQ9TAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAyJpVFh0WE1MOmNvbS5hZG9iZS54bXAAAAAAADw/eHBhY2tldCBiZWdpbj0i77u/IiBpZD0iVzVNME1wQ2VoaUh6cmVTek5UY3prYzlkIj8+IDx4OnhtcG1ldGEgeG1sbnM6eD0iYWRvYmU6bnM6bWV0YS8iIHg6eG1wdGs9IkFkb2JlIFhNUCBDb3JlIDUuMC1jMDYwIDYxLjEzNDc3NywgMjAxMC8wMi8xMi0xNzozMjowMCAgICAgICAgIj4gPHJkZjpSREYgeG1sbnM6cmRmPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5LzAyLzIyLXJkZi1zeW50YXgtbnMjIj4gPHJkZjpEZXNjcmlwdGlvbiByZGY6YWJvdXQ9IiIgeG1sbnM6eG1wPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvIiB4bWxuczp4bXBNTT0iaHR0cDovL25zLmFkb2JlLmNvbS94YXAvMS4wL21tLyIgeG1sbnM6c3RSZWY9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC9zVHlwZS9SZXNvdXJjZVJlZiMiIHhtcDpDcmVhdG9yVG9vbD0iQWRvYmUgUGhvdG9zaG9wIENTNSBNYWNpbnRvc2giIHhtcE1NOkluc3RhbmNlSUQ9InhtcC5paWQ6ODdCREY5REI1NkQ3MTFFNTkyNjNEMTA5NjgwODUyRTgiIHhtcE1NOkRvY3VtZW50SUQ9InhtcC5kaWQ6ODdCREY5REM1NkQ3MTFFNTkyNjNEMTA5NjgwODUyRTgiPiA8eG1wTU06RGVyaXZlZEZyb20gc3RSZWY6aW5zdGFuY2VJRD0ieG1wLmlpZDo4N0JERjlEOTU2RDcxMUU1OTI2M0QxMDk2ODA4NTJFOCIgc3RSZWY6ZG9jdW1lbnRJRD0ieG1wLmRpZDo4N0JERjlEQTU2RDcxMUU1OTI2M0QxMDk2ODA4NTJFOCIvPiA8L3JkZjpEZXNjcmlwdGlvbj4gPC9yZGY6UkRGPiA8L3g6eG1wbWV0YT4gPD94cGFja2V0IGVuZD0iciI/PqjT9SMAAAAGUExURQAAAP///6XZn90AAAACdFJOU/8A5bcwSgAAAB9JREFUeNpiYEQDDEQJMMABTAAmNdAC6A4j0XMAAQYAcbwA1Xvj1CgAAAAASUVORK5CYII=';
 
 /**
  * Interval to show dialog for unsaved data if autosave is on.
@@ -1301,10 +1287,10 @@ App.loadPlugins = function(plugins, useInclude)
 		{
 			try
 			{
-				var url = PLUGINS_BASE_PATH + App.pluginRegistry[plugins[i]];
-				
-				if (url != null)
+				if (App.pluginRegistry[plugins[i]] != null)
 				{
+					var url = PLUGINS_BASE_PATH + App.pluginRegistry[plugins[i]];
+					
 					if (App.pluginsLoaded[url] == null)
 					{
 						App.pluginsLoaded[url] = true;
@@ -1726,7 +1712,7 @@ App.prototype.init = function()
 	{
 		this.buttonContainer = document.createElement('div');
 		this.buttonContainer.style.display = 'inline-block';
-		this.buttonContainer.style.paddingRight = '48px';
+		this.buttonContainer.style.paddingRight = '32px';
 		this.buttonContainer.style.position = 'absolute';
 		this.buttonContainer.style.right = '0px';
 		
@@ -2109,10 +2095,7 @@ App.prototype.checkLicense = function()
  */
 App.prototype.handleLicense = function(lic, domain)
 {
-	if (lic != null && lic.plugins != null)
-	{
-		App.loadPlugins(lic.plugins.split(';'), true);
-	}
+	// Hook for subclassers to handle license response
 };
 
 /**
@@ -3388,9 +3371,9 @@ App.prototype.start = function()
 					this.loadTemplate(value, function(text)
 					{
 						showCreateDialog(text);
-					}, mxUtils.bind(this, function()
+					}, mxUtils.bind(this, function(e)
 					{
-						this.handleError(null, mxResources.get('errorLoadingFile'), reconnect);
+						this.handleError(e, mxResources.get('errorLoadingFile'), reconnect);
 					}));
 				}
 			}
@@ -3684,7 +3667,7 @@ App.prototype.showSplash = function(force)
  * @param {number} dx X-coordinate of the translation.
  * @param {number} dy Y-coordinate of the translation.
  */
-App.prototype.addLanguageMenu = function(elt, addLabel)
+App.prototype.addLanguageMenu = function(elt, addLabel, right)
 {
 	var img = null;
 	var langMenu = this.menus.get('language');
@@ -3693,27 +3676,37 @@ App.prototype.addLanguageMenu = function(elt, addLabel)
 	{
 		img = document.createElement('div');
 		img.setAttribute('title', mxResources.get('language'));
-		img.className = 'geIcon geSprite geSprite-globe';
+
+		img.className = (uiTheme != 'atlas') ? 'geIcon geAdaptiveAsset' : '';
+		img.style.backgroundImage = 'url(' + Editor.globeImage + ')';
+		img.style.backgroundPosition = 'right center';
+		img.style.backgroundRepeat = 'no-repeat';
+		img.style.backgroundSize = '19px 19px';
+		img.style.width = '19px';
+		img.style.height = '19px';
+		mxUtils.setOpacity(img, 40);
+
 		img.style.position = 'absolute';
 		img.style.cursor = 'pointer';
 		img.style.bottom = '20px';
-		img.style.right = '20px';
+		img.style.right = (right != null) ? right : '22px';
 		
 		if (addLabel)
 		{
 			img.style.direction = 'rtl';
 			img.style.textAlign = 'right';
-			img.style.right = '24px';
+			img.style.right = (right != null) ? right : '24px';
 
 			var label = document.createElement('span');
 			label.style.display = 'inline-block';
 			label.style.fontSize = '12px';
-			label.style.margin = '5px 24px 0 0';
-			label.style.color = 'gray';
+			label.style.margin = '2px 24px 0 0';
 			label.style.userSelect = 'none';
 			
 			mxUtils.write(label, mxResources.get('language'));
 			img.appendChild(label);
+
+			label.className = (uiTheme != 'atlas') ? 'geAdaptiveAsset' : '';
 		}
 		
 		mxEvent.addListener(img, 'click', mxUtils.bind(this, function(evt)
@@ -5731,20 +5724,15 @@ App.prototype.updateButtonContainer = function()
 	if (this.buttonContainer != null)
 	{
 		var file = this.getCurrentFile();
-		
+
 		if (urlParams['embed'] == '1')
 		{
-			if (uiTheme == 'atlas' || urlParams['atlas'] == '1')
+			if (urlParams['sketch'] != '1')
 			{
 				this.buttonContainer.style.paddingRight = '12px';
-				this.buttonContainer.style.paddingTop = '6px';
-				this.buttonContainer.style.right = urlParams['noLangIcon'] == '1'? '0' : '25px';
 			}
-			else if (uiTheme != 'min')
-			{
-				this.buttonContainer.style.paddingRight = '38px';
-				this.buttonContainer.style.paddingTop = '6px';
-			}
+			
+			this.buttonContainer.style.paddingTop = '6px';
 		}
 		
 		// Comments
@@ -5754,7 +5742,7 @@ App.prototype.updateButtonContainer = function()
 			{
 				this.commentButton = document.createElement('a');
 				this.commentButton.setAttribute('title', mxResources.get('comments'));
-				this.commentButton.className = 'geToolbarButton';
+				this.commentButton.className = 'geToolbarButton geAdaptiveAsset';
 				this.commentButton.style.cssText = 'display:inline-block;position:relative;box-sizing:border-box;' +
 					'margin-right:4px;float:left;cursor:pointer;width:24px;height:24px;background-size:24px 24px;' +
 					'background-position:center center;background-repeat:no-repeat;background-image:' +
@@ -5785,7 +5773,7 @@ App.prototype.updateButtonContainer = function()
 				
 				this.buttonContainer.appendChild(this.commentButton);
 				
-				if (uiTheme == 'dark' || uiTheme == 'atlas')
+				if (uiTheme == 'atlas')
 				{
 					this.commentButton.style.filter = 'invert(100%)';
 				}
@@ -5807,7 +5795,7 @@ App.prototype.updateButtonContainer = function()
 				if (this.shareButton == null)
 				{
 					this.shareButton = document.createElement('div');
-					this.shareButton.className = 'geBtn gePrimaryBtn';
+					this.shareButton.className = 'geBtn gePrimaryBtn';// geAdaptiveAsset';
 					this.shareButton.style.display = 'inline-block';
 					this.shareButton.style.backgroundColor = '#F2931E';
 					this.shareButton.style.borderColor = '#F08705';
@@ -5821,13 +5809,14 @@ App.prototype.updateButtonContainer = function()
 					this.shareButton.setAttribute('title', mxResources.get('share'));
 					
 					var icon = document.createElement('img');
+					icon.className = 'geInverseAdaptiveAsset';
 					icon.setAttribute('src', this.shareImage);
 					icon.setAttribute('align', 'absmiddle');
 					icon.style.marginRight = '4px';
 					icon.style.marginTop = '-3px';
 					this.shareButton.appendChild(icon);
 					
-					if (!Editor.isDarkMode() && uiTheme != 'atlas')
+					if (uiTheme != 'atlas')
 					{
 						this.shareButton.style.color = 'black';
 						icon.style.filter = 'invert(100%)';
@@ -5842,6 +5831,9 @@ App.prototype.updateButtonContainer = function()
 					
 					this.buttonContainer.appendChild(this.shareButton);
 				}
+
+				this.shareButton.style.display = (Editor.currentTheme == 'simple' ||
+					Editor.currentTheme == 'min') ? 'none' : 'inline-block';
 			}
 			else if (this.shareButton != null)
 			{
@@ -5849,7 +5841,7 @@ App.prototype.updateButtonContainer = function()
 				this.shareButton = null;
 			}
 			
-			//Fetch notifications
+			// Fetch notifications
 			if (urlParams['extAuth'] != '1') //Disable notification with external auth (e.g, Teams app)
 			{
 				this.fetchAndShowNotification('online', this.mode);
@@ -6418,7 +6410,7 @@ App.prototype.descriptorChanged = function()
 		if (this.fname != null)
 		{
 			this.fnameWrapper.style.display = 'block';
-			this.fname.innerHTML = '';
+			this.fname.innerText = '';
 			var filename = (file.getTitle() != null) ? file.getTitle() : this.defaultFilename;
 			mxUtils.write(this.fname, filename);
 			this.fname.setAttribute('title', filename + ' - ' + mxResources.get('rename'));
@@ -6707,6 +6699,7 @@ App.prototype.updateHeader = function()
 {
 	if (this.menubar != null)
 	{
+		var logo = 'url(' + Editor.logoImage + ')';
 		this.appIcon = document.createElement('a');
 		this.appIcon.style.display = 'block';
 		this.appIcon.style.position = 'absolute';
@@ -6714,13 +6707,12 @@ App.prototype.updateHeader = function()
 		this.appIcon.style.height = (this.menubarHeight - 28) + 'px';
 		this.appIcon.style.margin = '14px 0px 8px 16px';
 		this.appIcon.style.opacity = '0.85';
-		this.appIcon.style.borderRadius = '3px';
-		
-		if (uiTheme != 'dark')
-		{
-			this.appIcon.style.backgroundColor = '#f08705';
-		}
-		
+		this.appIcon.style.borderRadius = '3px';		
+		this.appIcon.style.backgroundPosition = 'center center';
+		this.appIcon.style.backgroundSize = '100% 100%';
+		this.appIcon.style.backgroundRepeat = 'no-repeat';
+		this.appIcon.style.backgroundImage = logo;
+
 		mxEvent.disableContextMenu(this.appIcon);
 		
 		mxEvent.addListener(this.appIcon, 'click', mxUtils.bind(this, function(evt)
@@ -6728,19 +6720,16 @@ App.prototype.updateHeader = function()
 			this.appIconClicked(evt);
 		}));
 		
-		// LATER: Use Alpha image loader in IE6
-		// NOTE: This uses the diagram bit of the old logo as it looks better in this case
-		//this.appIcon.style.filter = 'progid:DXImageTransform.Microsoft.AlphaImageLoader(src=' + IMAGE_PATH + '/logo-white.png,sizingMethod=\'scale\')';
-		var logo = (!mxClient.IS_SVG) ? 'url(\'' + IMAGE_PATH + '/logo-white.png\')' :
-			((uiTheme == 'dark') ? 'url(data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiIHN0YW5kYWxvbmU9Im5vIj8+CjxzdmcKICAgeG1sbnM6ZGM9Imh0dHA6Ly9wdXJsLm9yZy9kYy9lbGVtZW50cy8xLjEvIgogICB4bWxuczpjYz0iaHR0cDovL2NyZWF0aXZlY29tbW9ucy5vcmcvbnMjIgogICB4bWxuczpyZGY9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkvMDIvMjItcmRmLXN5bnRheC1ucyMiCiAgIHhtbG5zOnN2Zz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciCiAgIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIKICAgeG1sOnNwYWNlPSJwcmVzZXJ2ZSIKICAgZW5hYmxlLWJhY2tncm91bmQ9Im5ldyAwIDAgMzA2LjE4NSAxMjAuMjk2IgogICB2aWV3Qm94PSIyNCAyNiA2OCA2OCIKICAgeT0iMHB4IgogICB4PSIwcHgiCiAgIHZlcnNpb249IjEuMSI+CiAgIAkgPGc+PGxpbmUKICAgICAgIHkyPSI3Mi4zOTQiCiAgICAgICB4Mj0iNDEuMDYxIgogICAgICAgeTE9IjQzLjM4NCIKICAgICAgIHgxPSI1OC4wNjkiCiAgICAgICBzdHJva2UtbWl0ZXJsaW1pdD0iMTAiCiAgICAgICBzdHJva2Utd2lkdGg9IjMuNTUyOCIKICAgICAgIHN0cm9rZT0iI0ZGRkZGRiIKICAgICAgIGZpbGw9Im5vbmUiIC8+PGxpbmUKICAgICAgIHkyPSI3Mi4zOTQiCiAgICAgICB4Mj0iNzUuMDc2IgogICAgICAgeTE9IjQzLjM4NCIKICAgICAgIHgxPSI1OC4wNjgiCiAgICAgICBzdHJva2UtbWl0ZXJsaW1pdD0iMTAiCiAgICAgICBzdHJva2Utd2lkdGg9IjMuNTAwOCIKICAgICAgIHN0cm9rZT0iI0ZGRkZGRiIKICAgICAgIGZpbGw9Im5vbmUiIC8+PGc+PHBhdGgKICAgICAgICAgZD0iTTUyLjc3Myw3Ny4wODRjMCwxLjk1NC0xLjU5OSwzLjU1My0zLjU1MywzLjU1M0gzNi45OTljLTEuOTU0LDAtMy41NTMtMS41OTktMy41NTMtMy41NTN2LTkuMzc5ICAgIGMwLTEuOTU0LDEuNTk5LTMuNTUzLDMuNTUzLTMuNTUzaDEyLjIyMmMxLjk1NCwwLDMuNTUzLDEuNTk5LDMuNTUzLDMuNTUzVjc3LjA4NHoiCiAgICAgICAgIGZpbGw9IiNGRkZGRkYiIC8+PC9nPjxnCiAgICAgICBpZD0iZzM0MTkiPjxwYXRoCiAgICAgICAgIGQ9Ik02Ny43NjIsNDguMDc0YzAsMS45NTQtMS41OTksMy41NTMtMy41NTMsMy41NTNINTEuOTg4Yy0xLjk1NCwwLTMuNTUzLTEuNTk5LTMuNTUzLTMuNTUzdi05LjM3OSAgICBjMC0xLjk1NCwxLjU5OS0zLjU1MywzLjU1My0zLjU1M0g2NC4yMWMxLjk1NCwwLDMuNTUzLDEuNTk5LDMuNTUzLDMuNTUzVjQ4LjA3NHoiCiAgICAgICAgIGZpbGw9IiNGRkZGRkYiIC8+PC9nPjxnPjxwYXRoCiAgICAgICAgIGQ9Ik04Mi43NTIsNzcuMDg0YzAsMS45NTQtMS41OTksMy41NTMtMy41NTMsMy41NTNINjYuOTc3Yy0xLjk1NCwwLTMuNTUzLTEuNTk5LTMuNTUzLTMuNTUzdi05LjM3OSAgICBjMC0xLjk1NCwxLjU5OS0zLjU1MywzLjU1My0zLjU1M2gxMi4yMjJjMS45NTQsMCwzLjU1MywxLjU5OSwzLjU1MywzLjU1M1Y3Ny4wODR6IgogICAgICAgICBmaWxsPSIjRkZGRkZGIiAvPjwvZz48L2c+PC9zdmc+)' :
-			'url(data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0idXRmLTgiPz4KPHN2ZyB2ZXJzaW9uPSIxLjEiIGlkPSJFYmVuZV8xIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiB4PSIwcHgiIHk9IjBweCIKCSB2aWV3Qm94PSIwIDAgMjI1IDIyNSIgc3R5bGU9ImVuYWJsZS1iYWNrZ3JvdW5kOm5ldyAwIDAgMjI1IDIyNTsiIHhtbDpzcGFjZT0icHJlc2VydmUiPgo8c3R5bGUgdHlwZT0idGV4dC9jc3MiPgoJLnN0MXtmaWxsOiNERjZDMEM7fQoJLnN0MntmaWxsOiNGRkZGRkY7fQo8L3N0eWxlPgo8cGF0aCBjbGFzcz0ic3QxIiBkPSJNMjI1LDIxNS40YzAsNS4zLTQuMyw5LjYtOS41LDkuNmwwLDBINzcuMWwtNDQuOC00NS41TDYwLjIsMTM0bDgyLjctMTAyLjdsODIuMSw4NC41VjIxNS40eiIvPgo8cGF0aCBjbGFzcz0ic3QyIiBkPSJNMTg0LjYsMTI1LjhoLTIzLjdsLTI1LTQyLjdjNS43LTEuMiw5LjgtNi4yLDkuNy0xMlYzOWMwLTYuOC01LjQtMTIuMy0xMi4yLTEyLjNoLTAuMUg5MS42CgljLTYuOCwwLTEyLjMsNS40LTEyLjMsMTIuMlYzOXYzMi4xYzAsNS44LDQsMTAuOCw5LjcsMTJsLTI1LDQyLjdINDAuNGMtNi44LDAtMTIuMyw1LjQtMTIuMywxMi4ydjAuMXYzMi4xCgljMCw2LjgsNS40LDEyLjMsMTIuMiwxMi4zaDAuMWg0MS43YzYuOCwwLDEyLjMtNS40LDEyLjMtMTIuMnYtMC4xdi0zMi4xYzAtNi44LTUuNC0xMi4zLTEyLjItMTIuM2gtMC4xaC00bDI0LjgtNDIuNGgxOS4zCglsMjQuOSw0Mi40SDE0M2MtNi44LDAtMTIuMyw1LjQtMTIuMywxMi4ydjAuMXYzMi4xYzAsNi44LDUuNCwxMi4zLDEyLjIsMTIuM2gwLjFoNDEuN2M2LjgsMCwxMi4zLTUuNCwxMi4zLTEyLjJ2LTAuMXYtMzIuMQoJYzAtNi44LTUuNC0xMi4zLTEyLjItMTIuM0MxODQuNywxMjUuOCwxODQuNywxMjUuOCwxODQuNiwxMjUuOHoiLz4KPC9zdmc+Cg==)');
-		this.appIcon.style.backgroundImage = logo;		
-		this.appIcon.style.backgroundPosition = 'center center';
-		this.appIcon.style.backgroundSize = '100% 100%';
-		this.appIcon.style.backgroundRepeat = 'no-repeat';
-		
+		var updateBackground = mxUtils.bind(this, function()
+		{
+			this.appIcon.style.backgroundColor = (!Editor.isDarkMode()) ? '#f08705' : '';
+		});
+
+		this.addListener('darkModeChanged', updateBackground);
+		updateBackground();
+
 		mxUtils.setPrefixedStyle(this.appIcon.style, 'transition', 'all 125ms linear');
-	
+
 		mxEvent.addListener(this.appIcon, 'mouseover', mxUtils.bind(this, function()
 		{
 			var file = this.getCurrentFile();
@@ -6851,25 +6840,23 @@ App.prototype.updateHeader = function()
 		/**
 		 * Adds format panel toggle.
 		 */
+		var right = (uiTheme != 'atlas' && urlParams['embed'] != '1') ? 30 : 10;
 		this.toggleFormatElement = document.createElement('a');
-		this.toggleFormatElement.setAttribute('title', mxResources.get('formatPanel') + ' (' + Editor.ctrlKey + '+Shift+P)');
+		this.toggleFormatElement.setAttribute('title', mxResources.get('format') + ' (' + Editor.ctrlKey + '+Shift+P)');
 		this.toggleFormatElement.style.position = 'absolute';
 		this.toggleFormatElement.style.display = 'inline-block';
 		this.toggleFormatElement.style.top = (uiTheme == 'atlas') ? '8px' : '6px';
-		this.toggleFormatElement.style.right = (uiTheme != 'atlas' && urlParams['embed'] != '1') ? '30px' : '10px';
+		this.toggleFormatElement.style.right = right + 'px';
 		this.toggleFormatElement.style.padding = '2px';
 		this.toggleFormatElement.style.fontSize = '14px';
-		this.toggleFormatElement.className = (uiTheme != 'atlas') ? 'geButton' : '';
+		this.toggleFormatElement.className = (uiTheme != 'atlas') ? 'geButton geAdaptiveAsset' : '';
 		this.toggleFormatElement.style.width = '16px';
 		this.toggleFormatElement.style.height = '16px';
 		this.toggleFormatElement.style.backgroundPosition = '50% 50%';
+		this.toggleFormatElement.style.backgroundSize = '16px 16px';
 		this.toggleFormatElement.style.backgroundRepeat = 'no-repeat';
 		this.toolbarContainer.appendChild(this.toggleFormatElement);
-		
-		if (uiTheme == 'dark')
-		{
-			this.toggleFormatElement.style.filter = 'invert(100%)';
-		}
+		right += 20;
 		
 		// Prevents focus
 	    mxEvent.addListener(this.toggleFormatElement, (mxClient.IS_POINTER) ? 'pointerdown' : 'mousedown',
@@ -6881,9 +6868,9 @@ App.prototype.updateHeader = function()
 		mxEvent.addListener(this.toggleFormatElement, 'click', mxUtils.bind(this, function(evt)
 		{
 			EditorUi.logEvent({category: 'TOOLBAR-ACTION-',
-				action: 'formatPanel'});
+				action: 'format'});
 		
-			this.actions.get('formatPanel').funct();
+			this.actions.get('format').funct();
 			mxEvent.consume(evt);
 		}));
 
@@ -6902,21 +6889,12 @@ App.prototype.updateHeader = function()
 		this.addListener('formatWidthChanged', toggleFormatPanel);
 		toggleFormatPanel();
 
-		this.fullscreenElement = document.createElement('a');
+		this.fullscreenElement = this.toggleFormatElement.cloneNode(true);
 		this.fullscreenElement.setAttribute('title', mxResources.get('fullscreen'));
-		this.fullscreenElement.style.position = 'absolute';
-		this.fullscreenElement.style.display = 'inline-block';
-		this.fullscreenElement.style.top = (uiTheme == 'atlas') ? '8px' : '6px';
-		this.fullscreenElement.style.right = (uiTheme != 'atlas' && urlParams['embed'] != '1') ? '50px' : '30px';
-		this.fullscreenElement.style.padding = '2px';
-		this.fullscreenElement.style.fontSize = '14px';
-		this.fullscreenElement.className = (uiTheme != 'atlas') ? 'geButton' : '';
-		this.fullscreenElement.style.width = '16px';
-		this.fullscreenElement.style.height = '16px';
-		this.fullscreenElement.style.backgroundPosition = '50% 50%';
-		this.fullscreenElement.style.backgroundRepeat = 'no-repeat';
-		this.fullscreenElement.style.backgroundImage = 'url(\'' + this.fullscreenImage + '\')';
+		this.fullscreenElement.style.backgroundImage = 'url(\'' + Editor.fullscreenImage + '\')';
+		this.fullscreenElement.style.right = right + 'px';
 		this.toolbarContainer.appendChild(this.fullscreenElement);
+		right += 20;
 		
 		// Prevents focus
 		mxEvent.addListener(this.fullscreenElement, (mxClient.IS_POINTER) ? 'pointerdown' : 'mousedown',
@@ -6924,20 +6902,6 @@ App.prototype.updateHeader = function()
     	{
 			evt.preventDefault();
 		}));
-		
-		// Some style changes in Atlas theme
-		if (uiTheme == 'atlas')
-		{
-			mxUtils.setOpacity(this.toggleFormatElement, 70);
-			mxUtils.setOpacity(this.fullscreenElement, 70);
-		}
-		
-		var initialPosition = this.hsplitPosition;
-
-		if (uiTheme == 'dark')
-		{
-			this.fullscreenElement.style.filter = 'invert(100%)';
-		}
 		
 		mxEvent.addListener(this.fullscreenElement, 'click', mxUtils.bind(this, function(evt)
 		{
@@ -6961,6 +6925,46 @@ App.prototype.updateHeader = function()
 			this.fullscreenMode = !visible;
 			mxEvent.consume(evt);
 		}));
+		
+		if (urlParams['live-ui'] != '1' && uiTheme != 'atlas' && urlParams['embed'] != '1')
+		{
+			this.darkModeElement = this.toggleFormatElement.cloneNode(true);
+			this.darkModeElement.setAttribute('title', mxResources.get('theme'));
+			this.darkModeElement.style.right = right + 'px';
+			this.toolbarContainer.appendChild(this.darkModeElement);
+			right += 20;
+
+			var updateDarkModeElement = mxUtils.bind(this, function()
+			{
+				this.darkModeElement.style.backgroundImage = 'url(\'' + ((Editor.isDarkMode() || uiTheme == 'atlas') ?
+					Editor.lightModeImage : Editor.darkModeImage) + '\')';
+			});
+
+			this.addListener('darkModeChanged', updateDarkModeElement);
+			updateDarkModeElement();
+			
+			// Prevents focus
+			mxEvent.addListener(this.darkModeElement, (mxClient.IS_POINTER) ? 'pointerdown' : 'mousedown',
+				mxUtils.bind(this, function(evt)
+			{
+				evt.preventDefault();
+			}));
+			
+			mxEvent.addListener(this.darkModeElement, 'click', mxUtils.bind(this, function(evt)
+			{
+				this.actions.get('toggleDarkMode').funct();
+				mxEvent.consume(evt);
+			}));
+		}
+		
+		// Some style changes in Atlas theme
+		if (uiTheme == 'atlas')
+		{
+			mxUtils.setOpacity(this.toggleFormatElement, 70);
+			mxUtils.setOpacity(this.fullscreenElement, 70);
+		}
+		
+		var initialPosition = this.hsplitPosition;
 
 		/**
 		 * Adds compact UI toggle.
@@ -6969,7 +6973,7 @@ App.prototype.updateHeader = function()
 		{
 			this.toggleElement = document.createElement('a');
 			this.toggleElement.setAttribute('title', mxResources.get('collapseExpand'));
-			this.toggleElement.className = 'geButton';
+			this.toggleElement.className = 'geButton geAdaptiveAsset';
 			this.toggleElement.style.position = 'absolute';
 			this.toggleElement.style.display = 'inline-block';
 			this.toggleElement.style.width = '16px';
@@ -6984,11 +6988,6 @@ App.prototype.updateHeader = function()
 				
 			this.toggleElement.style.backgroundPosition = '50% 50%';
 			this.toggleElement.style.backgroundRepeat = 'no-repeat';
-			
-			if (uiTheme == 'dark')
-			{
-				this.toggleElement.style.filter = 'invert(100%)';
-			}
 			
 			// Prevents focus
 			mxEvent.addListener(this.toggleElement, (mxClient.IS_POINTER) ? 'pointerdown' : 'mousedown',
@@ -7071,6 +7070,12 @@ App.prototype.toggleCompactMode = function(visible)
  */
 App.prototype.updateUserElement = function()
 {
+	if (this.userElement == null)
+	{
+		this.userElement = this.createUserElement();
+		this.menubarContainer.appendChild(this.userElement);
+	}
+
 	if ((this.drive == null || this.drive.getUser() == null) &&
 		(this.oneDrive == null || this.oneDrive.getUser() == null) &&
 		(this.dropbox == null || this.dropbox.getUser() == null) &&
@@ -7078,595 +7083,11 @@ App.prototype.updateUserElement = function()
 		(this.gitLab == null || this.gitLab.getUser() == null) &&
 		(this.trello == null || !this.trello.isAuthorized())) //TODO Trello no user issue
 	{
-		if (this.userElement != null)
-		{
-			this.userElement.parentNode.removeChild(this.userElement);
-			this.userElement = null;
-		}
+		this.userElement.style.display = 'none';
 	}
 	else
 	{
-		if (this.userElement == null)
-		{
-			this.userElement = document.createElement('a');
-			this.userElement.className = 'geItem';
-			this.userElement.style.position = 'absolute';
-			this.userElement.style.fontSize = '8pt';
-			this.userElement.style.top = (uiTheme == 'atlas') ? '8px' : '2px';
-			this.userElement.style.right = '30px';
-			this.userElement.style.margin = '4px';
-			this.userElement.style.padding = '2px';
-			this.userElement.style.paddingRight = '16px';
-			this.userElement.style.verticalAlign = 'middle';
-			this.userElement.style.backgroundImage =  'url(' + IMAGE_PATH + '/expanded.gif)';
-			this.userElement.style.backgroundPosition = '100% 60%';
-			this.userElement.style.backgroundRepeat = 'no-repeat';
-			
-			this.menubarContainer.appendChild(this.userElement);
-
-			// Prevents focus
-			mxEvent.addListener(this.userElement, (mxClient.IS_POINTER) ? 'pointerdown' : 'mousedown',
-	        	mxUtils.bind(this, function(evt)
-	    	{
-				evt.preventDefault();
-			}));
-
-			mxEvent.addListener(this.userElement, 'click', mxUtils.bind(this, function(evt)
-			{
-				if (this.userPanel == null)
-				{
-					var div = document.createElement('div');
-					div.className = 'geDialog';
-					div.style.position = 'absolute';
-					div.style.top = (this.userElement.clientTop +
-						this.userElement.clientHeight + 6) + 'px';
-					div.style.zIndex = 5;
-					div.style.right = '36px';
-					div.style.padding = '0px';
-					div.style.cursor = 'default';
-					div.style.minWidth = '300px';
-					
-					this.userPanel = div;
-				}
-				
-				if (this.userPanel.parentNode != null)
-				{
-					this.userPanel.parentNode.removeChild(this.userPanel);
-				}
-				else
-				{
-					var connected = false;
-					this.userPanel.innerHTML = '';
-					
-					var img = document.createElement('img');
-
-					img.setAttribute('src', Dialog.prototype.closeImage);
-					img.setAttribute('title', mxResources.get('close'));
-					img.className = 'geDialogClose';
-					img.style.top = '8px';
-					img.style.right = '8px';
-					
-					mxEvent.addListener(img, 'click', mxUtils.bind(this, function()
-					{
-						if (this.userPanel.parentNode != null)
-						{
-							this.userPanel.parentNode.removeChild(this.userPanel);
-						}
-					}));
-					
-					this.userPanel.appendChild(img);
-										
-					if (this.drive != null)
-					{
-						var driveUsers = this.drive.getUsersList();
-						
-						if (driveUsers.length > 0)
-						{
-							// LATER: Cannot change user while file is open since close will not work with new
-							// credentials and closing the file using fileLoaded(null) will show splash dialog.
-							var closeFile = mxUtils.bind(this, function(callback, spinnerMsg)
-							{
-								var file = this.getCurrentFile();
-
-								if (file != null && file.constructor == DriveFile)
-								{
-									this.spinner.spin(document.body, spinnerMsg);
-										
-//									file.close();
-									this.fileLoaded(null);
-
-									// LATER: Use callback to wait for thumbnail update
-									window.setTimeout(mxUtils.bind(this, function()
-									{
-										this.spinner.stop();
-										callback();
-									}), 2000);
-								}
-								else
-								{
-									callback();
-								}
-							});
-							
-							var createUserRow = mxUtils.bind(this, function (user)
-							{
-								var tr = document.createElement('tr');
-								tr.setAttribute('title', 'User ID: ' + user.id);
-
-								var td = document.createElement('td');
-								td.setAttribute('valig', 'middle');
-								td.style.height = '59px';
-								td.style.width = '66px';
-
-								var img = document.createElement('img');
-								img.setAttribute('width', '50');
-								img.setAttribute('height', '50');
-								img.setAttribute('border', '0');
-								img.setAttribute('src', (user.pictureUrl != null) ? user.pictureUrl : this.defaultUserPicture);
-								img.style.borderRadius = '50%';
-								img.style.margin = '4px 8px 0 8px';
-								td.appendChild(img);
-								tr.appendChild(td);
-	
-								var td = document.createElement('td');
-								td.setAttribute('valign', 'middle');
-								td.style.whiteSpace = 'nowrap';
-								td.style.paddingTop = '4px';
-								td.style.maxWidth = '0';
-								td.style.overflow = 'hidden';
-								td.style.textOverflow = 'ellipsis';
-								mxUtils.write(td, user.displayName +
-									((user.isCurrent && driveUsers.length > 1) ?
-									' (' + mxResources.get('default') + ')' : ''));
-	
-								if (user.email != null)
-								{
-									mxUtils.br(td);
-	
-									var small = document.createElement('small');
-									small.style.color = 'gray';
-									mxUtils.write(small, user.email);
-									td.appendChild(small);
-								}
-	
-								var div = document.createElement('div');
-								div.style.marginTop = '4px';
-
-								var i = document.createElement('i');
-								mxUtils.write(i, mxResources.get('googleDrive'));
-								div.appendChild(i);
-								td.appendChild(div);
-								tr.appendChild(td);
-
-								if (!user.isCurrent)
-								{
-									tr.style.cursor = 'pointer';
-									tr.style.opacity = '0.3';
-
-									mxEvent.addListener(tr, 'click', mxUtils.bind(this, function(evt)
-									{
-										closeFile(mxUtils.bind(this, function()
-										{
-											this.stateArg = null;
-											this.drive.setUser(user);
-											
-											this.drive.authorize(true, mxUtils.bind(this, function()
-											{
-												this.setMode(App.MODE_GOOGLE);
-												this.hideDialog();
-												this.showSplash();
-											}), mxUtils.bind(this, function(resp)
-											{
-												this.handleError(resp);
-											}), true); //Remember is true since add account imply keeping that account
-										}), mxResources.get('closingFile') + '...');
-										
-										mxEvent.consume(evt);
-									}));
-								}
-							
-								return tr;
-							});
-							
-							connected = true;
-							
-							var driveUserTable = document.createElement('table');
-							driveUserTable.style.borderSpacing = '0';
-							driveUserTable.style.fontSize = '10pt';
-							driveUserTable.style.width = '100%';
-							driveUserTable.style.padding = '10px';
-
-							for (var i = 0; i < driveUsers.length; i++)
-							{
-								driveUserTable.appendChild(createUserRow(driveUsers[i]));
-							}
-							
-							this.userPanel.appendChild(driveUserTable);
-							
-							var div = document.createElement('div');
-							div.style.textAlign = 'left';
-							div.style.padding = '10px';
-							div.style.whiteSpace = 'nowrap';
-							div.style.borderTop = '1px solid rgb(224, 224, 224)';
-
-							var btn = mxUtils.button(mxResources.get('signOut'), mxUtils.bind(this, function()
-							{
-								this.confirm(mxResources.get('areYouSure'), mxUtils.bind(this, function()
-								{
-									closeFile(mxUtils.bind(this, function()
-									{
-										this.stateArg = null;
-										this.drive.logout();
-										this.setMode(App.MODE_GOOGLE);
-										this.hideDialog();
-										this.showSplash();
-									}), mxResources.get('signOut'));
-								}));
-							}));
-							btn.className = 'geBtn';
-							btn.style.float = 'right';
-							div.appendChild(btn);
-							
-							var btn = mxUtils.button(mxResources.get('addAccount'), mxUtils.bind(this, function()
-							{
-								var authWin = this.drive.createAuthWin();
-								//FIXME This doean't work to set focus back to main window until closing the file is done
-								authWin.blur();
-								window.focus();
-								
-								closeFile(mxUtils.bind(this, function()
-								{
-									this.stateArg = null;
-									
-									this.drive.authorize(false, mxUtils.bind(this, function()
-									{
-										this.setMode(App.MODE_GOOGLE);
-										this.hideDialog();
-										this.showSplash();
-									}), mxUtils.bind(this, function(resp)
-									{
-										this.handleError(resp);
-									}), true, authWin); //Remember is true since add account imply keeping that account
-								}), mxResources.get('closingFile') + '...');
-							}));
-							btn.className = 'geBtn';
-							btn.style.margin = '0px';
-							div.appendChild(btn);
-							this.userPanel.appendChild(div);
-						}
-					}
-					
-					var addUser = mxUtils.bind(this, function(user, logo, logout, label)
-					{
-						if (user != null)
-						{
-							if (connected)
-							{
-								this.userPanel.appendChild(document.createElement('hr'));
-							}
-							
-							connected = true;
-							var userTable = document.createElement('table');
-							userTable.style.borderSpacing = '0';
-							userTable.style.fontSize = '10pt';
-							userTable.style.width = '100%';
-							userTable.style.padding = '10px';
-
-							var tbody = document.createElement('tbody');
-							var row = document.createElement('tr');
-							var td = document.createElement('td');
-							td.setAttribute('valig', 'top');
-							td.style.width = '40px';
-
-							if (logo != null)
-							{
-								var img = document.createElement('img');
-								img.setAttribute('width', '40');
-								img.setAttribute('height', '40');
-								img.setAttribute('border', '0');
-								img.setAttribute('src', logo);
-								img.style.marginRight = '6px';
-
-								td.appendChild(img);
-							}
-
-							row.appendChild(td);
-
-							var td = document.createElement('td');
-							td.setAttribute('valign', 'middle');
-							td.style.whiteSpace = 'nowrap';
-							td.style.maxWidth = '0';
-							td.style.overflow = 'hidden';
-							td.style.textOverflow = 'ellipsis';
-
-							mxUtils.write(td, user.displayName);
-
-							if (user.email != null)
-							{
-								mxUtils.br(td);
-
-								var small = document.createElement('small');
-								small.style.color = 'gray';
-								mxUtils.write(small, user.email);
-								td.appendChild(small);
-							}
-
-							if (label != null)
-							{
-								var div = document.createElement('div');
-								div.style.marginTop = '4px';
-
-								var i = document.createElement('i');
-								mxUtils.write(i, label);
-								div.appendChild(i);
-								td.appendChild(div);
-							}
-
-							row.appendChild(td);
-							tbody.appendChild(row);
-							userTable.appendChild(tbody);
-
-							this.userPanel.appendChild(userTable);
-							var div = document.createElement('div');
-							div.style.textAlign = 'center';
-							div.style.padding = '10px';
-							div.style.whiteSpace = 'nowrap';
-							
-							if (logout != null)
-							{
-								var btn = mxUtils.button(mxResources.get('signOut'), logout);
-								btn.className = 'geBtn';
-								div.appendChild(btn);
-							}
-							
-							this.userPanel.appendChild(div);
-						}
-					});
-					
-					if (this.dropbox != null)
-					{
-						addUser(this.dropbox.getUser(), IMAGE_PATH + '/dropbox-logo.svg', mxUtils.bind(this, function()
-						{
-							var file = this.getCurrentFile();
-
-							if (file != null && file.constructor == DropboxFile)
-							{
-								var doLogout = mxUtils.bind(this, function()
-								{
-									this.dropbox.logout();
-									window.location.hash = '';
-								});
-								
-								if (!file.isModified())
-								{
-									doLogout();
-								}
-								else
-								{
-									this.confirm(mxResources.get('allChangesLost'), null, doLogout,
-										mxResources.get('cancel'), mxResources.get('discardChanges'));
-								}
-							}
-							else
-							{
-								this.dropbox.logout();
-							}
-						}), mxResources.get('dropbox'));
-					}
-
-					if (this.oneDrive != null)
-					{
-						addUser(this.oneDrive.getUser(), IMAGE_PATH + '/onedrive-logo.svg', this.oneDrive.noLogout? null : mxUtils.bind(this, function()
-						{
-							var file = this.getCurrentFile();
-
-							if (file != null && file.constructor == OneDriveFile)
-							{
-								var doLogout = mxUtils.bind(this, function()
-								{
-									this.oneDrive.logout();
-									window.location.hash = '';
-								});
-								
-								if (!file.isModified())
-								{
-									doLogout();
-								}
-								else
-								{
-									this.confirm(mxResources.get('allChangesLost'), null, doLogout,
-										mxResources.get('cancel'), mxResources.get('discardChanges'));
-								}
-							}
-							else
-							{
-								this.oneDrive.logout();
-							}
-						}), mxResources.get('oneDrive'));
-					}
-
-					if (this.gitHub != null)
-					{
-						addUser(this.gitHub.getUser(), IMAGE_PATH + '/github-logo.svg', mxUtils.bind(this, function()
-						{
-							var file = this.getCurrentFile();
-
-							if (file != null && file.constructor == GitHubFile)
-							{
-								var doLogout = mxUtils.bind(this, function()
-								{
-									this.gitHub.logout();
-									window.location.hash = '';
-								});
-								
-								if (!file.isModified())
-								{
-									doLogout();
-								}
-								else
-								{
-									this.confirm(mxResources.get('allChangesLost'), null, doLogout,
-										mxResources.get('cancel'), mxResources.get('discardChanges'));
-								}
-							}
-							else
-							{
-								this.gitHub.logout();
-							}
-						}), mxResources.get('github'));
-					}
-					
-					if (this.gitLab != null)
-					{
-						addUser(this.gitLab.getUser(), IMAGE_PATH + '/gitlab-logo.svg', mxUtils.bind(this, function()
-						{
-							var file = this.getCurrentFile();
-
-							if (file != null && file.constructor == GitLabFile)
-							{
-								var doLogout = mxUtils.bind(this, function()
-								{
-									this.gitLab.logout();
-									window.location.hash = '';
-								});
-
-								if (!file.isModified())
-								{
-									doLogout();
-								}
-								else
-								{
-									this.confirm(mxResources.get('allChangesLost'), null, doLogout,
-										mxResources.get('cancel'), mxResources.get('discardChanges'));
-								}
-							}
-							else
-							{
-								this.gitLab.logout();
-							}
-						}), mxResources.get('gitlab'));
-					}
-
-					//TODO We have no user info from Trello, how we can create a user?
-					if (this.trello != null)
-					{
-						addUser(this.trello.getUser(), IMAGE_PATH + '/trello-logo.svg', mxUtils.bind(this, function()
-						{
-							var file = this.getCurrentFile();
-
-							if (file != null && file.constructor == TrelloFile)
-							{
-								var doLogout = mxUtils.bind(this, function()
-								{
-									this.trello.logout();
-									window.location.hash = '';
-								});
-								
-								if (!file.isModified())
-								{
-									doLogout();
-								}
-								else
-								{
-									this.confirm(mxResources.get('allChangesLost'), null, doLogout,
-										mxResources.get('cancel'), mxResources.get('discardChanges'));
-								}
-							}
-							else
-							{
-								this.trello.logout();
-							}
-						}), mxResources.get('trello'));
-					}
-					
-					if (!connected)
-					{
-						var div = document.createElement('div');
-						div.style.textAlign = 'center';
-						div.style.padding = '10px';
-						div.innerHTML = mxResources.get('notConnected');
-						
-						this.userPanel.appendChild(div);
-					}
-					
-					var div = document.createElement('div');
-					div.style.textAlign = 'center';
-					div.style.padding = '10px';
-					div.style.background = Editor.isDarkMode() ? '' : 'whiteSmoke';
-					div.style.borderTop = '1px solid #e0e0e0';
-					div.style.whiteSpace = 'nowrap';
-					
-					if (urlParams['sketch'] == '1')
-					{
-						var btn = mxUtils.button(mxResources.get('share'), mxUtils.bind(this, function()
-						{
-							this.actions.get('share').funct();
-						}));
-						btn.className = 'geBtn';
-						div.appendChild(btn);
-				
-						if (this.commentsSupported())
-						{
-							btn = mxUtils.button(mxResources.get('comments'), mxUtils.bind(this, function()
-							{
-								this.actions.get('comments').funct();
-							}));
-							btn.className = 'geBtn';
-							div.appendChild(btn);
-							this.userPanel.appendChild(div);
-						}
-
-						this.userPanel.appendChild(div);
-					}
-					else
-					{
-						var btn = mxUtils.button(mxResources.get('close'), mxUtils.bind(this, function()
-						{
-							if (!mxEvent.isConsumed(evt) && this.userPanel != null && this.userPanel.parentNode != null)
-							{
-								this.userPanel.parentNode.removeChild(this.userPanel);
-							}
-						}));
-
-						btn.className = 'geBtn';
-						div.appendChild(btn);
-						this.userPanel.appendChild(div);
-					}
-
-					if (uiTheme == 'min')
-					{
-						var file = this.getCurrentFile();
-			
-						if (file != null && file.isRealtimeEnabled() && file.isRealtimeSupported())
-						{
-							div = div.cloneNode(false);
-							div.style.fontSize = '9pt';
-							var err = file.getRealtimeError();
-							var state = file.getRealtimeState();
-
-							mxUtils.write(div, mxResources.get('realtimeCollaboration') + ': ' +
-								(state == 1 ? mxResources.get('online') :
-									((err != null && err.message != null) ?
-									err.message : mxResources.get('disconnected'))));
-							this.userPanel.appendChild(div);
-						}
-					}
-
-					document.body.appendChild(this.userPanel);
-				}
-				
-				mxEvent.consume(evt);
-			}));
-			
-			mxEvent.addListener(document.body, 'click', mxUtils.bind(this, function(evt)
-			{
-				if (!mxEvent.isConsumed(evt) && this.userPanel != null && this.userPanel.parentNode != null)
-				{
-					this.userPanel.parentNode.removeChild(this.userPanel);
-				}
-			}));
-		}
-		
+		this.userElement.style.display = 'inline-block';
 		var user = null;
 		
 		if (this.drive != null && this.drive.getUser() != null)
@@ -7693,12 +7114,15 @@ App.prototype.updateUserElement = function()
 		
 		if (user != null)
 		{
-			this.userElement.innerHTML = '';
-			
-			if (screen.width > 560)
+			EditorUi.removeChildNodes(this.userElement);
+			this.userElement.innerText = '';
+
+			if (Editor.currentTheme != 'simple' &&
+				Editor.currentTheme != 'min' &&
+				screen.width > 560)
 			{
 				mxUtils.write(this.userElement, user.displayName);
-				this.userElement.style.display = 'block';
+				this.userElement.style.display = 'inline-block';
 			}
 		}
 		else
@@ -7706,6 +7130,647 @@ App.prototype.updateUserElement = function()
 			this.userElement.style.display = 'none';
 		}
 	}
+
+	this.updateUserElementStyle();
+	this.updateUserElementIcon();
+};
+
+/**
+ * 
+ */
+App.prototype.updateUserElementStyle = function()
+{
+	var elt = this.userElement;
+
+	if (elt != null)
+	{
+		if (Editor.currentTheme == 'simple' ||
+			Editor.currentTheme == 'min')
+		{
+    		elt.className = 'geToolbarButton';
+			elt.style.backgroundImage = 'url(' + Editor.userImage + ')';
+        	elt.style.backgroundPosition = 'center center';
+        	elt.style.backgroundRepeat = 'no-repeat';
+        	elt.style.backgroundSize = '100% 100%';
+			elt.style.position = 'relative';
+			elt.style.margin = '0px';
+			elt.style.padding = '0px';
+        	elt.style.height = '24px';
+        	elt.style.width = '24px';
+			elt.style.top = '3px';
+			elt.style.right = '';
+		}
+		else
+		{
+			elt.className = 'geItem';
+			elt.style.backgroundImage =  'url(' + IMAGE_PATH + '/expanded.gif)';
+			elt.style.backgroundPosition = '100% 60%';
+			elt.style.backgroundRepeat = 'no-repeat';
+        	elt.style.backgroundSize = '';
+			elt.style.position = 'absolute';
+			elt.style.margin = '4px';
+			elt.style.padding = '2px';
+			elt.style.paddingRight = '16px';
+			elt.style.width = '';
+			elt.style.height = '';
+			elt.style.right = (Editor.currentTheme == 'atlas' ||
+				this.darkModeElement != null) ? '12px' : '26px';
+			elt.style.top = (Editor.currentTheme == 'atlas') ? '8px' : '2px';
+		}
+	}
+};
+
+/**
+ * 
+ */
+App.prototype.updateUserElementIcon = function()
+{
+	var elt = this.userElement;
+
+	if (elt != null)
+	{
+		var title = mxResources.get('changeUser');
+
+		if (elt.style.display != 'none')
+		{
+			var file = this.getCurrentFile();
+
+			if (file != null && file.isRealtimeEnabled() && file.isRealtimeSupported())
+			{
+				var icon = document.createElement('img');
+				icon.setAttribute('border', '0');
+				icon.style.position = 'absolute';
+				icon.style.left = '16px';
+				icon.style.top = '2px';
+				icon.style.width = '12px';
+				icon.style.height = '12px';
+
+				var err = file.getRealtimeError();
+				var state = file.getRealtimeState();
+				title += ' (';
+
+				if (state == 1)
+				{
+					icon.src = Editor.syncImage;
+					title += mxResources.get('online');
+				}
+				else
+				{
+					icon.src = Editor.syncProblemImage;
+
+					if (err != null && err.message != null)
+					{
+						title += err.message;
+					}
+					else
+					{
+						title += mxResources.get('disconnected');
+					}
+				}
+				
+				title += ')';
+
+				if (Editor.currentTheme == 'simple' ||
+					Editor.currentTheme == 'min')
+				{
+					elt.style.marginRight = '4px';
+					elt.appendChild(icon);
+				}
+			}
+
+			elt.setAttribute('title', title);
+		}
+	}
+};
+
+/**
+ * Adds the listener for automatically saving the diagram for local changes.
+ */
+App.prototype.createUserElement = function()
+{
+	var elt = document.createElement('a');
+	mxUtils.setPrefixedStyle(elt.style, 'transition', 'none');
+	elt.style.display = 'inline-block';
+	elt.style.cursor = 'pointer';
+	elt.style.fontSize = '8pt';
+
+	// Prevents focus
+	mxEvent.addListener(elt, (mxClient.IS_POINTER) ? 'pointerdown' : 'mousedown',
+		mxUtils.bind(this, function(evt)
+	{
+		evt.preventDefault();
+	}));
+
+	mxEvent.addListener(elt, 'click', mxUtils.bind(this, function(evt)
+	{
+		if (this.userPanel == null)
+		{
+			var div = document.createElement('div');
+			div.className = 'geDialog';
+			div.style.position = 'absolute';
+			div.style.top = (elt.clientTop + elt.clientHeight + 6) + 'px';
+			div.style.zIndex = 5;
+			div.style.right = '36px';
+			div.style.padding = '0px';
+			div.style.cursor = 'default';
+			div.style.minWidth = '300px';
+			
+			this.userPanel = div;
+		}
+		
+		if (this.userPanel.parentNode != null)
+		{
+			this.userPanel.parentNode.removeChild(this.userPanel);
+		}
+		else
+		{
+			var connected = false;
+			this.userPanel.innerText = '';
+			
+			var img = document.createElement('img');
+
+			img.setAttribute('src', Dialog.prototype.closeImage);
+			img.setAttribute('title', mxResources.get('close'));
+			img.className = 'geDialogClose';
+			img.style.top = '8px';
+			img.style.right = '8px';
+			
+			mxEvent.addListener(img, 'click', mxUtils.bind(this, function()
+			{
+				if (this.userPanel.parentNode != null)
+				{
+					this.userPanel.parentNode.removeChild(this.userPanel);
+				}
+			}));
+			
+			this.userPanel.appendChild(img);
+								
+			if (this.drive != null)
+			{
+				var driveUsers = this.drive.getUsersList();
+				
+				if (driveUsers.length > 0)
+				{
+					// LATER: Cannot change user while file is open since close will not work with new
+					// credentials and closing the file using fileLoaded(null) will show splash dialog.
+					var closeFile = mxUtils.bind(this, function(callback, spinnerMsg)
+					{
+						var file = this.getCurrentFile();
+
+						if (file != null && file.constructor == DriveFile)
+						{
+							this.spinner.spin(document.body, spinnerMsg);
+								
+//									file.close();
+							this.fileLoaded(null);
+
+							// LATER: Use callback to wait for thumbnail update
+							window.setTimeout(mxUtils.bind(this, function()
+							{
+								this.spinner.stop();
+								callback();
+							}), 2000);
+						}
+						else
+						{
+							callback();
+						}
+					});
+					
+					var createUserRow = mxUtils.bind(this, function (user)
+					{
+						var tr = document.createElement('tr');
+						tr.setAttribute('title', 'User ID: ' + user.id);
+
+						var td = document.createElement('td');
+						td.setAttribute('valig', 'middle');
+						td.style.height = '59px';
+						td.style.width = '66px';
+
+						var img = document.createElement('img');
+						img.setAttribute('width', '50');
+						img.setAttribute('height', '50');
+						img.setAttribute('border', '0');
+						img.setAttribute('src', (user.pictureUrl != null) ? user.pictureUrl : this.defaultUserPicture);
+						img.style.borderRadius = '50%';
+						img.style.margin = '4px 8px 0 8px';
+						td.appendChild(img);
+						tr.appendChild(td);
+
+						var td = document.createElement('td');
+						td.setAttribute('valign', 'middle');
+						td.style.whiteSpace = 'nowrap';
+						td.style.paddingTop = '4px';
+						td.style.maxWidth = '0';
+						td.style.overflow = 'hidden';
+						td.style.textOverflow = 'ellipsis';
+						mxUtils.write(td, user.displayName +
+							((user.isCurrent && driveUsers.length > 1) ?
+							' (' + mxResources.get('default') + ')' : ''));
+
+						if (user.email != null)
+						{
+							mxUtils.br(td);
+
+							var small = document.createElement('small');
+							small.style.color = 'gray';
+							mxUtils.write(small, user.email);
+							td.appendChild(small);
+						}
+
+						var div = document.createElement('div');
+						div.style.marginTop = '4px';
+
+						var i = document.createElement('i');
+						mxUtils.write(i, mxResources.get('googleDrive'));
+						div.appendChild(i);
+						td.appendChild(div);
+						tr.appendChild(td);
+
+						if (!user.isCurrent)
+						{
+							tr.style.cursor = 'pointer';
+							tr.style.opacity = '0.3';
+
+							mxEvent.addListener(tr, 'click', mxUtils.bind(this, function(evt)
+							{
+								closeFile(mxUtils.bind(this, function()
+								{
+									this.stateArg = null;
+									this.drive.setUser(user);
+									
+									this.drive.authorize(true, mxUtils.bind(this, function()
+									{
+										this.setMode(App.MODE_GOOGLE);
+										this.hideDialog();
+										this.showSplash();
+									}), mxUtils.bind(this, function(resp)
+									{
+										this.handleError(resp);
+									}), true); //Remember is true since add account imply keeping that account
+								}), mxResources.get('closingFile') + '...');
+								
+								mxEvent.consume(evt);
+							}));
+						}
+					
+						return tr;
+					});
+					
+					connected = true;
+					
+					var driveUserTable = document.createElement('table');
+					driveUserTable.style.borderSpacing = '0';
+					driveUserTable.style.fontSize = '10pt';
+					driveUserTable.style.width = '100%';
+					driveUserTable.style.padding = '10px';
+
+					for (var i = 0; i < driveUsers.length; i++)
+					{
+						driveUserTable.appendChild(createUserRow(driveUsers[i]));
+					}
+					
+					this.userPanel.appendChild(driveUserTable);
+					
+					var div = document.createElement('div');
+					div.style.textAlign = 'left';
+					div.style.padding = '10px';
+					div.style.whiteSpace = 'nowrap';
+					div.style.borderTop = '1px solid rgb(224, 224, 224)';
+
+					var btn = mxUtils.button(mxResources.get('signOut'), mxUtils.bind(this, function()
+					{
+						this.confirm(mxResources.get('areYouSure'), mxUtils.bind(this, function()
+						{
+							closeFile(mxUtils.bind(this, function()
+							{
+								this.stateArg = null;
+								this.drive.logout();
+								this.setMode(App.MODE_GOOGLE);
+								this.hideDialog();
+								this.showSplash();
+							}), mxResources.get('signOut'));
+						}));
+					}));
+					btn.className = 'geBtn';
+					btn.style.float = 'right';
+					div.appendChild(btn);
+					
+					var btn = mxUtils.button(mxResources.get('addAccount'), mxUtils.bind(this, function()
+					{
+						var authWin = this.drive.createAuthWin();
+						//FIXME This doean't work to set focus back to main window until closing the file is done
+						authWin.blur();
+						window.focus();
+						
+						closeFile(mxUtils.bind(this, function()
+						{
+							this.stateArg = null;
+							
+							this.drive.authorize(false, mxUtils.bind(this, function()
+							{
+								this.setMode(App.MODE_GOOGLE);
+								this.hideDialog();
+								this.showSplash();
+							}), mxUtils.bind(this, function(resp)
+							{
+								this.handleError(resp);
+							}), true, authWin); //Remember is true since add account imply keeping that account
+						}), mxResources.get('closingFile') + '...');
+					}));
+					btn.className = 'geBtn';
+					btn.style.margin = '0px';
+					div.appendChild(btn);
+					this.userPanel.appendChild(div);
+				}
+			}
+			
+			var addUser = mxUtils.bind(this, function(user, logo, logout, label)
+			{
+				if (user != null)
+				{
+					if (connected)
+					{
+						this.userPanel.appendChild(document.createElement('hr'));
+					}
+					
+					connected = true;
+					var userTable = document.createElement('table');
+					userTable.style.borderSpacing = '0';
+					userTable.style.fontSize = '10pt';
+					userTable.style.width = '100%';
+					userTable.style.padding = '10px';
+
+					var tbody = document.createElement('tbody');
+					var row = document.createElement('tr');
+					var td = document.createElement('td');
+					td.setAttribute('valig', 'top');
+					td.style.width = '40px';
+
+					if (logo != null)
+					{
+						var img = document.createElement('img');
+						img.setAttribute('width', '40');
+						img.setAttribute('height', '40');
+						img.setAttribute('border', '0');
+						img.setAttribute('src', logo);
+						img.style.marginRight = '6px';
+
+						td.appendChild(img);
+					}
+
+					row.appendChild(td);
+
+					var td = document.createElement('td');
+					td.setAttribute('valign', 'middle');
+					td.style.whiteSpace = 'nowrap';
+					td.style.maxWidth = '0';
+					td.style.overflow = 'hidden';
+					td.style.textOverflow = 'ellipsis';
+
+					mxUtils.write(td, user.displayName);
+
+					if (user.email != null)
+					{
+						mxUtils.br(td);
+
+						var small = document.createElement('small');
+						small.style.color = 'gray';
+						mxUtils.write(small, user.email);
+						td.appendChild(small);
+					}
+
+					if (label != null)
+					{
+						var div = document.createElement('div');
+						div.style.marginTop = '4px';
+
+						var i = document.createElement('i');
+						mxUtils.write(i, label);
+						div.appendChild(i);
+						td.appendChild(div);
+					}
+
+					row.appendChild(td);
+					tbody.appendChild(row);
+					userTable.appendChild(tbody);
+
+					this.userPanel.appendChild(userTable);
+					var div = document.createElement('div');
+					div.style.textAlign = 'center';
+					div.style.padding = '10px';
+					div.style.whiteSpace = 'nowrap';
+					
+					if (logout != null)
+					{
+						var btn = mxUtils.button(mxResources.get('signOut'), logout);
+						btn.className = 'geBtn';
+						div.appendChild(btn);
+					}
+					
+					this.userPanel.appendChild(div);
+				}
+			});
+			
+			if (this.dropbox != null)
+			{
+				addUser(this.dropbox.getUser(), IMAGE_PATH + '/dropbox-logo.svg', mxUtils.bind(this, function()
+				{
+					var file = this.getCurrentFile();
+
+					if (file != null && file.constructor == DropboxFile)
+					{
+						var doLogout = mxUtils.bind(this, function()
+						{
+							this.dropbox.logout();
+							window.location.hash = '';
+						});
+						
+						if (!file.isModified())
+						{
+							doLogout();
+						}
+						else
+						{
+							this.confirm(mxResources.get('allChangesLost'), null, doLogout,
+								mxResources.get('cancel'), mxResources.get('discardChanges'));
+						}
+					}
+					else
+					{
+						this.dropbox.logout();
+					}
+				}), mxResources.get('dropbox'));
+			}
+
+			if (this.oneDrive != null)
+			{
+				addUser(this.oneDrive.getUser(), IMAGE_PATH + '/onedrive-logo.svg', this.oneDrive.noLogout? null : mxUtils.bind(this, function()
+				{
+					var file = this.getCurrentFile();
+
+					if (file != null && file.constructor == OneDriveFile)
+					{
+						var doLogout = mxUtils.bind(this, function()
+						{
+							this.oneDrive.logout();
+							window.location.hash = '';
+						});
+						
+						if (!file.isModified())
+						{
+							doLogout();
+						}
+						else
+						{
+							this.confirm(mxResources.get('allChangesLost'), null, doLogout,
+								mxResources.get('cancel'), mxResources.get('discardChanges'));
+						}
+					}
+					else
+					{
+						this.oneDrive.logout();
+					}
+				}), mxResources.get('oneDrive'));
+			}
+
+			if (this.gitHub != null)
+			{
+				addUser(this.gitHub.getUser(), IMAGE_PATH + '/github-logo.svg', mxUtils.bind(this, function()
+				{
+					var file = this.getCurrentFile();
+
+					if (file != null && file.constructor == GitHubFile)
+					{
+						var doLogout = mxUtils.bind(this, function()
+						{
+							this.gitHub.logout();
+							window.location.hash = '';
+						});
+						
+						if (!file.isModified())
+						{
+							doLogout();
+						}
+						else
+						{
+							this.confirm(mxResources.get('allChangesLost'), null, doLogout,
+								mxResources.get('cancel'), mxResources.get('discardChanges'));
+						}
+					}
+					else
+					{
+						this.gitHub.logout();
+					}
+				}), mxResources.get('github'));
+			}
+			
+			if (this.gitLab != null)
+			{
+				addUser(this.gitLab.getUser(), IMAGE_PATH + '/gitlab-logo.svg', mxUtils.bind(this, function()
+				{
+					var file = this.getCurrentFile();
+
+					if (file != null && file.constructor == GitLabFile)
+					{
+						var doLogout = mxUtils.bind(this, function()
+						{
+							this.gitLab.logout();
+							window.location.hash = '';
+						});
+
+						if (!file.isModified())
+						{
+							doLogout();
+						}
+						else
+						{
+							this.confirm(mxResources.get('allChangesLost'), null, doLogout,
+								mxResources.get('cancel'), mxResources.get('discardChanges'));
+						}
+					}
+					else
+					{
+						this.gitLab.logout();
+					}
+				}), mxResources.get('gitlab'));
+			}
+
+			//TODO We have no user info from Trello, how we can create a user?
+			if (this.trello != null)
+			{
+				addUser(this.trello.getUser(), IMAGE_PATH + '/trello-logo.svg', mxUtils.bind(this, function()
+				{
+					var file = this.getCurrentFile();
+
+					if (file != null && file.constructor == TrelloFile)
+					{
+						var doLogout = mxUtils.bind(this, function()
+						{
+							this.trello.logout();
+							window.location.hash = '';
+						});
+						
+						if (!file.isModified())
+						{
+							doLogout();
+						}
+						else
+						{
+							this.confirm(mxResources.get('allChangesLost'), null, doLogout,
+								mxResources.get('cancel'), mxResources.get('discardChanges'));
+						}
+					}
+					else
+					{
+						this.trello.logout();
+					}
+				}), mxResources.get('trello'));
+			}
+			
+			if (uiTheme == 'min')
+			{
+				var file = this.getCurrentFile();
+	
+				if (file != null && file.isRealtimeEnabled() && file.isRealtimeSupported())
+				{
+					var div = document.createElement('div');
+					div.style.padding = '10px';
+					div.style.whiteSpace = 'nowrap';
+					div.style.borderTop = '1px solid rgb(224, 224, 224)';
+					div.style.marginTop = '4px';
+					div.style.textAlign = 'center';
+					div.style.padding = '10px';
+					div.style.fontSize = '9pt';
+					var err = file.getRealtimeError();
+					var state = file.getRealtimeState();
+
+					if (state != 1)
+					{
+						mxUtils.write(div, mxResources.get('realtimeCollaboration') + ': ' +
+								((err != null && err.message != null) ?
+								err.message : mxResources.get('disconnected')));
+						this.userPanel.appendChild(div);
+					}
+				}
+			}
+
+			document.body.appendChild(this.userPanel);
+		}
+		
+		mxEvent.consume(evt);
+	}));
+	
+	mxEvent.addListener(document.body, 'click', mxUtils.bind(this, function(evt)
+	{
+		if (!mxEvent.isConsumed(evt) && this.userPanel != null && this.userPanel.parentNode != null)
+		{
+			this.userPanel.parentNode.removeChild(this.userPanel);
+		}
+	}));
+	
+	
+	return elt;
 };
 
 //TODO Use this function to get the currently logged in user
@@ -7732,7 +7797,8 @@ App.prototype.getCurrentUser = function()
 	//TODO Trello no user issue
 	
 	return user;
-}
+};
+
 /**
  * Override depends on mxSettings which is not defined in the minified viewer.
  */

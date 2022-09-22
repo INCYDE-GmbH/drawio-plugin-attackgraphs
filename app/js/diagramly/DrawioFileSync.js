@@ -488,13 +488,14 @@ DrawioFileSync.prototype.updateOnlineState = function()
 	if (this.ui.toolbarContainer != null && this.collaboratorsElement == null)
 	{
 		var elt = document.createElement('a');
-		elt.className = 'geButton';
+		elt.className = 'geButton geAdaptiveAsset';
 		elt.style.position = 'absolute';
 		elt.style.display = 'inline-block';
 		elt.style.verticalAlign = 'bottom';
 		elt.style.color = '#666';
 		elt.style.top = '6px';
-		elt.style.right = (uiTheme != 'atlas') ?  '70px' : '50px';
+		elt.style.right = (uiTheme != 'atlas') ? (this.ui.darkModeElement != null ?
+			'90px' : '70px') : '50px';
 		elt.style.padding = '2px';
 		elt.style.fontSize = '8pt';
 		elt.style.verticalAlign = 'middle';
@@ -506,11 +507,6 @@ DrawioFileSync.prototype.updateOnlineState = function()
 		elt.style.height = '16px';
 		mxUtils.setOpacity(elt, 60);
 		
-		if (uiTheme == 'dark')
-		{
-			elt.style.filter = 'invert(100%)';
-		}
-
 		// Prevents focus
 		mxEvent.addListener(elt, (mxClient.IS_POINTER) ? 'pointerdown' : 'mousedown',
 			mxUtils.bind(this, function(evt)
@@ -875,21 +871,27 @@ DrawioFileSync.prototype.doSendLocalChanges = function(changes)
 	if (!this.file.ignorePatches(changes))
 	{
 		var changeId = this.clientId + '.' + (this.syncChangeCounter++);
-		var msg = {a: 'change', c: changes, id: changeId, t: Date.now()};
-		var data = encodeURIComponent(
-			this.objectToString(
-			this.createMessage(msg)));
+		var msg = this.createMessage({a: 'change', c: changes,
+			id: changeId, t: Date.now()});
 		var skipped = false;
 		
 		if (this.p2pCollab != null)
 		{
-			this.p2pCollab.sendDiff(data);
+			this.p2pCollab.sendDiff(msg);
 		}
-		else if (urlParams['dev'] == '1' &&
-			(this.maxSyncMessageSize == 0 ||
-			data.length < this.maxSyncMessageSize))
+		else if (urlParams['dev'] == '1')
 		{
-			mxUtils.post(EditorUi.cacheUrl, this.getIdParameters() + '&msg=' + data);
+			var data = encodeURIComponent(this.objectToString(msg));
+
+			if (this.maxSyncMessageSize == 0 ||
+				data.length < this.maxSyncMessageSize)
+			{
+				mxUtils.post(EditorUi.cacheUrl, this.getIdParameters() + '&msg=' + data);
+			}
+			else
+			{
+				skipped = true;
+			}
 		}
 		else
 		{
@@ -897,8 +899,7 @@ DrawioFileSync.prototype.doSendLocalChanges = function(changes)
 		}
 
 		EditorUi.debug('DrawioFileSync.doSendLocalChanges', [this],
-			'changes', changes, data.length, 'bytes',
-			skipped ? '(skipped)' : '');
+			'changes', changes, skipped ? '(skipped)' : '');
 	}
 };
 
@@ -1274,8 +1275,9 @@ DrawioFileSync.prototype.merge = function(patches, checksum, desc, success, erro
 			{
 				var to = this.ui.hashValue(target);
 				var from = this.ui.hashValue(this.file.getCurrentRevisionId());
-				this.file.checksumError(error, patches, 'From: ' + from + '\nTo: ' + to +
-					'\nChecksum: ' + checksum + '\nCurrent: ' + current, target, 'merge');
+				this.file.checksumError(error, patches, 'From: ' + from +
+					'\nTo: ' + to + '\nChecksum: ' + checksum + '\nCurrent: ' +
+					current, target, 'merge', checksum, current, target);
 
 				if (urlParams['test'] == '1')
 				{
@@ -1997,6 +1999,12 @@ DrawioFileSync.prototype.stop = function()
 		
 		this.pusher.disconnect();
 		this.pusher = null;
+
+		if (this.p2pCollab != null)
+		{
+			this.p2pCollab.destroy();
+			this.p2pCollab = null;
+		}
 	}
 	
 	this.updateOnlineState();
@@ -2066,6 +2074,7 @@ DrawioFileSync.prototype.destroy = function()
 		this.collaboratorsElement = null;
 	}
 
+	// This is not needed now as stop already destroyed it
 	if (this.p2pCollab != null)
 	{
 		this.p2pCollab.destroy();

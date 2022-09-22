@@ -153,15 +153,21 @@ mxConstants.POINTS = 1;
 mxConstants.MILLIMETERS = 2;
 mxConstants.INCHES = 3;
 mxConstants.METERS = 4;
+
 /**
  * This ratio is with page scale 1
  */
 mxConstants.PIXELS_PER_MM = 3.937;
 mxConstants.PIXELS_PER_INCH = 100;
-
 mxConstants.SHADOW_OPACITY = 0.25;
 mxConstants.SHADOWCOLOR = '#000000';
 mxConstants.VML_SHADOWCOLOR = '#d0d0d0';
+
+mxCodec.allowlist = ['mxStylesheet', 'Array', 'mxGraphModel',
+	'mxCell', 'mxGeometry', 'mxRectangle', 'mxPoint',
+	'mxChildChange', 'mxRootChange', 'mxTerminalChange',
+	'mxValueChange', 'mxStyleChange', 'mxGeometryChange',
+	'mxCollapseChange', 'mxVisibleChange', 'mxCellAttributeChange'];
 mxGraph.prototype.pageBreakColor = '#c0c0c0';
 mxGraph.prototype.pageScale = 1;
 
@@ -1741,14 +1747,21 @@ Graph.sanitizeHtml = function(value, editing)
 /**
  * Returns the size of the page format scaled with the page size.
  */
-Graph.sanitizeLink = function(href)
-{
-	var a = document.createElement('a');
-	a.setAttribute('href', href);
-	Graph.sanitizeNode(a);
-	
-	return a.getAttribute('href');
-};
+ Graph.sanitizeLink = function(href)
+ {
+	 if (href == null)
+	 {
+		 return null;
+	 }
+	 else
+	 {
+		 var a = document.createElement('a');
+		 a.setAttribute('href', href);
+		 Graph.sanitizeNode(a);
+		 
+		 return a.getAttribute('href');
+	 }
+ };
 
 /**
  * Sanitizes the given DOM node in-place.
@@ -1761,11 +1774,23 @@ Graph.sanitizeNode = function(value)
 // Allows use tag in SVG with local references only
 DOMPurify.addHook('afterSanitizeAttributes', function(node)
 {
-	if (node.nodeName == 'use' && node.hasAttribute('xlink:href') &&
-		!node.getAttribute('xlink:href').match(/^#/))
+	if (node.nodeName == 'use' && ((node.getAttribute('xlink:href') != null &&
+		!node.getAttribute('xlink:href').startsWith('#')) ||
+		(node.getAttribute('href') != null && !node.getAttribute('href').startsWith('#'))))
 	{
 		node.remove();
-	} 
+	}
+});
+
+// Workaround for removed content with empty nodes
+DOMPurify.addHook('uponSanitizeAttribute', function (node, evt)
+{
+	if (node.nodeName == 'svg' && evt.attrName == 'content')
+	{
+		evt.forceKeepAttr = true;
+	}
+	
+	return node;
 });
 
 /**
@@ -1803,6 +1828,7 @@ Graph.clipSvgDataUri = function(dataUri, ignorePreserveAspect)
 			{
 				// Strips leading XML declaration and doctypes
 				div.innerHTML = Graph.sanitizeHtml(data.substring(idx));
+				//div.innerHTML = data.substring(idx);
 				
 				// Gets the size and removes from DOM
 				var svgs = div.getElementsByTagName('svg');
@@ -2021,6 +2047,11 @@ Graph.prototype.lightbox = false;
  * 
  */
 Graph.prototype.defaultPageBackgroundColor = '#ffffff';
+
+/**
+ * 
+ */
+Graph.prototype.simpleBackgroundColor = '#f0f0f0';
 
 /**
  * 
@@ -2265,7 +2296,8 @@ Graph.prototype.init = function(container)
 			(this.model.isVertex(state.cell) ||
 			mxUtils.getValue(state.style, mxConstants.STYLE_SHAPE, null) == 'arrow' ||
 			mxUtils.getValue(state.style, mxConstants.STYLE_SHAPE, null) == 'filledEdge' ||
-			mxUtils.getValue(state.style, mxConstants.STYLE_SHAPE, null) == 'flexArrow');
+			mxUtils.getValue(state.style, mxConstants.STYLE_SHAPE, null) == 'flexArrow' ||
+			mxUtils.getValue(state.style, mxConstants.STYLE_SHAPE, null) == 'mxgraph.arrows2.wedgeArrow');
 	};
 	
 	/**
@@ -2966,6 +2998,12 @@ Graph.prototype.isViewer = function()
 Graph.prototype.labelLinkClicked = function(state, elt, evt)
 {
 	var href = elt.getAttribute('href');
+	
+	// Blocks and removes unsafe links in labels
+	if (href != Graph.sanitizeLink(href))
+	{
+		Graph.sanitizeNode(elt);
+	}
 	
 	if (href != null && !this.isCustomLink(href) && ((mxEvent.isLeftMouseButton(evt) &&
 		!mxEvent.isPopupTrigger(evt)) || mxEvent.isTouchEvent(evt)))
@@ -4531,7 +4569,7 @@ Graph.prototype.getIndexableText = function(cells)
 		{
 			if (this.isHtmlLabel(cell))
 			{
-				tmp.innerHTML = this.sanitizeHtml(this.getLabel(cell));
+				tmp.innerHTML = Graph.sanitizeHtml(this.getLabel(cell));
 				label = mxUtils.extractTextWithWhitespace([tmp]);
 			}
 			else
@@ -4690,14 +4728,15 @@ Graph.prototype.replaceDefaultColors = function(cell, style)
 		var bg = mxUtils.hex2rgb(this.shapeBackgroundColor);
 		var fg = mxUtils.hex2rgb(this.shapeForegroundColor);
 
-		this.replaceDefaultColor(style, mxConstants.STYLE_FONTCOLOR, fg);
-		this.replaceDefaultColor(style, mxConstants.STYLE_FILLCOLOR, bg);
-		this.replaceDefaultColor(style, mxConstants.STYLE_STROKECOLOR, fg);
-		this.replaceDefaultColor(style, mxConstants.STYLE_IMAGE_BORDER, fg);
-		this.replaceDefaultColor(style, mxConstants.STYLE_IMAGE_BACKGROUND, bg);
-		this.replaceDefaultColor(style, mxConstants.STYLE_LABEL_BORDERCOLOR, fg);
-		this.replaceDefaultColor(style, mxConstants.STYLE_SWIMLANE_FILLCOLOR, bg);
-		this.replaceDefaultColor(style, mxConstants.STYLE_LABEL_BACKGROUNDCOLOR, bg);
+		this.replaceDefaultColor(style, mxConstants.STYLE_FONTCOLOR, fg, bg);
+		this.replaceDefaultColor(style, mxConstants.STYLE_FILLCOLOR, bg, fg);
+		this.replaceDefaultColor(style, mxConstants.STYLE_GRADIENTCOLOR, fg, bg);
+		this.replaceDefaultColor(style, mxConstants.STYLE_STROKECOLOR, fg, bg);
+		this.replaceDefaultColor(style, mxConstants.STYLE_IMAGE_BORDER, fg, bg);
+		this.replaceDefaultColor(style, mxConstants.STYLE_IMAGE_BACKGROUND, bg, fg);
+		this.replaceDefaultColor(style, mxConstants.STYLE_LABEL_BORDERCOLOR, fg, bg);
+		this.replaceDefaultColor(style, mxConstants.STYLE_SWIMLANE_FILLCOLOR, bg, fg);
+		this.replaceDefaultColor(style, mxConstants.STYLE_LABEL_BACKGROUNDCOLOR, bg, fg);
 	}
 
 	return style;
@@ -4706,12 +4745,27 @@ Graph.prototype.replaceDefaultColors = function(cell, style)
 /**
  * Replaces the colors for the given key.
  */
-Graph.prototype.replaceDefaultColor = function(style, key, value)
+Graph.prototype.replaceDefaultColor = function(style, key, value, inverseValue)
 {
 	if (style != null && style[key] == 'default' && value != null)
 	{
-		style[key] = value;
+		style[key] = this.getDefaultColor(style, key, value, inverseValue);
 	}
+};
+
+/**
+ * Replaces the colors for the given key.
+ */
+Graph.prototype.getDefaultColor = function(style, key, defaultValue, inverseDefaultValue)
+{
+	var temp = 'default' + key.charAt(0).toUpperCase() + key.substring(1);
+
+	if (style[temp] == 'invert')
+	{
+		defaultValue = inverseDefaultValue;
+	}
+
+	return defaultValue;
 };
 
 /**
@@ -5141,7 +5195,7 @@ Graph.prototype.getTooltipForCell = function(cell)
 				tmp = this.replacePlaceholders(cell, tmp);
 			}
 			
-			tip = this.sanitizeHtml(tmp);
+			tip = Graph.sanitizeHtml(tmp);
 		}
 		else
 		{
@@ -5158,7 +5212,9 @@ Graph.prototype.getTooltipForCell = function(cell)
 			
 			for (var i = 0; i < attrs.length; i++)
 			{
-				if (mxUtils.indexOf(ignored, attrs[i].nodeName) < 0 && attrs[i].nodeValue.length > 0)
+				if (((Graph.translateDiagram && attrs[i].nodeName == 'label') ||
+					mxUtils.indexOf(ignored, attrs[i].nodeName) < 0) &&
+					attrs[i].nodeValue.length > 0)
 				{
 					temp.push({name: attrs[i].nodeName, value: attrs[i].nodeValue});
 				}
@@ -5185,8 +5241,8 @@ Graph.prototype.getTooltipForCell = function(cell)
 			{
 				if (temp[i].name != 'link' || !this.isCustomLink(temp[i].value))
 				{
-					tip += ((temp[i].name != 'link') ? '<b>' + temp[i].name + ':</b> ' : '') +
-						mxUtils.htmlEntities(temp[i].value) + '\n';
+					tip += ((temp[i].name != 'link') ? '<b>' + mxUtils.htmlEntities(temp[i].name) +
+						':</b> ' : '') + mxUtils.htmlEntities(temp[i].value) + '\n';
 				}
 			}
 			
@@ -6085,8 +6141,9 @@ HoverIcons.prototype.getState = function(state)
  */
 HoverIcons.prototype.update = function(state, x, y)
 {
-	if (!this.graph.connectionArrowsEnabled || (state != null &&
-		mxUtils.getValue(state.style, 'allowArrows', '1') == '0'))
+	if (!this.graph.connectionArrowsEnabled ||
+		(this.graph.freehand != null && this.graph.freehand.isDrawing()) ||
+		(state != null && mxUtils.getValue(state.style, 'allowArrows', '1') == '0'))
 	{
 		this.reset();
 	}
@@ -10362,7 +10419,9 @@ if (typeof mxVertexHandler !== 'undefined')
 					
 					if ((ignoreSelection && lookup == null) || selected)
 					{
+						graph.view.redrawEnumerationState(state);
 						imgExportDrawCellState.apply(this, arguments);
+						this.doDrawShape(state.secondLabel, canvas);
 					}
 				};
 	
@@ -11890,7 +11949,7 @@ if (typeof mxVertexHandler !== 'undefined')
 					if (this.clearOnChange && this.textarea.innerHTML == this.getEmptyLabelText())
 					{
 						this.clearOnChange = false;
-						this.textarea.innerHTML = '';
+						this.textarea.innerText = '';
 					}
 					
 					// Removes newlines from HTML and converts breaks to newlines
@@ -13812,7 +13871,7 @@ if (typeof mxVertexHandler !== 'undefined')
 						}));
 					}
 	
-					this.linkHint.innerHTML = '';
+					this.linkHint.innerText = '';
 					
 					if (link != null)
 					{
@@ -13821,6 +13880,7 @@ if (typeof mxVertexHandler !== 'undefined')
 						if (this.graph.isEnabled() && typeof this.graph.editLink === 'function')
 						{
 							var changeLink = document.createElement('img');
+							changeLink.className = 'geAdaptiveAsset';
 							changeLink.setAttribute('src', Editor.editImage);
 							changeLink.setAttribute('title', mxResources.get('editLink'));
 							changeLink.setAttribute('width', '11');
@@ -13836,13 +13896,21 @@ if (typeof mxVertexHandler !== 'undefined')
 								this.graph.editLink();
 								mxEvent.consume(evt);
 							}));
-							
-							this.linkHint.appendChild(Graph.createRemoveIcon(mxResources.get('removeIt',
-								[mxResources.get('link')]), mxUtils.bind(this, function(evt)
+
+							var trashLink = changeLink.cloneNode(true);
+
+							trashLink.setAttribute('src', Editor.trashImage);
+							trashLink.setAttribute('title', mxResources.get('removeIt',
+								[mxResources.get('link')]));
+							trashLink.style.marginLeft = '4px';
+
+							this.linkHint.appendChild(trashLink);
+
+							mxEvent.addListener(trashLink, 'click', mxUtils.bind(this, function(evt)
 							{
 								this.graph.setLinkForCell(this.state.cell, null);
 								mxEvent.consume(evt);
-							})));
+							}));
 						}
 					}
 	

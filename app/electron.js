@@ -39,6 +39,8 @@ const isWin = process.platform === 'win32'
 let enableSpellCheck = store.get('enableSpellCheck');
 enableSpellCheck = enableSpellCheck != null? enableSpellCheck : isMac;
 let enableStoreBkp = store.get('enableStoreBkp') != null? store.get('enableStoreBkp') : true;
+let dialogOpen = false;
+let enablePlugins = false;
 
 //Read config file
 var queryObj = {
@@ -78,12 +80,23 @@ catch(e)
 }
 
 // Trying sandboxing the renderer for more protection
-app.enableSandbox();
+//app.enableSandbox(); // This maybe the reason snap stopped working
 
 function createWindow (opt = {})
 {
 	let lastWinSizeStr = store.get('lastWinSize');
 	let lastWinSize = lastWinSizeStr ? lastWinSizeStr.split(',') : [1600, 1200];
+
+	// TODO On some Mac OS, double click the titlebar set incorrect window size
+	if (lastWinSize[0] < 500)
+	{
+		lastWinSize[0] = 500;
+	}
+
+	if (lastWinSize[1] < 500)
+	{
+		lastWinSize[1] = 500;
+	}
 
 	let options = Object.assign(
 	{
@@ -92,8 +105,8 @@ function createWindow (opt = {})
 		width: parseInt(lastWinSize[0]),
 		height: parseInt(lastWinSize[1]),
 		icon: `${__dirname}/images/drawlogo256.png`,
-		webViewTag: false,
-		'web-security': true,
+		webviewTag: false,
+		webSecurity: true,
 		webPreferences: {
 			preload: `${__dirname}/electron-preload.js`,
 			spellcheck: enableSpellCheck,
@@ -166,43 +179,51 @@ function createWindow (opt = {})
 
 		if (contents != null)
 		{
-			contents.executeJavaScript('if(typeof window.__emt_isModified === \'function\'){window.__emt_isModified()}', true)
-				.then((isModified) =>
+	        ipcMain.once('isModified-result', async (evt, data) =>
+			{
+				if (data.isModified)
 				{
-					if (__DEV__) 
-					{
-						console.log('__emt_isModified', isModified)
-					}
-					
-					if (isModified)
-					{
-						var choice = dialog.showMessageBoxSync(
-							win,
-							{
-								type: 'question',
-								buttons: ['Cancel', 'Discard Changes'],
-								title: 'Confirm',
-								message: 'The document has unsaved changes. Do you really want to quit without saving?' //mxResources.get('allChangesLost')
-							})
-							
-						if (choice === 1)
+					// Can't use async function here because it crashes on Linux when win.destroy is called
+					let response = dialog.showMessageBoxSync(
+						win,
 						{
-							//If user chose not to save, remove the draft
-							contents.executeJavaScript('window.__emt_removeDraft()', true);
-							win.destroy()
+							type: 'question',
+							buttons: ['Cancel', 'Discard Changes'],
+							title: 'Confirm',
+							message: 'The document has unsaved changes. Do you really want to quit without saving?' //mxResources.get('allChangesLost')
+						});
+
+					if (response === 1)
+					{
+						//If user chose not to save, remove the draft
+						if (data.draftPath != null)
+						{
+							await deleteFile(data.draftPath);
+							win.destroy();
 						}
 						else
 						{
-							cmdQPressed = false
+							contents.send('removeDraft');
+
+							ipcMain.once('draftRemoved', () =>
+							{
+								win.destroy();
+							});
 						}
 					}
 					else
 					{
-						win.destroy()
+						cmdQPressed = false;
 					}
-				})
+				}
+				else
+				{
+					win.destroy();
+				}
+			});
 
-			event.preventDefault()
+			contents.send('isModified');
+			event.preventDefault();
 		}
 	})
 
@@ -229,7 +250,22 @@ app.on('ready', e =>
 {
 	ipcMain.on('newfile', (event, arg) =>
 	{
-		createWindow(arg)
+		let opts = {};
+
+		if (arg)
+		{
+			if (arg.width)
+			{
+				opts.width = arg.width;
+			}
+
+			if (arg.height)
+			{
+				opts.height = arg.height;
+			}
+		}
+
+		createWindow(opts);
 	})
 	
     let argv = process.argv
@@ -287,6 +323,8 @@ app.on('ready', e =>
 				'selects a page range (for PDF format only)', argsRange)
 			.option('-u, --uncompressed',
 				'Uncompressed XML output (for XML format only)')
+			.option('--enable-plugins',
+				'Enable Plugins')
 	        .parse(argv)
 	}
 	catch(e)
@@ -296,7 +334,8 @@ app.on('ready', e =>
 	}
 	
 	var options = program.opts();
-	
+	enablePlugins = options.enablePlugins;
+
     //Start export mode?
     if (options.export)
 	{
@@ -610,6 +649,9 @@ app.on('ready', e =>
     else 
     {
     	app.on('second-instance', (event, commandLine, workingDirectory) => {
+			// Creating a new window while a save/open dialog is open crashes the app
+			if (dialogOpen) return;
+
     		//Create another window
     		let win = createWindow()
 
@@ -715,7 +757,7 @@ app.on('ready', e =>
 					{
 						type: 'info',
 						title: 'No updates found',
-						message: 'You application is up-to-date',
+						message: 'Your application is up-to-date',
 					})
 			})
 		}
@@ -832,6 +874,8 @@ app.on('will-finish-launching', function()
 	app.on("open-file", function(event, path) 
 	{
 	    event.preventDefault();
+		// Creating a new window while a save/open dialog is open crashes the app
+		if (dialogOpen) return;
 
 	    if (firstWinLoaded)
 	    {
@@ -1827,7 +1871,7 @@ async function saveDraft(fileObject, data)
 			try
 			{
 				// Add Hidden attribute:
-				spawn("attrib", ["+h", draftFileName]);
+				spawn('attrib', ['+h', draftFileName], {shell: true});
 			} catch(e) {}
 		}
 
@@ -1930,7 +1974,7 @@ async function saveFile(fileObject, data, origStat, overwrite, defEnc)
 					try
 					{
 						// Add Hidden attribute:
-						spawn("attrib", ["+h", bkpPath]);
+						spawn('attrib', ['+h', bkpPath], {shell: true});
 					} catch(e) {}
 				}
 			}
@@ -2010,7 +2054,9 @@ function checkFileExists(pathParts)
 
 async function showOpenDialog(defaultPath, filters, properties)
 {
-	return dialog.showOpenDialogSync({
+	let win = BrowserWindow.getFocusedWindow();
+
+	return dialog.showOpenDialog(win, {
 		defaultPath: defaultPath,
 		filters: filters,
 		properties: properties
@@ -2019,7 +2065,9 @@ async function showOpenDialog(defaultPath, filters, properties)
 
 async function showSaveDialog(defaultPath, filters)
 {
-	return dialog.showSaveDialogSync({
+	let win = BrowserWindow.getFocusedWindow();
+
+	return dialog.showSaveDialog(win, {
 		defaultPath: defaultPath,
 		filters: filters
 	});
@@ -2027,6 +2075,8 @@ async function showSaveDialog(defaultPath, filters)
 
 async function installPlugin(filePath)
 {
+	if (!enablePlugins) return {};
+
 	var pluginsDir = path.join(getAppDataFolder(), '/plugins');
 	
 	if (!fs.existsSync(pluginsDir))
@@ -2049,13 +2099,28 @@ async function installPlugin(filePath)
 	return {pluginName: pluginName, selDir: path.dirname(filePath)};
 }
 
+function getPluginFile(plugin)
+{
+	if (!enablePlugins) return null;
+	
+	const prefix = path.join(getAppDataFolder(), '/plugins/');
+	const pluginFile = path.join(prefix, plugin);
+	        	
+	if (pluginFile.startsWith(prefix) && fs.existsSync(pluginFile))
+	{
+		return pluginFile;
+	}
+
+	return null;
+}
+
 function uninstallPlugin(plugin)
 {
-	var pluginsFile = path.join(getAppDataFolder(), '/plugins', plugin);
+	const pluginFile = getPluginFile(plugin);
 	        	
-	if (fs.existsSync(pluginsFile))
+	if (pluginFile != null)
 	{
-		fs.unlinkSync(pluginsFile);
+		fs.unlinkSync(pluginFile);
 	}
 }
 
@@ -2223,9 +2288,6 @@ ipcMain.on("rendererReq", async (event, args) =>
 		case 'getFileDrafts':
 			ret = await getFileDrafts(args.fileObject);
 			break;
-		case 'getAppDataFolder':
-			ret = await getAppDataFolder();
-			break;
 		case 'getDocumentsFolder':
 			ret = await getDocumentsFolder();
 			break;
@@ -2233,16 +2295,28 @@ ipcMain.on("rendererReq", async (event, args) =>
 			ret = await checkFileExists(args.pathParts);
 			break;
 		case 'showOpenDialog':
+			dialogOpen = true;
 			ret = await showOpenDialog(args.defaultPath, args.filters, args.properties);
+			ret = ret.filePaths;
+			dialogOpen = false;
 			break;
 		case 'showSaveDialog':
+			dialogOpen = true;
 			ret = await showSaveDialog(args.defaultPath, args.filters);
+			ret = ret.canceled? null : ret.filePath;
+			dialogOpen = false;
 			break;
 		case 'installPlugin':
 			ret = await installPlugin(args.filePath);
 			break;
 		case 'uninstallPlugin':
 			ret = await uninstallPlugin(args.plugin);
+			break;
+		case 'getPluginFile':
+			ret = await getPluginFile(args.plugin);
+			break;
+		case 'isPluginsEnabled':
+			ret = enablePlugins;
 			break;
 		case 'dirname':
 			ret = await dirname(args.path);

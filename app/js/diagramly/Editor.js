@@ -47,6 +47,13 @@
 		{ext: 'svg', title: 'filetypeSvg'}];
 	
 	/**
+	 * Definitions for sketch font styles.
+	 */
+	Editor.sketchFontFamily = 'Architects Daughter';
+	Editor.sketchFontSource = 'https%3A%2F%2Ffonts.googleapis.com%2Fcss%3Ffamily%3DArchitects%2BDaughter';
+	Editor.sketchFonts = [{'fontFamily': Editor.sketchFontFamily, 'fontUrl': decodeURIComponent(Editor.sketchFontSource)}];
+	
+	/**
 	 * 
 	 */
 	Editor.styles = [{},
@@ -101,117 +108,31 @@
 	/**
 	 * 
 	 */
+	Editor.logoImage = 'data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiIHN0YW5kYWxvbmU9Im5vIj8+CjxzdmcKICAgeG1sbnM6ZGM9Imh0dHA6Ly9wdXJsLm9yZy9kYy9lbGVtZW50cy8xLjEvIgogICB4bWxuczpjYz0iaHR0cDovL2NyZWF0aXZlY29tbW9ucy5vcmcvbnMjIgogICB4bWxuczpyZGY9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkvMDIvMjItcmRmLXN5bnRheC1ucyMiCiAgIHhtbG5zOnN2Zz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciCiAgIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIKICAgeG1sOnNwYWNlPSJwcmVzZXJ2ZSIKICAgZW5hYmxlLWJhY2tncm91bmQ9Im5ldyAwIDAgMzA2LjE4NSAxMjAuMjk2IgogICB2aWV3Qm94PSIyNCAyNiA2OCA2OCIKICAgeT0iMHB4IgogICB4PSIwcHgiCiAgIHZlcnNpb249IjEuMSI+CiAgIAkgPGc+PGxpbmUKICAgICAgIHkyPSI3Mi4zOTQiCiAgICAgICB4Mj0iNDEuMDYxIgogICAgICAgeTE9IjQzLjM4NCIKICAgICAgIHgxPSI1OC4wNjkiCiAgICAgICBzdHJva2UtbWl0ZXJsaW1pdD0iMTAiCiAgICAgICBzdHJva2Utd2lkdGg9IjMuNTUyOCIKICAgICAgIHN0cm9rZT0iI0ZGRkZGRiIKICAgICAgIGZpbGw9Im5vbmUiIC8+PGxpbmUKICAgICAgIHkyPSI3Mi4zOTQiCiAgICAgICB4Mj0iNzUuMDc2IgogICAgICAgeTE9IjQzLjM4NCIKICAgICAgIHgxPSI1OC4wNjgiCiAgICAgICBzdHJva2UtbWl0ZXJsaW1pdD0iMTAiCiAgICAgICBzdHJva2Utd2lkdGg9IjMuNTAwOCIKICAgICAgIHN0cm9rZT0iI0ZGRkZGRiIKICAgICAgIGZpbGw9Im5vbmUiIC8+PGc+PHBhdGgKICAgICAgICAgZD0iTTUyLjc3Myw3Ny4wODRjMCwxLjk1NC0xLjU5OSwzLjU1My0zLjU1MywzLjU1M0gzNi45OTljLTEuOTU0LDAtMy41NTMtMS41OTktMy41NTMtMy41NTN2LTkuMzc5ICAgIGMwLTEuOTU0LDEuNTk5LTMuNTUzLDMuNTUzLTMuNTUzaDEyLjIyMmMxLjk1NCwwLDMuNTUzLDEuNTk5LDMuNTUzLDMuNTUzVjc3LjA4NHoiCiAgICAgICAgIGZpbGw9IiNGRkZGRkYiIC8+PC9nPjxnCiAgICAgICBpZD0iZzM0MTkiPjxwYXRoCiAgICAgICAgIGQ9Ik02Ny43NjIsNDguMDc0YzAsMS45NTQtMS41OTksMy41NTMtMy41NTMsMy41NTNINTEuOTg4Yy0xLjk1NCwwLTMuNTUzLTEuNTk5LTMuNTUzLTMuNTUzdi05LjM3OSAgICBjMC0xLjk1NCwxLjU5OS0zLjU1MywzLjU1My0zLjU1M0g2NC4yMWMxLjk1NCwwLDMuNTUzLDEuNTk5LDMuNTUzLDMuNTUzVjQ4LjA3NHoiCiAgICAgICAgIGZpbGw9IiNGRkZGRkYiIC8+PC9nPjxnPjxwYXRoCiAgICAgICAgIGQ9Ik04Mi43NTIsNzcuMDg0YzAsMS45NTQtMS41OTksMy41NTMtMy41NTMsMy41NTNINjYuOTc3Yy0xLjk1NCwwLTMuNTUzLTEuNTk5LTMuNTUzLTMuNTUzdi05LjM3OSAgICBjMC0xLjk1NCwxLjU5OS0zLjU1MywzLjU1My0zLjU1M2gxMi4yMjJjMS45NTQsMCwzLjU1MywxLjU5OSwzLjU1MywzLjU1M1Y3Ny4wODR6IgogICAgICAgICBmaWxsPSIjRkZGRkZGIiAvPjwvZz48L2c+PC9zdmc+';
 	Editor.saveImage = 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0iYmxhY2siIHdpZHRoPSIxOHB4IiBoZWlnaHQ9IjE4cHgiPjxwYXRoIGQ9Ik0wIDBoMjR2MjRIMHoiIGZpbGw9Im5vbmUiLz48cGF0aCBkPSJNMTkgMTJ2N0g1di03SDN2N2MwIDEuMS45IDIgMiAyaDE0YzEuMSAwIDItLjkgMi0ydi03aC0yem0tNiAuNjdsMi41OS0yLjU4TDE3IDExLjVsLTUgNS01LTUgMS40MS0xLjQxTDExIDEyLjY3VjNoMnoiLz48L3N2Zz4=';
-
-	/**
-	 * 
-	 */
-	Editor.smallPlusImage = (!mxClient.IS_SVG) ? IMAGE_PATH + '/plus.png' : 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKCAYAAACNMs+9AAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAyJpVFh0WE1MOmNvbS5hZG9iZS54bXAAAAAAADw/eHBhY2tldCBiZWdpbj0i77u/IiBpZD0iVzVNME1wQ2VoaUh6cmVTek5UY3prYzlkIj8+IDx4OnhtcG1ldGEgeG1sbnM6eD0iYWRvYmU6bnM6bWV0YS8iIHg6eG1wdGs9IkFkb2JlIFhNUCBDb3JlIDUuMC1jMDYwIDYxLjEzNDc3NywgMjAxMC8wMi8xMi0xNzozMjowMCAgICAgICAgIj4gPHJkZjpSREYgeG1sbnM6cmRmPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5LzAyLzIyLXJkZi1zeW50YXgtbnMjIj4gPHJkZjpEZXNjcmlwdGlvbiByZGY6YWJvdXQ9IiIgeG1sbnM6eG1wPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvIiB4bWxuczp4bXBNTT0iaHR0cDovL25zLmFkb2JlLmNvbS94YXAvMS4wL21tLyIgeG1sbnM6c3RSZWY9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC9zVHlwZS9SZXNvdXJjZVJlZiMiIHhtcDpDcmVhdG9yVG9vbD0iQWRvYmUgUGhvdG9zaG9wIENTNSBNYWNpbnRvc2giIHhtcE1NOkluc3RhbmNlSUQ9InhtcC5paWQ6MDdCMTdENjVCOEM4MTFFNDlCRjVBNDdCODU5NjNBNUMiIHhtcE1NOkRvY3VtZW50SUQ9InhtcC5kaWQ6MDdCMTdENjZCOEM4MTFFNDlCRjVBNDdCODU5NjNBNUMiPiA8eG1wTU06RGVyaXZlZEZyb20gc3RSZWY6aW5zdGFuY2VJRD0ieG1wLmlpZDowN0IxN0Q2M0I4QzgxMUU0OUJGNUE0N0I4NTk2M0E1QyIgc3RSZWY6ZG9jdW1lbnRJRD0ieG1wLmRpZDowN0IxN0Q2NEI4QzgxMUU0OUJGNUE0N0I4NTk2M0E1QyIvPiA8L3JkZjpEZXNjcmlwdGlvbj4gPC9yZGY6UkRGPiA8L3g6eG1wbWV0YT4gPD94cGFja2V0IGVuZD0iciI/PtjrjmgAAAAtSURBVHjaYvz//z8DMigvLwcLdHZ2MiKLMzEQCaivkLGsrOw/dU0cAr4GCDAARQsQbTFrv10AAAAASUVORK5CYII=';
-	
-	/**
-	 * 
-	 */
-	Editor.spinImage = (!mxClient.IS_SVG) ? IMAGE_PATH + '/spin.gif' : 'data:image/gif;base64,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';
-
-	/**
-	 * 
-	 */
 	Editor.globeImage = 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgdmlld0JveD0iMCAwIDI0IDI0Ij48cGF0aCBkPSJNMTEuOTkgMkM2LjQ3IDIgMiA2LjQ4IDIgMTJzNC40NyAxMCA5Ljk5IDEwQzE3LjUyIDIyIDIyIDE3LjUyIDIyIDEyUzE3LjUyIDIgMTEuOTkgMnptNi45MyA2aC0yLjk1Yy0uMzItMS4yNS0uNzgtMi40NS0xLjM4LTMuNTYgMS44NC42MyAzLjM3IDEuOTEgNC4zMyAzLjU2ek0xMiA0LjA0Yy44MyAxLjIgMS40OCAyLjUzIDEuOTEgMy45NmgtMy44MmMuNDMtMS40MyAxLjA4LTIuNzYgMS45MS0zLjk2ek00LjI2IDE0QzQuMSAxMy4zNiA0IDEyLjY5IDQgMTJzLjEtMS4zNi4yNi0yaDMuMzhjLS4wOC42Ni0uMTQgMS4zMi0uMTQgMiAwIC42OC4wNiAxLjM0LjE0IDJINC4yNnptLjgyIDJoMi45NWMuMzIgMS4yNS43OCAyLjQ1IDEuMzggMy41Ni0xLjg0LS42My0zLjM3LTEuOS00LjMzLTMuNTZ6bTIuOTUtOEg1LjA4Yy45Ni0xLjY2IDIuNDktMi45MyA0LjMzLTMuNTZDOC44MSA1LjU1IDguMzUgNi43NSA4LjAzIDh6TTEyIDE5Ljk2Yy0uODMtMS4yLTEuNDgtMi41My0xLjkxLTMuOTZoMy44MmMtLjQzIDEuNDMtMS4wOCAyLjc2LTEuOTEgMy45NnpNMTQuMzQgMTRIOS42NmMtLjA5LS42Ni0uMTYtMS4zMi0uMTYtMiAwLS42OC4wNy0xLjM1LjE2LTJoNC42OGMuMDkuNjUuMTYgMS4zMi4xNiAyIDAgLjY4LS4wNyAxLjM0LS4xNiAyem0uMjUgNS41NmMuNi0xLjExIDEuMDYtMi4zMSAxLjM4LTMuNTZoMi45NWMtLjk2IDEuNjUtMi40OSAyLjkzLTQuMzMgMy41NnpNMTYuMzYgMTRjLjA4LS42Ni4xNC0xLjMyLjE0LTIgMC0uNjgtLjA2LTEuMzQtLjE0LTJoMy4zOGMuMTYuNjQuMjYgMS4zMS4yNiAycy0uMSAxLjM2LS4yNiAyaC0zLjM4eiIvPjwvc3ZnPg==';
-
-	/**
-	 * 
-	 */
 	Editor.commentImage = 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgdmlld0JveD0iMCAwIDI0IDI0Ij48cGF0aCBkPSJNMjEuOTkgNGMwLTEuMS0uODktMi0xLjk5LTJINGMtMS4xIDAtMiAuOS0yIDJ2MTJjMCAxLjEuOSAyIDIgMmgxNGw0IDQtLjAxLTE4ek0xOCAxNEg2di0yaDEydjJ6bTAtM0g2VjloMTJ2MnptMC0zSDZWNmgxMnYyeiIvPjxwYXRoIGQ9Ik0wIDBoMjR2MjRIMHoiIGZpbGw9Im5vbmUiLz48L3N2Zz4=';
-
-	/**
-	 * 
-	 */
 	Editor.userImage = 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgdmlld0JveD0iMCAwIDI0IDI0Ij48cGF0aCBkPSJNMTIgMTJjMi4yMSAwIDQtMS43OSA0LTRzLTEuNzktNC00LTQtNCAxLjc5LTQgNCAxLjc5IDQgNCA0em0wIDJjLTIuNjcgMC04IDEuMzQtOCA0djJoMTZ2LTJjMC0yLjY2LTUuMzMtNC04LTR6Ii8+PC9zdmc+';
-
-	/**
-	 * 
-	 */
 	Editor.shareImage = 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgdmlld0JveD0iMCAwIDI0IDI0Ij48cGF0aCBkPSJNMTggMTYuMDhjLS43NiAwLTEuNDQuMy0xLjk2Ljc3TDguOTEgMTIuN2MuMDUtLjIzLjA5LS40Ni4wOS0uN3MtLjA0LS40Ny0uMDktLjdsNy4wNS00LjExYy41NC41IDEuMjUuODEgMi4wNC44MSAxLjY2IDAgMy0xLjM0IDMtM3MtMS4zNC0zLTMtMy0zIDEuMzQtMyAzYzAgLjI0LjA0LjQ3LjA5LjdMOC4wNCA5LjgxQzcuNSA5LjMxIDYuNzkgOSA2IDljLTEuNjYgMC0zIDEuMzQtMyAzczEuMzQgMyAzIDNjLjc5IDAgMS41LS4zMSAyLjA0LS44MWw3LjEyIDQuMTZjLS4wNS4yMS0uMDguNDMtLjA4LjY1IDAgMS42MSAxLjMxIDIuOTIgMi45MiAyLjkyIDEuNjEgMCAyLjkyLTEuMzEgMi45Mi0yLjkycy0xLjMxLTIuOTItMi45Mi0yLjkyeiIvPjwvc3ZnPg==';
-
-	/**
-	 *
-	 */
 	Editor.syncImage = 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgdmlld0JveD0iMCAwIDI0IDI0Ij48cGF0aCBkPSJNMTIgNFYxTDggNWw0IDRWNmMzLjMxIDAgNiAyLjY5IDYgNiAwIDEuMDEtLjI1IDEuOTctLjcgMi44bDEuNDYgMS40NkMxOS41NCAxNS4wMyAyMCAxMy41NyAyMCAxMmMwLTQuNDItMy41OC04LTgtOHptMCAxNGMtMy4zMSAwLTYtMi42OS02LTYgMC0xLjAxLjI1LTEuOTcuNy0yLjhMNS4yNCA3Ljc0QzQuNDYgOC45NyA0IDEwLjQzIDQgMTJjMCA0LjQyIDMuNTggOCA4IDh2M2w0LTQtNC00djN6Ii8+PC9zdmc+';
-
-	/**
-	 *
-	 */
 	Editor.cloudImage = 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIGhlaWdodD0iMjRweCIgdmlld0JveD0iMCAwIDI0IDI0IiB3aWR0aD0iMjRweCIgZmlsbD0iIzAwMDAwMCI+PHBhdGggZD0iTTAgMGgyNHYyNEgwVjB6IiBmaWxsPSJub25lIi8+PHBhdGggZD0iTTEyIDZjMi42MiAwIDQuODggMS44NiA1LjM5IDQuNDNsLjMgMS41IDEuNTMuMTFjMS41Ni4xIDIuNzggMS40MSAyLjc4IDIuOTYgMCAxLjY1LTEuMzUgMy0zIDNINmMtMi4yMSAwLTQtMS43OS00LTQgMC0yLjA1IDEuNTMtMy43NiAzLjU2LTMuOTdsMS4wNy0uMTEuNS0uOTVDOC4wOCA3LjE0IDkuOTQgNiAxMiA2bTAtMkM5LjExIDQgNi42IDUuNjQgNS4zNSA4LjA0IDIuMzQgOC4zNiAwIDEwLjkxIDAgMTRjMCAzLjMxIDIuNjkgNiA2IDZoMTNjMi43NiAwIDUtMi4yNCA1LTUgMC0yLjY0LTIuMDUtNC43OC00LjY1LTQuOTZDMTguNjcgNi41OSAxNS42NCA0IDEyIDR6Ii8+PC9zdmc+';
-
-	/**
-	 *
-	 */
 	Editor.cloudOffImage = 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIGhlaWdodD0iMjRweCIgdmlld0JveD0iMCAwIDI0IDI0IiB3aWR0aD0iMjRweCIgZmlsbD0iIzAwMDAwMCI+PHBhdGggZD0iTTAgMGgyNHYyNEgwVjB6IiBmaWxsPSJub25lIi8+PHBhdGggZD0iTTI0IDE1YzAtMi42NC0yLjA1LTQuNzgtNC42NS00Ljk2QzE4LjY3IDYuNTkgMTUuNjQgNCAxMiA0Yy0xLjMzIDAtMi41Ny4zNi0zLjY1Ljk3bDEuNDkgMS40OUMxMC41MSA2LjE3IDExLjIzIDYgMTIgNmMzLjA0IDAgNS41IDIuNDYgNS41IDUuNXYuNUgxOWMxLjY2IDAgMyAxLjM0IDMgMyAwIC45OS0uNDggMS44NS0xLjIxIDIuNGwxLjQxIDEuNDFjMS4wOS0uOTIgMS44LTIuMjcgMS44LTMuODF6TTQuNDEgMy44NkwzIDUuMjdsMi43NyAyLjc3aC0uNDJDMi4zNCA4LjM2IDAgMTAuOTEgMCAxNGMwIDMuMzEgMi42OSA2IDYgNmgxMS43M2wyIDIgMS40MS0xLjQxTDQuNDEgMy44NnpNNiAxOGMtMi4yMSAwLTQtMS43OS00LTRzMS43OS00IDQtNGgxLjczbDggOEg2eiIvPjwvc3ZnPg==';
-
-	/**
-	 *
-	 */
-	Editor.syncDisabledImage = 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgdmlld0JveD0iMCAwIDI0IDI0Ij48cGF0aCBkPSJNMTAgNi4zNVY0LjI2Yy0uOC4yMS0xLjU1LjU0LTIuMjMuOTZsMS40NiAxLjQ2Yy4yNS0uMTIuNS0uMjQuNzctLjMzem0tNy4xNC0uOTRsMi4zNiAyLjM2QzQuNDUgOC45OSA0IDEwLjQ0IDQgMTJjMCAyLjIxLjkxIDQuMiAyLjM2IDUuNjRMNCAyMGg2di02bC0yLjI0IDIuMjRDNi42OCAxNS4xNSA2IDEzLjY2IDYgMTJjMC0xIC4yNS0xLjk0LjY4LTIuNzdsOC4wOCA4LjA4Yy0uMjUuMTMtLjUuMjUtLjc3LjM0djIuMDljLjgtLjIxIDEuNTUtLjU0IDIuMjMtLjk2bDIuMzYgMi4zNiAxLjI3LTEuMjdMNC4xNCA0LjE0IDIuODYgNS40MXpNMjAgNGgtNnY2bDIuMjQtMi4yNEMxNy4zMiA4Ljg1IDE4IDEwLjM0IDE4IDEyYzAgMS0uMjUgMS45NC0uNjggMi43N2wxLjQ2IDEuNDZDMTkuNTUgMTUuMDEgMjAgMTMuNTYgMjAgMTJjMC0yLjIxLS45MS00LjItMi4zNi01LjY0TDIwIDR6Ii8+PC9zdmc+';
-
-	/**
-	 * 
-	 */
 	Editor.calendarImage = 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIGVuYWJsZS1iYWNrZ3JvdW5kPSJuZXcgMCAwIDI0IDI0IiBoZWlnaHQ9IjI0cHgiIHZpZXdCb3g9IjAgMCAyNCAyNCIgd2lkdGg9IjI0cHgiIGZpbGw9IiMwMDAwMDAiPjxnPjxwYXRoIGQ9Ik0wLDBoMjR2MjRIMFYweiIgZmlsbD0ibm9uZSIvPjwvZz48Zz48cGF0aCBkPSJNMjAsNEg0QzIuOSw0LDIsNC45LDIsNnYxMmMwLDEuMSwwLjksMiwyLDJoMTZjMS4xLDAsMi0wLjksMi0yVjZDMjIsNC45LDIxLjEsNCwyMCw0eiBNOCwxMUg0VjZoNFYxMXogTTE0LDExaC00VjZoNFYxMXogTTIwLDExaC00VjZoNFYxMXogTTgsMThINHYtNWg0VjE4eiBNMTQsMThoLTR2LTVoNFYxOHogTTIwLDE4aC00di01aDRWMTh6Ii8+PC9nPjwvc3ZnPg==';
-	
-	/**
-	 *
-	 */
  	Editor.syncProblemImage = 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgdmlld0JveD0iMCAwIDI0IDI0Ij48cGF0aCBkPSJNMyAxMmMwIDIuMjEuOTEgNC4yIDIuMzYgNS42NEwzIDIwaDZ2LTZsLTIuMjQgMi4yNEM1LjY4IDE1LjE1IDUgMTMuNjYgNSAxMmMwLTIuNjEgMS42Ny00LjgzIDQtNS42NVY0LjI2QzUuNTUgNS4xNSAzIDguMjcgMyAxMnptOCA1aDJ2LTJoLTJ2MnpNMjEgNGgtNnY2bDIuMjQtMi4yNEMxOC4zMiA4Ljg1IDE5IDEwLjM0IDE5IDEyYzAgMi42MS0xLjY3IDQuODMtNCA1LjY1djIuMDljMy40NS0uODkgNi00LjAxIDYtNy43NCAwLTIuMjEtLjkxLTQuMi0yLjM2LTUuNjRMMjEgNHptLTEwIDloMlY3aC0ydjZ6Ii8+PC9zdmc+';
-
-	/**
-	 *
-	 */
-	Editor.drawLogoImage = 'data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0idXRmLTgiPz4KPHN2ZyB2ZXJzaW9uPSIxLjEiIGlkPSJFYmVuZV8xIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiB4PSIwcHgiIHk9IjBweCIKCSB2aWV3Qm94PSIwIDAgMjUwIDI1MCIgc3R5bGU9ImVuYWJsZS1iYWNrZ3JvdW5kOm5ldyAwIDAgMjUwIDI1MDsiIHhtbDpzcGFjZT0icHJlc2VydmUiPgo8c3R5bGUgdHlwZT0idGV4dC9jc3MiPgoJLnN0MntmaWxsOiMwMDA7fQo8L3N0eWxlPgo8cGF0aCBjbGFzcz0ic3QyIiB0cmFuc2Zvcm09InRyYW5zbGF0ZSgwLDE1KSIgZD0iTTE5Ny4xLDEzOC4zaC0yMy43bC0yNS00Mi43YzUuNy0xLjIsOS44LTYuMiw5LjctMTJWNTEuNWMwLTYuOC01LjQtMTIuMy0xMi4yLTEyLjNjMCwwLTAuMSwwLTAuMSwwaC00MS43CgljLTYuOCwwLTEyLjMsNS40LTEyLjMsMTIuMmMwLDAsMCwwLjEsMCwwLjF2MzIuMWMwLDUuOCw0LDEwLjgsOS43LDEybC0yNSw0Mi43SDUyLjljLTYuOCwwLTEyLjMsNS40LTEyLjMsMTIuMmMwLDAsMCwwLjEsMCwwLjEKCXYzMi4xYzAsNi44LDUuNCwxMi4zLDEyLjIsMTIuM2MwLDAsMC4xLDAsMC4xLDBoNDEuN2M2LjgsMCwxMi4zLTUuNCwxMi4zLTEyLjJjMCwwLDAtMC4xLDAtMC4xdi0zMi4xYzAtNi44LTUuNC0xMi4zLTEyLjItMTIuMwoJYzAsMC0wLjEsMC0wLjEsMGgtNGwyNC44LTQyLjRoMTkuM2wyNC45LDQyLjRoLTQuMWMtNi44LDAtMTIuMyw1LjQtMTIuMywxMi4yYzAsMCwwLDAuMSwwLDAuMXYzMi4xYzAsNi44LDUuNCwxMi4zLDEyLjIsMTIuMwoJYzAsMCwwLjEsMCwwLjEsMGg0MS43YzYuOCwwLDEyLjMtNS40LDEyLjMtMTIuMmMwLDAsMC0wLjEsMC0wLjF2LTMyLjFjMC02LjgtNS40LTEyLjMtMTIuMi0xMi4zCglDMTk3LjIsMTM4LjMsMTk3LjIsMTM4LjMsMTk3LjEsMTM4LjN6Ii8+Cjwvc3ZnPgo=';
-
-	/**
-	 * 
-	 */
 	Editor.tailSpin = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTYiIGhlaWdodD0iMTYiIHZpZXdCb3g9Ii0yIC0yIDQ0IDQ0IiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPgogICAgPGRlZnM+CiAgICAgICAgPGxpbmVhckdyYWRpZW50IHgxPSI4LjA0MiUiIHkxPSIwJSIgeDI9IjY1LjY4MiUiIHkyPSIyMy44NjUlIiBpZD0iYSI+CiAgICAgICAgICAgIDxzdG9wIHN0b3AtY29sb3I9IiM4MDgwODAiIHN0b3Atb3BhY2l0eT0iMCIgb2Zmc2V0PSIwJSIvPgogICAgICAgICAgICA8c3RvcCBzdG9wLWNvbG9yPSIjODA4MDgwIiBzdG9wLW9wYWNpdHk9Ii42MzEiIG9mZnNldD0iNjMuMTQ2JSIvPgogICAgICAgICAgICA8c3RvcCBzdG9wLWNvbG9yPSIjODA4MDgwIiBvZmZzZXQ9IjEwMCUiLz4KICAgICAgICA8L2xpbmVhckdyYWRpZW50PgogICAgPC9kZWZzPgogICAgPGcgZmlsbD0ibm9uZSIgZmlsbC1ydWxlPSJldmVub2RkIj4KICAgICAgICA8ZyB0cmFuc2Zvcm09InRyYW5zbGF0ZSgxIDEpIj4KICAgICAgICAgICAgPHBhdGggZD0iTTM2IDE4YzAtOS45NC04LjA2LTE4LTE4LTE4IiBzdHJva2U9InVybCgjYSkiIHN0cm9rZS13aWR0aD0iNiI+CiAgICAgICAgICAgICAgICA8YW5pbWF0ZVRyYW5zZm9ybQogICAgICAgICAgICAgICAgICAgIGF0dHJpYnV0ZU5hbWU9InRyYW5zZm9ybSIKICAgICAgICAgICAgICAgICAgICB0eXBlPSJyb3RhdGUiCiAgICAgICAgICAgICAgICAgICAgZnJvbT0iMCAxOCAxOCIKICAgICAgICAgICAgICAgICAgICB0bz0iMzYwIDE4IDE4IgogICAgICAgICAgICAgICAgICAgIGR1cj0iMC45cyIKICAgICAgICAgICAgICAgICAgICByZXBlYXRDb3VudD0iaW5kZWZpbml0ZSIgLz4KICAgICAgICAgICAgPC9wYXRoPgogICAgICAgICAgICA8Y2lyY2xlIGZpbGw9IiM4MDgwODAiIGN4PSIzNiIgY3k9IjE4IiByPSIxIj4KICAgICAgICAgICAgICAgIDxhbmltYXRlVHJhbnNmb3JtCiAgICAgICAgICAgICAgICAgICAgYXR0cmlidXRlTmFtZT0idHJhbnNmb3JtIgogICAgICAgICAgICAgICAgICAgIHR5cGU9InJvdGF0ZSIKICAgICAgICAgICAgICAgICAgICBmcm9tPSIwIDE4IDE4IgogICAgICAgICAgICAgICAgICAgIHRvPSIzNjAgMTggMTgiCiAgICAgICAgICAgICAgICAgICAgZHVyPSIwLjlzIgogICAgICAgICAgICAgICAgICAgIHJlcGVhdENvdW50PSJpbmRlZmluaXRlIiAvPgogICAgICAgICAgICA8L2NpcmNsZT4KICAgICAgICA8L2c+CiAgICA8L2c+Cjwvc3ZnPgo=';
-
-	/**
-	 * 
-	 */
 	Editor.mailImage = 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIGhlaWdodD0iMjRweCIgdmlld0JveD0iMCAwIDI0IDI0IiB3aWR0aD0iMjRweCIgZmlsbD0iIzAwMDAwMCI+PHBhdGggZD0iTTAgMGgyNHYyNEgwVjB6IiBmaWxsPSJub25lIi8+PHBhdGggZD0iTTIyIDZjMC0xLjEtLjktMi0yLTJINGMtMS4xIDAtMiAuOS0yIDJ2MTJjMCAxLjEuOSAyIDIgMmgxNmMxLjEgMCAyLS45IDItMlY2em0tMiAwbC04IDQuOTlMNCA2aDE2em0wIDEySDRWOGw4IDUgOC01djEweiIvPjwvc3ZnPg==';
-
-	/**
-	 * Used in the GraphViewer lightbox.
-	 */
-	Editor.tweetImage = IMAGE_PATH + '/tweet.png';
-
-	/**
-	 * Used in the GraphViewer lightbox.
-	 */
-	Editor.facebookImage = IMAGE_PATH + '/facebook.png';
-
-	/**
-	 *
-	 */
-	Editor.blankImage = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAACklEQVR4nGMAAQAABQABDQottAAAAABJRU5ErkJggg==';
-
-	/**
-	 *
-	 */
-	Editor.hiResImage = (mxClient.IS_SVG) ? 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAFAAAAA+CAMAAACLMWy1AAAAh1BMVEUAAABMTExERERBQUFBQUFFRUVAQEBCQkJAQEA6OjpDQ0NKSkpBQUFBQUFERERERERBQUFCQkJCQkJCQkJJSUlBQUFCQkJDQ0NDQ0NCQkJDQ0NBQUFBQUFCQkJBQUFCQkJCQkJDQ0NCQkJHR0dBQUFCQkJCQkJAQEBCQkJDQ0NAQEBERERCQkIk1hS2AAAAKnRSTlMAAjj96BL7PgQFRwfu3TYazKuVjRXl1V1DPCn1uLGjnWNVIgy9hU40eGqPkM38AAACG0lEQVRYw+2X63KbMBCFzwZblgGDceN74muatpLe//m6MHV3gHGFAv2RjM94MAbxzdnVsQbBDKwH8AH8MDAyafzjqYeyOG04XE7RS8nIRDXg6BlT+rA0nmtAPh+NQRDxIASIMG44rAMrGunBgHwy3uUldxggIStGKp2f+DQc2O4h4eQsX3O2IFB/oEbsjOKbStnjAEA+zJ0ylZTbgvoDn8xNyn6Dbj5Kd4GsNpABa6duQPfSdEj88TgMAhKuCWjAkgmFXPLnsD0pWd3OFGdrMugQII/eOMPEiGOzqPMIeWrcSoMCg71W1pXBPvCP+gS/OdXqQ3uW23+93XGWLl/OaBb805bNcBPoEIcVJsnHzcxpZH86u5KZ9gDby5dQCcnKqdbke4ItI4Tzd7IW9hZQt4EO6GG9b9sYuuK9Wwn8TIr2xKbF2+3Nhr+qxChJ/AI6pIfCu4z4Zowp4ZUNihz79vewzctnHDwTvQO/hCdFBzrUGDOPn2Y/F8YKT4oOATLvlhOznzmBSdFBJWtc58y7r+UVFOCQczy3wpN6pegDqHtsCPTGvH9JuTO0Dyg8icldYPk+RB6g8Aofj4m2EKBvtTmUPD9xDd1pPcSReV2U5iD/ik2yrngtvvqBfPzOvKiDTKTsCdoHZJ7pLLffgTwlJ5vJdtJV2/jiAYaLvLGhMAEDO5QcDg2M/jOw/8Zn+K3ZwJvHT7ZffgC/NvA3zcybTeIfE4EAAAAASUVORK5CYII=' : IMAGE_PATH + '/img-hi-res.png';
-
-	/**
-	 *
-	 */
-	Editor.loResImage = (mxClient.IS_SVG) ? 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAFAAAAA+CAMAAACLMWy1AAAAS1BMVEVAQEAAAAA1NTVBQUFDQ0NDQ0NFRUVERERBQUFBQUFBQUFAQEBBQUFBQUFCQkJCQkJCQkJBQUFCQkJDQ0NDQ0NCQkJCQkJCQkJGRkb5/XqTAAAAGXRSTlP+AAWODlASCsesX+Lc2LyWe3pwa1tCPjohjSJfoAAAAI1JREFUWMPt1MkKhTAMRuG0anvneXr/J71nUypKcdqI/N8yhLMKMZE1CahnClDQzMPB44ED3EgeCubgDWnWQMHpwTtKwTe+UHD4sJ94wbUEHHFGhILlYDeSnsQeabeCgsPBgB0MOZZ9oGA5GJFiJSfUULAfjLjARrhCwX7wh2YCDwVbwZkUBKqFFJRN+wOcwSgR2sREcgAAAABJRU5ErkJggg==' : IMAGE_PATH + '/img-lo-res.png';
-
-	/**
-	 *
-	 */
 	Editor.cameraImage = 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIGhlaWdodD0iMThweCIgdmlld0JveD0iMCAwIDI0IDI0IiB3aWR0aD0iMThweCIgZmlsbD0iIzAwMDAwMCI+PHBhdGggZD0iTTAgMGgyNHYyNEgwVjB6IiBmaWxsPSJub25lIi8+PHBhdGggZD0iTTE0LjEyIDRsMS44MyAySDIwdjEySDRWNmg0LjA1bDEuODMtMmg0LjI0TTE1IDJIOUw3LjE3IDRINGMtMS4xIDAtMiAuOS0yIDJ2MTJjMCAxLjEuOSAyIDIgMmgxNmMxLjEgMCAyLS45IDItMlY2YzAtMS4xLS45LTItMi0yaC0zLjE3TDE1IDJ6bS0zIDdjMS42NSAwIDMgMS4zNSAzIDNzLTEuMzUgMy0zIDMtMy0xLjM1LTMtMyAxLjM1LTMgMy0zbTAtMmMtMi43NiAwLTUgMi4yNC01IDVzMi4yNCA1IDUgNSA1LTIuMjQgNS01LTIuMjQtNS01LTV6Ii8+PC9zdmc+';
-		
-	/**
-	 *
-	 */
 	Editor.tagsImage = 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIGVuYWJsZS1iYWNrZ3JvdW5kPSJuZXcgMCAwIDI0IDI0IiBoZWlnaHQ9IjE4cHgiIHZpZXdCb3g9IjAgMCAyNCAyNCIgd2lkdGg9IjE4cHgiIGZpbGw9IiMwMDAwMDAiPjxnPjxwYXRoIGQ9Ik0wLDBoMjR2MjRIMFYweiIgZmlsbD0ibm9uZSIvPjwvZz48Zz48Zz48cGF0aCBkPSJNMjEuNDEsMTEuNDFsLTguODMtOC44M0MxMi4yMSwyLjIxLDExLjcsMiwxMS4xNywySDRDMi45LDIsMiwyLjksMiw0djcuMTdjMCwwLjUzLDAuMjEsMS4wNCwwLjU5LDEuNDFsOC44Myw4LjgzIGMwLjc4LDAuNzgsMi4wNSwwLjc4LDIuODMsMGw3LjE3LTcuMTdDMjIuMiwxMy40NiwyMi4yLDEyLjIsMjEuNDEsMTEuNDF6IE0xMi44MywyMEw0LDExLjE3VjRoNy4xN0wyMCwxMi44M0wxMi44MywyMHoiLz48Y2lyY2xlIGN4PSI2LjUiIGN5PSI2LjUiIHI9IjEuNSIvPjwvZz48L2c+PC9zdmc+';
+	Editor.darkModeImage = 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIGhlaWdodD0iMjQiIHdpZHRoPSIyNCI+PHBhdGggZD0iTTEyIDIxcS0zLjc1IDAtNi4zNzUtMi42MjVUMyAxMnEwLTMuNzUgMi42MjUtNi4zNzVUMTIgM3EuMzUgMCAuNjg4LjAyNS4zMzcuMDI1LjY2Mi4wNzUtMS4wMjUuNzI1LTEuNjM3IDEuODg3UTExLjEgNi4xNSAxMS4xIDcuNXEwIDIuMjUgMS41NzUgMy44MjVRMTQuMjUgMTIuOSAxNi41IDEyLjlxMS4zNzUgMCAyLjUyNS0uNjEzIDEuMTUtLjYxMiAxLjg3NS0xLjYzNy4wNS4zMjUuMDc1LjY2MlEyMSAxMS42NSAyMSAxMnEwIDMuNzUtMi42MjUgNi4zNzVUMTIgMjFabTAtMnEyLjIgMCAzLjk1LTEuMjEyIDEuNzUtMS4yMTMgMi41NS0zLjE2My0uNS4xMjUtMSAuMi0uNS4wNzUtMSAuMDc1LTMuMDc1IDAtNS4yMzgtMi4xNjJROS4xIDEwLjU3NSA5LjEgNy41cTAtLjUuMDc1LTF0LjItMXEtMS45NS44LTMuMTYyIDIuNTVRNSA5LjggNSAxMnEwIDIuOSAyLjA1IDQuOTVROS4xIDE5IDEyIDE5Wm0tLjI1LTYuNzVaIi8+PC9zdmc+';
+	Editor.lightModeImage = 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIGhlaWdodD0iMjQiIHdpZHRoPSIyNCI+PHBhdGggZD0iTTEyIDE1cTEuMjUgMCAyLjEyNS0uODc1VDE1IDEycTAtMS4yNS0uODc1LTIuMTI1VDEyIDlxLTEuMjUgMC0yLjEyNS44NzVUOSAxMnEwIDEuMjUuODc1IDIuMTI1VDEyIDE1Wm0wIDJxLTIuMDc1IDAtMy41MzctMS40NjNRNyAxNC4wNzUgNyAxMnQxLjQ2My0zLjUzOFE5LjkyNSA3IDEyIDd0My41MzggMS40NjJRMTcgOS45MjUgMTcgMTJxMCAyLjA3NS0xLjQ2MiAzLjUzN1ExNC4wNzUgMTcgMTIgMTdaTTIgMTNxLS40MjUgMC0uNzEyLS4yODhRMSAxMi40MjUgMSAxMnQuMjg4LS43MTNRMS41NzUgMTEgMiAxMWgycS40MjUgMCAuNzEzLjI4N1E1IDExLjU3NSA1IDEydC0uMjg3LjcxMlE0LjQyNSAxMyA0IDEzWm0xOCAwcS0uNDI1IDAtLjcxMi0uMjg4UTE5IDEyLjQyNSAxOSAxMnQuMjg4LS43MTNRMTkuNTc1IDExIDIwIDExaDJxLjQyNSAwIC43MTIuMjg3LjI4OC4yODguMjg4LjcxM3QtLjI4OC43MTJRMjIuNDI1IDEzIDIyIDEzWm0tOC04cS0uNDI1IDAtLjcxMi0uMjg4UTExIDQuNDI1IDExIDRWMnEwLS40MjUuMjg4LS43MTNRMTEuNTc1IDEgMTIgMXQuNzEzLjI4N1ExMyAxLjU3NSAxMyAydjJxMCAuNDI1LS4yODcuNzEyUTEyLjQyNSA1IDEyIDVabTAgMThxLS40MjUgMC0uNzEyLS4yODhRMTEgMjIuNDI1IDExIDIydi0ycTAtLjQyNS4yODgtLjcxMlExMS41NzUgMTkgMTIgMTl0LjcxMy4yODhRMTMgMTkuNTc1IDEzIDIwdjJxMCAuNDI1LS4yODcuNzEyUTEyLjQyNSAyMyAxMiAyM1pNNS42NSA3LjA1IDQuNTc1IDZxLS4zLS4yNzUtLjI4OC0uNy4wMTMtLjQyNS4yODgtLjcyNS4zLS4zLjcyNS0uM3QuNy4zTDcuMDUgNS42NXEuMjc1LjMuMjc1LjcgMCAuNC0uMjc1LjctLjI3NS4zLS42ODcuMjg3LS40MTMtLjAxMi0uNzEzLS4yODdaTTE4IDE5LjQyNWwtMS4wNS0xLjA3NXEtLjI3NS0uMy0uMjc1LS43MTIgMC0uNDEzLjI3NS0uNjg4LjI3NS0uMy42ODgtLjI4Ny40MTIuMDEyLjcxMi4yODdMMTkuNDI1IDE4cS4zLjI3NS4yODguNy0uMDEzLjQyNS0uMjg4LjcyNS0uMy4zLS43MjUuM3QtLjctLjNaTTE2Ljk1IDcuMDVxLS4zLS4yNzUtLjI4Ny0uNjg4LjAxMi0uNDEyLjI4Ny0uNzEyTDE4IDQuNTc1cS4yNzUtLjMuNy0uMjg4LjQyNS4wMTMuNzI1LjI4OC4zLjMuMy43MjV0LS4zLjdMMTguMzUgNy4wNXEtLjMuMjc1LS43LjI3NS0uNCAwLS43LS4yNzVaTTQuNTc1IDE5LjQyNXEtLjMtLjMtLjMtLjcyNXQuMy0uN2wxLjA3NS0xLjA1cS4zLS4yNzUuNzEzLS4yNzUuNDEyIDAgLjY4Ny4yNzUuMy4yNzUuMjg4LjY4OC0uMDEzLjQxMi0uMjg4LjcxMkw2IDE5LjQyNXEtLjI3NS4zLS43LjI4Ny0uNDI1LS4wMTItLjcyNS0uMjg3Wk0xMiAxMloiLz48L3N2Zz4=';
+	Editor.spinImage = 'data:image/gif;base64,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';
+	Editor.errorImage = 'data:image/gif;base64,R0lGODlhEAAQAPcAAADGAIQAAISEhP8AAP///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////yH5BAEAAAAALAAAAAAQABAAAAhoAAEIFBigYMGBCAkGGMCQ4cGECxtKHBAAYUQCEzFSHLiQgMeGHjEGEAAg4oCQJz86LCkxpEqHAkwyRClxpEyXGmGaREmTIsmOL1GO/DkzI0yOE2sKIMlRJsWhCQHENDiUaVSpS5cmDAgAOw==';
+	Editor.smallPlusImage = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKCAYAAACNMs+9AAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAyJpVFh0WE1MOmNvbS5hZG9iZS54bXAAAAAAADw/eHBhY2tldCBiZWdpbj0i77u/IiBpZD0iVzVNME1wQ2VoaUh6cmVTek5UY3prYzlkIj8+IDx4OnhtcG1ldGEgeG1sbnM6eD0iYWRvYmU6bnM6bWV0YS8iIHg6eG1wdGs9IkFkb2JlIFhNUCBDb3JlIDUuMC1jMDYwIDYxLjEzNDc3NywgMjAxMC8wMi8xMi0xNzozMjowMCAgICAgICAgIj4gPHJkZjpSREYgeG1sbnM6cmRmPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5LzAyLzIyLXJkZi1zeW50YXgtbnMjIj4gPHJkZjpEZXNjcmlwdGlvbiByZGY6YWJvdXQ9IiIgeG1sbnM6eG1wPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvIiB4bWxuczp4bXBNTT0iaHR0cDovL25zLmFkb2JlLmNvbS94YXAvMS4wL21tLyIgeG1sbnM6c3RSZWY9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC9zVHlwZS9SZXNvdXJjZVJlZiMiIHhtcDpDcmVhdG9yVG9vbD0iQWRvYmUgUGhvdG9zaG9wIENTNSBNYWNpbnRvc2giIHhtcE1NOkluc3RhbmNlSUQ9InhtcC5paWQ6MDdCMTdENjVCOEM4MTFFNDlCRjVBNDdCODU5NjNBNUMiIHhtcE1NOkRvY3VtZW50SUQ9InhtcC5kaWQ6MDdCMTdENjZCOEM4MTFFNDlCRjVBNDdCODU5NjNBNUMiPiA8eG1wTU06RGVyaXZlZEZyb20gc3RSZWY6aW5zdGFuY2VJRD0ieG1wLmlpZDowN0IxN0Q2M0I4QzgxMUU0OUJGNUE0N0I4NTk2M0E1QyIgc3RSZWY6ZG9jdW1lbnRJRD0ieG1wLmRpZDowN0IxN0Q2NEI4QzgxMUU0OUJGNUE0N0I4NTk2M0E1QyIvPiA8L3JkZjpEZXNjcmlwdGlvbj4gPC9yZGY6UkRGPiA8L3g6eG1wbWV0YT4gPD94cGFja2V0IGVuZD0iciI/PtjrjmgAAAAtSURBVHjaYvz//z8DMigvLwcLdHZ2MiKLMzEQCaivkLGsrOw/dU0cAr4GCDAARQsQbTFrv10AAAAASUVORK5CYII=';
+	Editor.hiResImage = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAFAAAAA+CAMAAACLMWy1AAAAh1BMVEUAAABMTExERERBQUFBQUFFRUVAQEBCQkJAQEA6OjpDQ0NKSkpBQUFBQUFERERERERBQUFCQkJCQkJCQkJJSUlBQUFCQkJDQ0NDQ0NCQkJDQ0NBQUFBQUFCQkJBQUFCQkJCQkJDQ0NCQkJHR0dBQUFCQkJCQkJAQEBCQkJDQ0NAQEBERERCQkIk1hS2AAAAKnRSTlMAAjj96BL7PgQFRwfu3TYazKuVjRXl1V1DPCn1uLGjnWNVIgy9hU40eGqPkM38AAACG0lEQVRYw+2X63KbMBCFzwZblgGDceN74muatpLe//m6MHV3gHGFAv2RjM94MAbxzdnVsQbBDKwH8AH8MDAyafzjqYeyOG04XE7RS8nIRDXg6BlT+rA0nmtAPh+NQRDxIASIMG44rAMrGunBgHwy3uUldxggIStGKp2f+DQc2O4h4eQsX3O2IFB/oEbsjOKbStnjAEA+zJ0ylZTbgvoDn8xNyn6Dbj5Kd4GsNpABa6duQPfSdEj88TgMAhKuCWjAkgmFXPLnsD0pWd3OFGdrMugQII/eOMPEiGOzqPMIeWrcSoMCg71W1pXBPvCP+gS/OdXqQ3uW23+93XGWLl/OaBb805bNcBPoEIcVJsnHzcxpZH86u5KZ9gDby5dQCcnKqdbke4ItI4Tzd7IW9hZQt4EO6GG9b9sYuuK9Wwn8TIr2xKbF2+3Nhr+qxChJ/AI6pIfCu4z4Zowp4ZUNihz79vewzctnHDwTvQO/hCdFBzrUGDOPn2Y/F8YKT4oOATLvlhOznzmBSdFBJWtc58y7r+UVFOCQczy3wpN6pegDqHtsCPTGvH9JuTO0Dyg8icldYPk+RB6g8Aofj4m2EKBvtTmUPD9xDd1pPcSReV2U5iD/ik2yrngtvvqBfPzOvKiDTKTsCdoHZJ7pLLffgTwlJ5vJdtJV2/jiAYaLvLGhMAEDO5QcDg2M/jOw/8Zn+K3ZwJvHT7ZffgC/NvA3zcybTeIfE4EAAAAASUVORK5CYII=';
+	Editor.loResImage = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAFAAAAA+CAMAAACLMWy1AAAAS1BMVEVAQEAAAAA1NTVBQUFDQ0NDQ0NFRUVERERBQUFBQUFBQUFAQEBBQUFBQUFCQkJCQkJCQkJBQUFCQkJDQ0NDQ0NCQkJCQkJCQkJGRkb5/XqTAAAAGXRSTlP+AAWODlASCsesX+Lc2LyWe3pwa1tCPjohjSJfoAAAAI1JREFUWMPt1MkKhTAMRuG0anvneXr/J71nUypKcdqI/N8yhLMKMZE1CahnClDQzMPB44ED3EgeCubgDWnWQMHpwTtKwTe+UHD4sJ94wbUEHHFGhILlYDeSnsQeabeCgsPBgB0MOZZ9oGA5GJFiJSfUULAfjLjARrhCwX7wh2YCDwVbwZkUBKqFFJRN+wOcwSgR2sREcgAAAABJRU5ErkJggg==';
+	Editor.blankImage = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAACklEQVR4nGMAAQAABQABDQottAAAAABJRU5ErkJggg==';
+	Editor.facebookImage = IMAGE_PATH + '/facebook.png';
+	Editor.tweetImage = IMAGE_PATH + '/tweet.png';
 
 	/**
 	 * Broken image symbol for offline SVG.
@@ -221,8 +142,7 @@
 	/**
 	 * Error image for not found images
 	 */	
-	Editor.errorImage = 'data:image/gif;base64,R0lGODlhEAAQAPcAAADGAIQAAISEhP8AAP///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////yH5BAEAAAAALAAAAAAQABAAAAhoAAEIFBigYMGBCAkGGMCQ4cGECxtKHBAAYUQCEzFSHLiQgMeGHjEGEAAg4oCQJz86LCkxpEqHAkwyRClxpEyXGmGaREmTIsmOL1GO/DkzI0yOE2sKIMlRJsWhCQHENDiUaVSpS5cmDAgAOw==';
-	
+
 	/**
 	 * Error image for not found images
 	 */	
@@ -276,6 +196,11 @@
 	 * Disables the export URL function.
 	 */
 	Editor.enableExportUrl = true;
+
+	/**
+	 * Disables fast real time collaboration while keeping slower real time collaboration enabled.
+	 */
+	Editor.enableRealtime = true;
 
 	/**
 	 * Specifies if XML files should be compressed. Default is true.
@@ -506,7 +431,6 @@
         			{val: 'centerPerimeter', dispName: 'Center'}]
         },
         {name: 'fixDash', dispName: 'Fixed Dash', type: 'bool', defVal: false},
-        {name: 'autosize', dispName: 'Autosize', type: 'bool', defVal: false},
         {name: 'container', dispName: 'Container', type: 'bool', defVal: false, isVisible: function(state, format)
         {
     		return state.vertices.length == 1 && state.edges.length == 0;
@@ -555,6 +479,8 @@
     		
     		return geo != null && !geo.relative;
         }},
+        {name: 'autosize', dispName: 'Autosize', type: 'bool', defVal: false},
+        {name: 'fixedWidth', dispName: 'Fixed Width', type: 'bool', defVal: false},
         {name: 'resizable', dispName: 'Resizable', type: 'bool', defVal: true},
         {name: 'resizeWidth', dispName: 'Resize Width', type: 'bool', defVal: false},
         {name: 'resizeHeight', dispName: 'Resize Height', type: 'bool', defVal: false},
@@ -689,6 +615,10 @@
 		'#\n' +
 		'# height: auto\n' +
 		'#\n' +
+		'## Collapsed state for vertices. Possible values are true or false. Default is false.\n' +
+		'#\n' +
+		'# collapsed: false\n' +
+		'#\n' +
 		'## Padding for autosize. Default is 0.\n' +
 		'#\n' +
 		'# padding: -12\n' +
@@ -715,8 +645,8 @@
 		'# edgespacing: 40\n' +
 		'#\n' +
 		'## Name or JSON of layout. Possible values are auto, none, verticaltree, horizontaltree,\n' +
-		'## verticalflow, horizontalflow, organic, circle or a JSON string as used in Layout, Apply.\n' +
-		'## Default is auto.\n' +
+		'## verticalflow, horizontalflow, organic, circle, orgchart or a JSON string as used in\n' +
+		'## Layout, Apply. Default is auto.\n' +
 		'#\n' +
 		'# layout: auto\n' +
 		'#\n' +
@@ -1785,7 +1715,7 @@
 	 * For defaultVertexStyle, defaultEdgeStyle and defaultLibraries, this must be called before
 	 * mxSettings.load via global config variable window.mxLoadSettings = false.
 	 */
-	Editor.configure = function(config, untrusted)
+	Editor.configure = function(config)
 	{
 		if (config != null)
 		{
@@ -2075,18 +2005,7 @@
 					EditorUi.debug('Configuration Error: Int > 0 expected for autosaveDelay');
 				}
 			}
-			
-			if (config.plugins != null && !untrusted)
-			{
-				// Required for callback
-				App.initPluginCallback();
-				
-				for (var i = 0; i < config.plugins.length; i++)
-				{
-					mxscript(config.plugins[i]);
-				}
-			}
-			
+
 			if(config.maxImageBytes != null) 
 			{
 				EditorUi.prototype.maxImageBytes = config.maxImageBytes;
@@ -2191,14 +2110,6 @@
 	Editor.prototype.timeout = 25000;
 	
 	/**
-	 * Mathjax output ignores CSS transforms in Safari (lightbox and normal mode).
-	 * Check the following test case on page 2 before enabling this in production:
-	 * https://devhost.jgraph.com/git/drawio/etc/embed/sf-math-fo-clipping.html?dev=1
-	 * UPDATE: Fixed via position:static CSS override in initMath.
-	 */
-	Editor.prototype.useForeignObjectForMath = true;
-
-	/**
 	 * Executes the first step for connecting to Google Drive.
 	 */
 	Editor.prototype.editButtonLink = (urlParams['edit'] != null) ? decodeURIComponent(urlParams['edit']) : null;
@@ -2271,9 +2182,6 @@
 				{
 					this.graph.setBackgroundImage(null);
 				}
-				
-				mxClient.NO_FO = ((this.graph.mathEnabled && !this.useForeignObjectForMath)) ?
-					true : this.originalNoForeignObject;
 				
 				this.graph.useCssTransforms = !mxClient.NO_FO &&
 					this.isChromelessView() &&
@@ -2418,8 +2326,6 @@
 		this.graph.mathEnabled = (urlParams['math'] == '1');
 		this.graph.view.x0 = null;
 		this.graph.view.y0 = null;
-		mxClient.NO_FO = ((this.graph.mathEnabled && !this.useForeignObjectForMath)) ?
-			true : this.originalNoForeignObject;
 		
 		this.graph.useCssTransforms = !mxClient.NO_FO &&
 			this.isChromelessView() &&
@@ -2436,8 +2342,6 @@
 	Editor.prototype.updateGraphComponents = function()
 	{
 		editorUpdateGraphComponents.apply(this, arguments);
-		mxClient.NO_FO = ((this.graph.mathEnabled && !this.useForeignObjectForMath) &&
-			Editor.MathJaxRender != null) ? true : this.originalNoForeignObject;
 		
 		this.graph.useCssTransforms = !mxClient.NO_FO &&
 			this.isChromelessView() &&
@@ -2446,82 +2350,69 @@
 	};
 	
 	/**
-	 * Overrides relative position to fix clipping bug in Webkit.
-	 */
-	Editor.mathJaxWebkitCss = 'div.MathJax_SVG_Display { position: static; }\n' +
-		'span.MathJax_SVG { position: static !important; }';
-		
-	/**
 	 * Initializes math typesetting and loads respective code.
 	 */
 	Editor.initMath = function(src, config)
 	{
-		if (typeof(window.MathJax) === 'undefined')
+		if (typeof window.MathJax === 'undefined' && !mxClient.IS_IE && !mxClient.IS_IE11)
 		{
-			src = ((src != null) ? src : DRAW_MATH_URL + '/MathJax.js') + '?config=TeX-MML-AM_' +
-				((urlParams['math-output'] == 'html') ? 'HTMLorMML' : 'SVG') + '-full,Safe';
+			src = (src != null) ? src : DRAW_MATH_URL + '/startup.js';
 			Editor.mathJaxQueue = [];
-
+			
 			Editor.doMathJaxRender = function(container)
 			{
-				window.setTimeout(function()
+				try
 				{
-					if (container.style.visibility != 'hidden')
+					MathJax.typesetClear([container]);
+					MathJax.typeset([container]);
+					Editor.onMathJaxDone();
+				}
+				catch (e)
+				{
+					MathJax.typesetClear([container]);
+
+					if (e.retry != null)
 					{
-						MathJax.Hub.Queue(['Typeset', MathJax.Hub, container]);
+						e.retry.then(function()
+						{
+							MathJax.typesetPromise([container]).then(Editor.onMathJaxDone);
+						});
 					}
-				}, 0);
-			};
-			
-			var font = (urlParams['math-font'] != null) ?
-				decodeURIComponent(urlParams['math-font']) : 'TeX';
-			
-			config = (config != null) ? config :
-			{
-				'HTML-CSS': {
-					availableFonts: [font],
-					imageFont: null
-				},
-				SVG: {
-					font: font,
-					// Needed for client-side export to work
-					useFontCache: false
-				},
-				// Ignores math in in-place editor
-				tex2jax: {
-					ignoreClass: 'mxCellEditor'
-				},
-				asciimath2jax: {
-					ignoreClass: 'mxCellEditor'
+					else if (window.console != null)
+					{
+						console.log('Error in MathJax: ' + e.toString());
+					}
 				}
 			};
-
-			// Disables global typesetting and messages on startup, adds queue for
-			// asynchronous rendering while MathJax is loading
-			window.MathJax =
+			
+			window.MathJax = (config != null) ? config :
 			{
-				skipStartupTypeset: true,
-				showMathMenu: false,
-				messageStyle: 'none',
-				AuthorInit: function ()
+				options:
 				{
-					MathJax.Hub.Config(config);
-					
-					MathJax.Hub.Register.StartupHook('Begin', function()	
-					{	
+					skipHtmlTags: {'[+]': ['text']}
+				},
+				loader:
+				{
+					load: [(urlParams['math-output'] == 'html') ?
+						'output/chtml' : 'output/svg', 'input/tex',
+						'input/asciimath', 'ui/safe']
+				},
+				startup:
+				{
+					pageReady: function()
+					{
 						for (var i = 0; i < Editor.mathJaxQueue.length; i++)	
 						{	
 							Editor.doMathJaxRender(Editor.mathJaxQueue[i]);	
-						}	
-					});
+						}
+					}
 				}
 			};
 
 			// Adds global enqueue method for async rendering
 			Editor.MathJaxRender = function(container)
 			{
-				// Initial rendering when MathJax finished loading
-				if (typeof(MathJax) !== 'undefined' && typeof(MathJax.Hub) !== 'undefined')
+				if (typeof MathJax !== 'undefined' && typeof MathJax.typeset === 'function')
 				{
 					Editor.doMathJaxRender(container);
 				}
@@ -2537,20 +2428,30 @@
 				Editor.mathJaxQueue = [];
 			};
 			
+			// Adds global MathJax render callback
+			Editor.onMathJaxDone = function()
+			{
+				// Hook for listeners
+			};
+
 			// Updates math typesetting after changes
 			var editorInit = Editor.prototype.init;
 			
 			Editor.prototype.init = function()
 			{
 				editorInit.apply(this, arguments);
-				
-				this.graph.addListener(mxEvent.SIZE, mxUtils.bind(this, function(sender, evt)
+
+				var renderMath = mxUtils.bind(this, function(sender, evt)
 				{
-					if (this.graph.container != null && this.graph.mathEnabled && !this.graph.blockMathRender)
+					if (this.graph.container != null && this.graph.mathEnabled &&
+						!this.graph.blockMathRender)
 					{
 						Editor.MathJaxRender(this.graph.container);
 					}
-				}));
+				});
+				
+				this.graph.model.addListener(mxEvent.CHANGE, renderMath);
+				this.graph.addListener(mxEvent.REFRESH, renderMath);
 			};
 			
 			var tags = document.getElementsByTagName('script');
@@ -2562,47 +2463,69 @@
 				s.setAttribute('src', src);
 				tags[0].parentNode.appendChild(s);
 			}
-			
-			// Workaround for zoomed math clipping in Webkit
-			try
-			{
-				if (mxClient.IS_GC || mxClient.IS_SF)
-				{
-					var style = document.createElement('style')
-					style.type = 'text/css';
-					style.innerHTML = Editor.mathJaxWebkitCss;
-					document.getElementsByTagName('head')[0].appendChild(style);
-				}
-			}
-			catch (e)
-			{
-				// ignore
-			}
 		}
 	};
 
 	/**
-	 * Return array of string values, or NULL if CSV string not well formed.
+	 * Parses line of CSV values according to RFC 4180.
 	 */
 	Editor.prototype.csvToArray = function(text)
 	{
-	    var re_valid = /^\s*(?:'[^'\\]*(?:\\[\S\s][^'\\]*)*'|"[^"\\]*(?:\\[\S\s][^"\\]*)*"|[^,'"\s\\]*(?:\s+[^,'"\s\\]+)*)\s*(?:,\s*(?:'[^'\\]*(?:\\[\S\s][^'\\]*)*'|"[^"\\]*(?:\\[\S\s][^"\\]*)*"|[^,'"\s\\]*(?:\s+[^,'"\s\\]+)*)\s*)*$/;
-	    var re_value = /(?!\s*$)\s*(?:'([^'\\]*(?:\\[\S\s][^'\\]*)*)'|"([^"\\]*(?:\\[\S\s][^"\\]*)*)"|([^,'"\s\\]*(?:\s+[^,'"\s\\]+)*))\s*(?:,|$)/g;
-	    // Return NULL if input string is not well formed CSV string.
-	    if (!re_valid.test(text)) return null;
-	    var a = [];                     // Initialize array to receive values.
-	    text.replace(re_value, // "Walk" the string using replace with callback.
-	        function(m0, m1, m2, m3) {
-	            // Remove backslash from \' in single quoted values.
-	            if      (m1 !== undefined) a.push(m1.replace(/\\'/g, "'"));
-	            // Remove backslash from \" in double quoted values.
-	            else if (m2 !== undefined) a.push(m2.replace(/\\"/g, '"'));
-	            else if (m3 !== undefined) a.push(m3);
-	            return ''; // Return empty string.
-	        });
-	    // Handle special case of empty last value.
-	    if (/,\s*$/.test(text)) a.push('');
-	    return a;
+		if (text.length > 0)
+		{
+			var p = '', row = [''], i = 0, s = !0, l;
+
+			for (l of text)
+			{
+				if ('"' === l)
+				{
+					if (s && l === p)
+					{
+						row[i] += l;
+					}
+
+					s = !s;
+				}
+				else if (',' === l && s)
+				{
+					l = row[++i] = '';
+				}
+				else
+				{
+					row[i] += l;
+				}
+
+				p = l;
+			}
+			
+			return row;
+		}
+		else
+		{
+			return [];
+		}
+	};
+
+	/**
+	 * Returns an URL that is proxied if the given URL is blocked. Uses
+	 * direct URL if no CSP is used as proxy blocks unknown text content.
+	 */
+	Editor.prototype.getProxiedUrl = function(url)
+	{
+		if ((/test\.draw\.io$/.test(window.location.hostname) ||
+			/app\.diagrams\.net$/.test(window.location.hostname)) &&
+			!this.isCorsEnabledForUrl(url))
+		{
+			var isVisioFilename = /(\.v(dx|sdx?))($|\?)/i.test(url) ||
+				/(\.vs(x|sx?))($|\?)/i.test(url);
+			var binary = /\.png$/i.test(url) || /\.pdf$/i.test(url);
+			var base64 = binary || isVisioFilename;
+			var nocache = 't=' + new Date().getTime();
+			url = PROXY_URL + '?url=' + encodeURIComponent(url) +
+				'&' + nocache + ((base64) ? '&base64=1' : '');
+		}
+
+		return url;
 	};
 
 	/**
@@ -2636,7 +2559,7 @@
 			url.substring(0, 29) === 'https://fonts.googleapis.com/' ||
 			url.substring(0, 26) === 'https://fonts.gstatic.com/';
 	};
-	
+
 	/**
 	 * Converts all images in the SVG output to data URIs for immediate rendering
 	 */
@@ -2965,6 +2888,10 @@
 						{
 							// Handles CORS errors
 							error({message: mxResources.get('accessDenied')}, req);
+						}
+						else if (req.getStatus() == 404)
+						{
+							error({code: req.getStatus()}, req);
 						}
 						else
 						{
@@ -5355,6 +5282,11 @@
 					{
 						var b = (urlParams['sketch'] == '1') ? '2px solid' : '1px solid';
 						
+						if (colorset['border'] != null)
+						{
+							b = colorset['border'];
+						}
+						
 						if (colorset['gradient'] != null)
 						{
 							if (mxClient.IS_IE && (document.documentMode < 10))
@@ -5418,7 +5350,7 @@
 					picker.appendChild(btn);
 				});
 				
-				picker.innerHTML = '';
+				picker.innerText = '';
 				
 				for (var i = 0; i < colorsets.length; i++)
 				{
@@ -5944,7 +5876,7 @@
 		mxSvgCanvas2DUpdateTextNodes.apply(this, arguments);
 		Graph.processFontAttributes(g);
 	};
-		
+	
 	/**
 	 * Handles custom fonts in labels.
 	 */
@@ -5960,6 +5892,9 @@
 		}
 	};
 
+	/**
+	 * Creates the tags dialog.
+	 */
 	Graph.prototype.createTagsDialog = function(isEnabled, invert, addFn)
 	{
 		var graph = this;
@@ -6003,22 +5938,14 @@
 
 		function setAllVisible(visible)
 		{
-			if (visible)
-			{
-				graph.hiddenTags = [];
-			}
-			else
-			{
-				graph.hiddenTags = allTags.slice();
-			}
-
+			graph.setHiddenTags(visible ? [] : allTags.slice());
 			removeInvisibleSelectionCells();
 			graph.refresh();
 		};
 
 		var resetBtn = mxUtils.button(mxResources.get('reset'), function(evt)
 		{
-			graph.hiddenTags = [];
+			graph.setHiddenTags([]);
 
 			if (!mxEvent.isShiftDown(evt))
 			{
@@ -6045,6 +5972,7 @@
 				});
 			}
 		});
+		
 		addBtn.setAttribute('title', mxResources.get('add'));
 		addBtn.className = 'geBtn';
 		addBtn.style.margin = '0';
@@ -6056,7 +5984,7 @@
 	
 		function refreshTags(tags, selected)
 		{
-			tagCloud.innerHTML = '';
+			tagCloud.innerText = '';
 	
 			if (tags.length > 0)
 			{
@@ -6079,7 +6007,7 @@
 								var temp = allTags.slice();
 								var index = mxUtils.indexOf(temp, tag);
 								temp.splice(index, 1);
-								graph.hiddenTags = temp;
+								graph.setHiddenTags(temp);
 								removeInvisibleSelectionCells();
 								graph.refresh();
 							};
@@ -6122,23 +6050,13 @@
 
 							mxEvent.addListener(img, 'click', function(evt)
 							{
-								var idx = mxUtils.indexOf(graph.hiddenTags, tag);
-
 								if (mxEvent.isShiftDown(evt))
 								{
 									setAllVisible(mxUtils.indexOf(graph.hiddenTags, tag) >= 0);
 								}
 								else
 								{
-									if (idx < 0)
-									{
-										graph.hiddenTags.push(tag);
-									}
-									else if (idx >= 0)
-									{
-										graph.hiddenTags.splice(idx, 1);
-									}
-
+									graph.toggleHiddenTag(tag);
 									removeInvisibleSelectionCells();
 									graph.refresh();
 								}
@@ -6540,6 +6458,14 @@
 			style.appendChild(svgDoc.createTextNode(prefix + postfix));
 			result.getElementsByTagName('defs')[0].appendChild(style);
 		}
+
+		// SVG element must be added to DOM for MathJax to work
+		if (this.mathEnabled)
+		{
+			document.body.appendChild(result);
+			Editor.MathJaxRender(result);
+			result.parentNode.removeChild(result);
+		}
 		
 		if (temp != null)
 		{
@@ -6552,61 +6478,6 @@
 		return result;
 	};
 	
-	/**
-	 * Overridden to support client-side math typesetting.
-	 */
-	var graphCreateSvgImageExport = Graph.prototype.createSvgImageExport;
-	
-	Graph.prototype.createSvgImageExport = function()
-	{
-		var imgExport = graphCreateSvgImageExport.apply(this, arguments);
-		
-		if (this.mathEnabled)
-		{
-			var drawText = imgExport.drawText;
-			
-			// Replaces input with rendered markup
-			imgExport.drawText = function(state, c)
-			{
-				if (state.text != null && state.text.value != null && state.text.checkBounds() &&
-					(mxUtils.isNode(state.text.value) || state.text.dialect == mxConstants.DIALECT_STRICTHTML))
-				{
-					var clone = state.text.getContentNode();
-					
-					if (clone != null)
-					{
-						clone = clone.cloneNode(true);
-						
-						// Removes duplicate math output
-						if (clone.getElementsByTagNameNS)
-						{
-							var ele = clone.getElementsByTagNameNS('http://www.w3.org/1998/Math/MathML', 'math');
-							
-							while (ele.length > 0)
-							{
-								ele[0].parentNode.removeChild(ele[0]);
-							}
-						}
-						
-						if (clone.innerHTML != null)
-						{
-							var prev = state.text.value;
-							state.text.value = clone.innerHTML;
-							drawText.apply(this, arguments);
-							state.text.value = prev;
-						}
-					}
-				}
-				else
-				{
-					drawText.apply(this, arguments);
-				}
-			};
-		}
-		
-		return imgExport;
-	};
-
 	/**
 	 * Overridden to destroy the shape number.
 	 */
@@ -7026,7 +6897,7 @@
 							}
 						}
 
-						this.hiddenTags = hidden;
+						this.setHiddenTags(hidden);
 						this.refresh();
 					}
 
@@ -7271,6 +7142,34 @@
 			!this.isAllTagsHidden(this.getTagsForCell(cell));
 	};
   
+	/**
+	 * Returns the tags for the given cell as a string.
+	 */
+	Graph.prototype.setHiddenTags = function(tags)
+	{
+		this.hiddenTags = tags;
+		this.fireEvent(new mxEventObject('hiddenTagsChanged'));
+	};
+
+	/**
+	 * Returns the tags for the given cell as a string.
+	 */
+	Graph.prototype.toggleHiddenTag = function(tag)
+	{
+		var idx = mxUtils.indexOf(this.hiddenTags, tag);
+									
+		if (idx < 0)
+		{
+			this.hiddenTags.push(tag);
+		}
+		else if (idx >= 0)
+		{
+			this.hiddenTags.splice(idx, 1);
+		}
+		
+		this.fireEvent(new mxEventObject('hiddenTagsChanged'));
+	};
+ 
 	/**
 	 * Returns the cells in the model (or given array) that have all of the
 	 * given tags in their tags property.
@@ -8329,20 +8228,12 @@
 					{
 						writeHead.apply(this, arguments);
 						
-						// Workaround for zoomed math clipping in Webkit
-						if (mxClient.IS_GC || mxClient.IS_SF)
-						{
-							doc.writeln('<style type="text/css">');
-							doc.writeln(Editor.mathJaxWebkitCss);
-							doc.writeln('</style>');
-						}
-
-						// Fixes font weight for PDF export in Chrome
+						// Fixes bold math when exported to PDF
 						if (mxClient.IS_GC)
 						{
 							doc.writeln('<style type="text/css">');
 							doc.writeln('@media print {');
-							doc.writeln('span.MathJax_SVG svg { shape-rendering: crispEdges; }');
+							doc.writeln('.MathJax svg { shape-rendering: crispEdges; }');
 							doc.writeln('}');
 							doc.writeln('</style>');
 						}
@@ -8386,8 +8277,6 @@
 						pv.renderPage = function(w, h, dx, dy, content, pageNumber)
 						{
 							var prev = mxClient.NO_FO;
-							mxClient.NO_FO = (this.graph.mathEnabled && !editorUi.editor.useForeignObjectForMath) ?
-								true : editorUi.editor.originalNoForeignObject;
 							var result = printPreviewRenderPage.apply(this, arguments);
 							mxClient.NO_FO = prev;
 							
@@ -8826,6 +8715,8 @@
 	{
 		// ignore
 	}
+
+	Editor.prototype.useCanvasForExport = false;
 	
 })();
 
@@ -8849,17 +8740,17 @@
 
         if (obj.foldingEnabled != null)
         {
-        		obj.foldingEnabled = !obj.foldingEnabled;
+        	obj.foldingEnabled = !obj.foldingEnabled;
         }
        
         if (obj.mathEnabled != null)
         {
-        		obj.mathEnabled = !obj.mathEnabled;
+        	obj.mathEnabled = !obj.mathEnabled;
         }
         
         if (obj.shadowVisible != null)
         {
-        		obj.shadowVisible = !obj.shadowVisible;
+        	obj.shadowVisible = !obj.shadowVisible;
         }
         
 		return obj;
