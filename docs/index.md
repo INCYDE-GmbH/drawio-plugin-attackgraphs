@@ -2,6 +2,8 @@
 
 [Launch draw.io](app)
 
+(You must enable the plugin on first start-up via "Extras > Plugins... > Add... > Custom... > plugins/attackgraphs.js > Add > Ok > Apply". Reload the website afterwards.)
+
 ### Draw.io Desktop
 
 You can obtain the latest version of the plugin from here:

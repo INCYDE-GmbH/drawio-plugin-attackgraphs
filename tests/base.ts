@@ -25,7 +25,7 @@ export const test = base.extend<{drawio: DrawioPage}>({
         "customFonts": [],
         "libraries": "general;uml;er;bpmn;flowchart;basic;arrows2",
         "customLibraries": ["L.scratchpad"],
-        "plugins": ["http://localhost:8000/attackgraphs.js"],
+        "plugins": ["plugins/attackgraphs.js"],
         "recentColors": [],
         "formatWidth": "240",
         "createTarget": false,

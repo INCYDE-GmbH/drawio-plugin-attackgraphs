@@ -21,6 +21,8 @@ jobs:
     - run: npm run lint
     - name: Install Playwright
       run: npx playwright install --with-deps
+    - name: Create Docker image for Playwright Tests
+      run: npm run docker
     - name: Run Playwright tests
       run: npx playwright test --project chrome
     - uses: actions/upload-artifact@v2
@@ -28,6 +30,8 @@ jobs:
       with:
         name: playwright-test-results
         path: test-results/
+    - name: Stop webserver
+      run: npm run stop
     - name: Archive compiled plugin
       uses: actions/upload-artifact@v2
       with:
