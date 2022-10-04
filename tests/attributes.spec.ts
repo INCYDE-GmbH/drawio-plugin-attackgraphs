@@ -52,6 +52,10 @@ test.describe('attributes and default attributes', () => {
     await page.locator('.mxPopupMenu').locator('text="Save"').click();
     await page.locator('text=Browser').click();
 
+    // Wait to be sure that the file was saved in the browser
+    // TODO: Replace with wait for selector (spinning wheel) to be hidden
+    await page.waitForTimeout(3000);
+
     await page.goto('/');
     await page.locator('text="File"').first().waitFor();
 
