@@ -92,46 +92,35 @@
 	vertical-align:middle;
 	display:inline-block;
 	font-size:12px;
-}
-a.geStatus {
 	margin-right:8px;
 }
 .geStatus img {
 	max-width:16px;
 	vertical-align:bottom;
 }
-a.geStatus > div {
-	margin-top:1px;
-}
-a.geStatus div + div {
-	margin-left:8px;
-}
-a.geStatus .geStatusAlert {
+.geStatusAlert {
 	padding:4px 8px;
-	margin-top:-2px;
+	margin-top:-4px;
 	background-color:#f2dede;
 	border:1px solid #ebccd1;
 	color:#a94442 !important;
 	border-radius:3px;
 }
-a.geStatus .geStatusAlertOrange {
+.geStatusAlertOrange {
 	padding:4px 8px;
-	margin-top:-2px;
+	margin-top:-4px;
 	background-color:rgb(242, 147, 30);
 	border:rgb(240, 135, 5);
 	color:#000000 !important;
 	border-radius:3px;
 	opacity:0.8;
 }
-a.geStatus div + div.geStatusAlert, a.geStatus div + div.geStatusAlertOrange {
-	margin-top:-4px;
-}
 .geStatusAlertOrange:hover {
 	opacity:1;
 }
-a.geStatus .geStatusMessage {
+.geStatusMessage {
 	padding:4px 6px 4px 6px;
-	margin-top:-2px;
+	margin-top:-4px;
 	font-size:12px;
 	background: -webkit-linear-gradient(top,#dff0d8 0,#c8e5bc 100%);
     background: -o-linear-gradient(top,#dff0d8 0,#c8e5bc 100%);
@@ -300,14 +289,15 @@ a.geStatus .geStatusMessage {
 	opacity: 0.6;
 }
 .geToolbarButton:active {
-	opacity: 0.2 !important;
+	opacity: 0.2;
 }
 .mxDisabled:hover {
 	background:inherit !important;
 }
 .geMenubar a.geStatus {
 	color:#888888;
-	padding-top:4px;
+	padding-top:5px;
+	padding-left:8px;
 	display:inline-block;
 	cursor:default !important;
 }

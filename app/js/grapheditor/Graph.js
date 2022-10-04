@@ -1747,21 +1747,14 @@ Graph.sanitizeHtml = function(value, editing)
 /**
  * Returns the size of the page format scaled with the page size.
  */
- Graph.sanitizeLink = function(href)
- {
-	 if (href == null)
-	 {
-		 return null;
-	 }
-	 else
-	 {
-		 var a = document.createElement('a');
-		 a.setAttribute('href', href);
-		 Graph.sanitizeNode(a);
-		 
-		 return a.getAttribute('href');
-	 }
- };
+Graph.sanitizeLink = function(href)
+{
+	var a = document.createElement('a');
+	a.setAttribute('href', href);
+	Graph.sanitizeNode(a);
+	
+	return a.getAttribute('href');
+};
 
 /**
  * Sanitizes the given DOM node in-place.
@@ -1774,23 +1767,11 @@ Graph.sanitizeNode = function(value)
 // Allows use tag in SVG with local references only
 DOMPurify.addHook('afterSanitizeAttributes', function(node)
 {
-	if (node.nodeName == 'use' && ((node.getAttribute('xlink:href') != null &&
-		!node.getAttribute('xlink:href').startsWith('#')) ||
-		(node.getAttribute('href') != null && !node.getAttribute('href').startsWith('#'))))
+	if (node.nodeName == 'use' && node.hasAttribute('xlink:href') &&
+		!node.getAttribute('xlink:href').match(/^#/))
 	{
 		node.remove();
-	}
-});
-
-// Workaround for removed content with empty nodes
-DOMPurify.addHook('uponSanitizeAttribute', function (node, evt)
-{
-	if (node.nodeName == 'svg' && evt.attrName == 'content')
-	{
-		evt.forceKeepAttr = true;
-	}
-	
-	return node;
+	} 
 });
 
 /**
@@ -1828,7 +1809,6 @@ Graph.clipSvgDataUri = function(dataUri, ignorePreserveAspect)
 			{
 				// Strips leading XML declaration and doctypes
 				div.innerHTML = Graph.sanitizeHtml(data.substring(idx));
-				//div.innerHTML = data.substring(idx);
 				
 				// Gets the size and removes from DOM
 				var svgs = div.getElementsByTagName('svg');
@@ -2047,11 +2027,6 @@ Graph.prototype.lightbox = false;
  * 
  */
 Graph.prototype.defaultPageBackgroundColor = '#ffffff';
-
-/**
- * 
- */
-Graph.prototype.simpleBackgroundColor = '#f0f0f0';
 
 /**
  * 
@@ -2998,12 +2973,6 @@ Graph.prototype.isViewer = function()
 Graph.prototype.labelLinkClicked = function(state, elt, evt)
 {
 	var href = elt.getAttribute('href');
-	
-	// Blocks and removes unsafe links in labels
-	if (href != Graph.sanitizeLink(href))
-	{
-		Graph.sanitizeNode(elt);
-	}
 	
 	if (href != null && !this.isCustomLink(href) && ((mxEvent.isLeftMouseButton(evt) &&
 		!mxEvent.isPopupTrigger(evt)) || mxEvent.isTouchEvent(evt)))
@@ -4569,7 +4538,7 @@ Graph.prototype.getIndexableText = function(cells)
 		{
 			if (this.isHtmlLabel(cell))
 			{
-				tmp.innerHTML = Graph.sanitizeHtml(this.getLabel(cell));
+				tmp.innerHTML = this.sanitizeHtml(this.getLabel(cell));
 				label = mxUtils.extractTextWithWhitespace([tmp]);
 			}
 			else
@@ -5195,7 +5164,7 @@ Graph.prototype.getTooltipForCell = function(cell)
 				tmp = this.replacePlaceholders(cell, tmp);
 			}
 			
-			tip = Graph.sanitizeHtml(tmp);
+			tip = this.sanitizeHtml(tmp);
 		}
 		else
 		{
@@ -6141,9 +6110,8 @@ HoverIcons.prototype.getState = function(state)
  */
 HoverIcons.prototype.update = function(state, x, y)
 {
-	if (!this.graph.connectionArrowsEnabled ||
-		(this.graph.freehand != null && this.graph.freehand.isDrawing()) ||
-		(state != null && mxUtils.getValue(state.style, 'allowArrows', '1') == '0'))
+	if (!this.graph.connectionArrowsEnabled || (state != null &&
+		mxUtils.getValue(state.style, 'allowArrows', '1') == '0'))
 	{
 		this.reset();
 	}

@@ -49,7 +49,7 @@ Menus.prototype.init = function()
 
 	this.customFonts = [];
 	this.customFontSizes = [];
-	
+
 	this.put('fontFamily', new Menu(mxUtils.bind(this, function(menu, parent)
 	{
 		var addItem = mxUtils.bind(this, function(fontFamily)
@@ -505,7 +505,7 @@ Menus.prototype.init = function()
 	})));
 	this.put('view', new Menu(mxUtils.bind(this, function(menu, parent)
 	{
-		this.addMenuItems(menu, ((this.editorUi.format != null) ? ['format'] : []).
+		this.addMenuItems(menu, ((this.editorUi.format != null) ? ['formatPanel'] : []).
 			concat(['outline', 'layers', '-', 'pageView', 'pageScale', '-', 'scrollbars', 'tooltips', '-',
 			        'grid', 'guides', '-', 'connectionArrows', 'connectionPoints', '-',
 			        'resetView', 'zoomIn', 'zoomOut'], parent));
@@ -515,7 +515,7 @@ Menus.prototype.init = function()
 	{
 		if (this.editorUi.format != null)
 		{
-			this.addMenuItems(menu, ['format'], parent);
+			this.addMenuItems(menu, ['formatPanel'], parent);
 		}
 		
 		this.addMenuItems(menu, ['outline', 'layers'], parent);
@@ -604,7 +604,7 @@ Menus.prototype.addMenu = function(name, popupMenu, parent)
 	
 	if (menu != null && (popupMenu.showDisabled || menu.isEnabled()))
 	{
-		menu.execute(popupMenu, parent);
+		this.get(name).execute(popupMenu, parent);
 	}
 };
 

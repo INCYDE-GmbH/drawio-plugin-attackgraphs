@@ -303,11 +303,11 @@ var SplashDialog = function(editorUi)
 	
 	if (mxClient.IS_CHROMEAPP || EditorUi.isElectronApp)
 	{
-		var elt = editorUi.addLanguageMenu(div, false, '28px');
+		var elt = editorUi.addLanguageMenu(div, true, '28px');
 		
 		if (elt != null)
 		{
-			elt.style.bottom = '24px';
+			elt.style.bottom = '19px';
 		}
 	}
 	
@@ -1402,14 +1402,14 @@ var CreateGraphDialog = function(editorUi, title, type)
 		{
 			layout = new mxHierarchicalLayout(graph, mxConstants.DIRECTION_WEST);
 		}
-		else if (type == 'circle')
-		{
-			layout = new mxCircleLayout(graph);
-		}
-		else
+		else if (type == 'organic')
 		{
 			layout = new mxFastOrganicLayout(graph, false);
 			layout.forceConstant = 80;
+		}
+		else if (type == 'circle')
+		{
+			layout = new mxCircleLayout(graph);
 		}
 		
 		if (layout != null)
@@ -7695,15 +7695,8 @@ var FreehandWindow = function(editorUi, x, y, w, h, withBrush)
 	{
 		startBtn.innerText = '';
 		mxUtils.write(startBtn, mxResources.get(graph.freehand.isDrawing() ? 'stopDrawing' : 'startDrawing'));
-
-		var shortcut = document.createElement('span');
-		shortcut.style.opacity = '0.7';
-		shortcut.style['float'] = 'right';
-		mxUtils.write(shortcut, 'X');
-		startBtn.appendChild(shortcut);
-
 		startBtn.setAttribute('title', mxResources.get(graph.freehand.isDrawing() ? 'stopDrawing' : 'startDrawing'));
-		startBtn.className = 'geBtn' + (graph.freehand.isDrawing() ? ' gePrimaryBtn' : '');
+		startBtn.className = 'geBtn' + (!graph.freehand.isDrawing() ? ' gePrimaryBtn' : '');
 	}));
 	
 	this.window.addListener('show', mxUtils.bind(this, function()
@@ -8518,7 +8511,7 @@ var PluginsDialog = function(editorUi, addFn, delFn, closeOnly)
 				refresh();
 			}
 		}), null, null, null, customBtn);
-		editorUi.showDialog(dlg.container, 360, 100, true, true);
+		editorUi.showDialog(dlg.container, 300, 100, true, true);
 	});
 	
 	addBtn.className = 'geBtn';

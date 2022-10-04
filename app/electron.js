@@ -1871,7 +1871,7 @@ async function saveDraft(fileObject, data)
 			try
 			{
 				// Add Hidden attribute:
-				spawn('attrib', ['+h', draftFileName], {shell: true});
+				spawn("attrib", ["+h", draftFileName]);
 			} catch(e) {}
 		}
 
@@ -1974,7 +1974,7 @@ async function saveFile(fileObject, data, origStat, overwrite, defEnc)
 					try
 					{
 						// Add Hidden attribute:
-						spawn('attrib', ['+h', bkpPath], {shell: true});
+						spawn("attrib", ["+h", bkpPath]);
 					} catch(e) {}
 				}
 			}

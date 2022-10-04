@@ -2550,16 +2550,11 @@ EditorUi.prototype.initCanvas = function()
 			
 			if (toolbarConfig.backBtn != null)
 			{
-				var backUrl = Graph.sanitizeLink(toolbarConfig.backBtn.url);
-
-				if (backUrl != null)
+				addButton(mxUtils.bind(this, function(evt)
 				{
-					addButton(mxUtils.bind(this, function(evt)
-					{
-						window.location.href = backUrl;
-						mxEvent.consume(evt);
-					}), Editor.backImage, mxResources.get('back', null, 'Back'));
-				}
+					window.location.href = toolbarConfig.backBtn.url;
+					mxEvent.consume(evt);
+				}), Editor.backImage, mxResources.get('back', null, 'Back'));
 			}
 			
 			if (this.isPagesEnabled())
@@ -2817,14 +2812,11 @@ EditorUi.prototype.initCanvas = function()
 
 			if (toolbarConfig.refreshBtn != null)
 			{
-				var refreshUrl = (toolbarConfig.refreshBtn.url == null) ? null :
-					Graph.sanitizeLink(toolbarConfig.refreshBtn.url);
-
 				addButton(mxUtils.bind(this, function(evt)
 				{
-					if (refreshUrl != null)
+					if (toolbarConfig.refreshBtn.url)
 					{
-						window.location.href = refreshUrl;
+						window.location.href = toolbarConfig.refreshBtn.url;
 					}
 					else
 					{
@@ -3433,14 +3425,6 @@ EditorUi.prototype.toggleFormatPanel = function(visible)
 };
 
 /**
- * 
- */
-EditorUi.prototype.isFormatPanelVisible = function()
-{
-	return this.formatWidth > 0;
-};
-
-/**
  * Adds support for placeholders in labels.
  */
 EditorUi.prototype.lightboxFit = function(maxHeight)
@@ -3598,7 +3582,6 @@ EditorUi.prototype.setCurrentMenu = function(menu, elt)
 {
 	this.currentMenuElt = elt;
 	this.currentMenu = menu;
-	this.hideShapePicker();
 };
 
 /**
@@ -4243,7 +4226,7 @@ EditorUi.prototype.updateActionStates = function()
 	this.actions.get('sendBackward').setEnabled(ss.cells.length == 1);
 	this.actions.get('rotation').setEnabled(ss.vertices.length == 1);
 	this.actions.get('wordWrap').setEnabled(ss.vertices.length == 1);
-	this.actions.get('autosize').setEnabled(ss.vertices.length > 0);
+	this.actions.get('autosize').setEnabled(ss.vertices.length == 1);
 	this.actions.get('copySize').setEnabled(ss.vertices.length == 1);
 	this.actions.get('clearWaypoints').setEnabled(ss.connections);
 	this.actions.get('curved').setEnabled(ss.edges.length > 0);
@@ -5929,7 +5912,7 @@ EditorUi.prototype.createKeyHandler = function(editor)
 		keyHandler.bindAction(73, true, 'italic'); // Ctrl+I
 		keyHandler.bindAction(76, true, 'lockUnlock'); // Ctrl+L
 		keyHandler.bindAction(76, true, 'layers', true); // Ctrl+Shift+L
-		keyHandler.bindAction(80, true, 'format', true); // Ctrl+Shift+P
+		keyHandler.bindAction(80, true, 'formatPanel', true); // Ctrl+Shift+P
 		keyHandler.bindAction(85, true, 'underline'); // Ctrl+U
 		keyHandler.bindAction(85, true, 'ungroup', true); // Ctrl+Shift+U
 		keyHandler.bindAction(190, true, 'superscript'); // Ctrl+.

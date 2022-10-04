@@ -874,17 +874,14 @@ Actions.prototype.init = function()
 				for (var i = 0; i < cells.length; i++)
 				{
 					var cell = cells[i];
-
-					if (graph.getModel().isVertex(cell))
+					
+					if (graph.getModel().getChildCount(cell) > 0)
 					{
-						if (graph.getModel().getChildCount(cell) > 0)
-						{
-							graph.updateGroupBounds([cell], 0, true);
-						}
-						else
-						{
-							graph.updateCellSize(cell);
-						}
+						graph.updateGroupBounds([cell], 0, true);
+					}
+					else
+					{
+						graph.updateCellSize(cell);
 					}
 				}
 			}
@@ -1826,12 +1823,12 @@ Actions.prototype.init = function()
 	}), null, null, Editor.ctrlKey + '+Shift+L');
 	action.setToggleAction(true);
 	action.setSelectedCallback(mxUtils.bind(this, function() { return this.layersWindow != null && this.layersWindow.window.isVisible(); }));
-	action = this.addAction('format', mxUtils.bind(this, function()
+	action = this.addAction('formatPanel', mxUtils.bind(this, function()
 	{
 		ui.toggleFormatPanel();
 	}), null, null, Editor.ctrlKey + '+Shift+P');
 	action.setToggleAction(true);
-	action.setSelectedCallback(mxUtils.bind(this, function() { return ui.isFormatPanelVisible(); }));
+	action.setSelectedCallback(mxUtils.bind(this, function() { return ui.formatWidth > 0; }));
 	action = this.addAction('outline', mxUtils.bind(this, function()
 	{
 		if (this.outlineWindow == null)

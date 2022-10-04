@@ -11,7 +11,9 @@ if (!mxIsElectron && location.protocol !== 'http:')
 	(function()
 	{
 		var hashes = 'default-src \'self\'; ' +
-			'script-src %script-src% \'self\' https://viewer.diagrams.net https://apis.google.com https://*.pusher.com ' +
+			// storage.googleapis.com is needed for workbox-service-worker
+			'script-src %script-src% \'self\' https://viewer.diagrams.net https://storage.googleapis.com ' +
+			'https://apis.google.com https://*.pusher.com ' +
 			// Below are the SHAs of the two script blocks in index.html.
 			// These must be updated here and in the CDN after changes.
 			//----------------------------------------------------------//
@@ -31,9 +33,9 @@ if (!mxIsElectron && location.protocol !== 'http:')
 			//---------------------------------------------------------//
 			'; ';
 
-		var styleHashes = '\'sha256-pVoUz0B9cDvBP/6KP+5uOMqPh1c14hF0KFqSELqeyNQ=\' ' + // index.html
-			'\'sha256-cR/4glxXXRQGG5dXHk8/3xDJi1TSbDRy/iDCenCAUtI=\' ' + // Minimal.js/Light
-			'\'sha256-F2GX+Xo20+2dLG42hJFsFOmMgHcYXVoslaChl+VtVnM=\' ' + // Minimal.js/Dark
+		var styleHashes = '\'sha256-JjkxVHHCCVO0nllPD6hU8bBYSlsikA8TM/o3fhr0bas=\' ' + // index.html
+			'\'sha256-4pUt7OuaoLNo5uDuX+AclpTryPwhRX6uqZWQH/jtOvE=\' ' + // Minimal.js/Light
+			'\'sha256-C26P0UwTt9j3PuMuqZ6wTb7DL6A9c0DoJcT8e2atugc=\' ' + // Minimal.js/Dark
 			'\'sha256-7kY8ozVqKLIIBwZ24dhdmZkM26PsOlZmEi72RhmZKoM=\' ' + // mxTooltipHandler.js
 			'\'sha256-kuk5TvxZ/Kwuobo4g6uasb1xRQwr1+nfa1A3YGePO7U=\' ' + // MathJax
 			'\'sha256-ByOXYIXIkfNC3flUR/HoxR4Ak0pjOEF1q8XmtuIa6po=\' ' + // purify.min.js

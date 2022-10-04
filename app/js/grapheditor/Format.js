@@ -341,7 +341,7 @@ Format.prototype.immediateRefresh = function()
 			
 			mxEvent.addListener(img, 'click', function()
 			{
-				ui.actions.get('format').funct();
+				ui.actions.get('formatPanel').funct();
 			});
 			
 			div.appendChild(label2);
