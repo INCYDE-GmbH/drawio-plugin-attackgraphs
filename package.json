@@ -6,7 +6,7 @@
   "private": true,
   "scripts": {
     "docker": "docker build -t drawio-plugin-attackgraphs:test -f docs/Dockerfile .",
-    "start": "docker run --rm -d -p 127.0.0.1:8000:8080 --name drawio --mount type=bind,src=$(pwd)/dist/attackgraphs.js,dst=/usr/local/tomcat/webapps/draw/plugins/attackgraphs.js --mount type=bind,src=$(pwd)/dist/templates/AttackGraphTemplate_RKL.drawio,dst=/usr/local/tomcat/webapps/draw/templates/basic/attackgraph_RKL.xml --mount type=bind,src=$(pwd)/dist/templates/AttackGraphTemplate_TS50701.drawio,dst=/usr/local/tomcat/webapps/draw/templates/basic/attackgraph_TS50701.xml drawio-plugin-attackgraphs:test",
+    "start": "docker run --rm -d -p 127.0.0.1:8000:8080 --name drawio --mount type=bind,src=$(pwd)/dist/attackgraphs.js,dst=/usr/local/tomcat/webapps/draw/plugins/attackgraphs.js --mount type=bind,src=$(pwd)/dist/attackgraphs.js.map,dst=/usr/local/tomcat/webapps/draw/plugins/attackgraphs.js.map --mount type=bind,src=$(pwd)/dist/templates/AttackGraphTemplate_RKL.drawio,dst=/usr/local/tomcat/webapps/draw/templates/basic/attackgraph_RKL.xml --mount type=bind,src=$(pwd)/dist/templates/AttackGraphTemplate_TS50701.drawio,dst=/usr/local/tomcat/webapps/draw/templates/basic/attackgraph_TS50701.xml drawio-plugin-attackgraphs:test",
     "stop": "docker stop drawio",
     "build": "webpack --mode=production",
     "watch": "webpack --watch --mode=development",
