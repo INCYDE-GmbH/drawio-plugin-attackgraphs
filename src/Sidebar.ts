@@ -97,11 +97,16 @@ export class Sidebar {
     sidebar: Draw.Sidebar,
     style: string,
     width: number, height: number,
+    label: string | null,
     aggregationFunction: AttackgraphFunction | null,
     computedAttributeFunction: AttackgraphFunction | null
     ): HTMLAnchorElement {
     const doc = mxUtils.createXmlDocument();
     const value = doc.createElement('object');
+
+    if (label) {
+      value.setAttribute('label', label);
+    }
 
     if (aggregationFunction) {
       const newElement = doc.createElement(STORAGE_NAME_AGGREGATION_FUNCTION_REFERENCE);
@@ -214,8 +219,8 @@ export class Sidebar {
         content.appendChild(this.createYellowActivityVertexTemplate(sidebar, this.getDefaultGlobalAggregationFunctionByVertexType('activity_y'), this.getDefaultGlobalComputedAttributesFunctionByVertexType('activity_y')));
         content.appendChild(this.createControlVertexTemplate(sidebar, this.getDefaultGlobalAggregationFunctionByVertexType('measurement'), this.getDefaultGlobalComputedAttributesFunctionByVertexType('measurement')));
 
-        content.appendChild(this.createVertexTemplate(sidebar, 'shape=or;whiteSpace=wrap;html=1;rotation=-90;', 45, 60, this.getDefaultGlobalAggregationFunctionByVertexType('and'), this.getDefaultGlobalComputedAttributesFunctionByVertexType('and')));
-        content.appendChild(this.createVertexTemplate(sidebar, 'shape=xor;whiteSpace=wrap;html=1;rotation=-90;', 45, 60, this.getDefaultGlobalAggregationFunctionByVertexType('or'), this.getDefaultGlobalComputedAttributesFunctionByVertexType('or')));
+        content.appendChild(this.createVertexTemplate(sidebar, 'shape=or;whiteSpace=wrap;html=1;rotation=-90;', 45, 60, 'AND', this.getDefaultGlobalAggregationFunctionByVertexType('and'), this.getDefaultGlobalComputedAttributesFunctionByVertexType('and')));
+        content.appendChild(this.createVertexTemplate(sidebar, 'shape=xor;whiteSpace=wrap;html=1;rotation=-90;', 45, 60, 'OR', this.getDefaultGlobalAggregationFunctionByVertexType('or'), this.getDefaultGlobalComputedAttributesFunctionByVertexType('or')));
       });
     }
 
