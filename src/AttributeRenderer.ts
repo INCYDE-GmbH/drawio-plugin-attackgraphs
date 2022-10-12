@@ -6,6 +6,7 @@ import { AsyncWorker } from './AsyncUtils';
 import { AttackGraphSettings } from './AttackGraphSettings';
 import { GraphUtils } from './GraphUtils';
 import { AttackgraphFunction, CellDataCollection, ChildCellData, ChildCellDataCollection, GlobalAttribute, GlobalAttributeDict, KeyValuePairs } from './Model';
+import { Menubar } from './Menubar';
 
 export class AttributeRenderer {
   private static _sensitivityAnalysisEnabled = false;
@@ -49,7 +50,9 @@ export class AttributeRenderer {
   static async refreshCellValuesUpwards(cell: import('mxgraph').mxCell, ui: Draw.UI, worker: AsyncWorker): Promise<void> {
     if (AttackGraphSettings.isAttackGraph(ui.editor.graph)) {
       if (GraphUtils.isTree(cell)) {
+        Menubar.increaseUnfinishedWorkers(ui);
         await this.updateCellValuesUpwards(this.nodeAttributes(cell), AttributeRenderer.rootAttributes(ui.editor.graph), worker);
+        Menubar.decreaseUnfinishedWorkers(ui);
       } else {
         mxUtils.alert('Cannot recalculate the graph as it contains loops!');
       }
@@ -104,6 +107,7 @@ export class AttributeRenderer {
   }
 
   static async recalculateAllCells(ui: Draw.UI, worker: AsyncWorker): Promise<void> {
+    // TODO: Improve to avoid recalculating nodes already calculated
     await Promise.all(Object.entries(ui.editor.graph.getModel().cells as { [id: string]: import('mxgraph').mxCell }).map(([, cell]) =>
       this.refreshCellValuesUpwards(cell, ui, worker)
     ));
