@@ -13,6 +13,15 @@ import { KeyValuePairs } from './Model';
 
 Draw.loadPlugin(ui => {
 
+  // TODO: Multi-page diagramms (Issue #17)
+  // EditorUi.currentPage === DiagramPage (represents current page)
+  // EditorUi.pages === DiagramPage[] (holds all pages, even if length == 1)
+  // DiagramPage.root (holds <root> tag inside <diagram> tag of .drawio file --> only after was shown the first time!)
+  // Pages.js:
+  //    EditorUi.getPageIndex(page) (returns index of page in EditorUi.pages)
+  //    EditorUi.selectPage(page, quiet, viewState) (changes graph to page, quiet=true generates no undo event)
+  //    Graph.getViewState() (returns viewState of current graph)
+
   // overwrite the default pasteData action to remove the placeholder attribute &
   // copy attackgraph cell data
   ui.actions.addAction('pasteData', (evt: MouseEvent) => {
@@ -174,11 +183,25 @@ Draw.loadPlugin(ui => {
     }
   });
 
+  // TODO: Cycling stops if a page is empty (no nodes --> ui.editor.graph.model.root.value === undefined)
+  // TODO: Opening a new file does not trigger a new cycle thorugh the pages
+  let loadingComplete = false;
+  let firstPageIdx: number | null = null;
   ui.editor.graph.addListener(mxEvent.ROOT, () => {
     if (ui.editor.graph.model.root.value) {
-      sidebar.updatePalette();
-      void AttributeRenderer.recalculateAllCells(ui, worker);
-      CellStyles.updateAllEdgeStyles(ui.editor.graph.model);
+      // Cycle through all pages so each diagram's root is stored in ui.pages
+      if (!loadingComplete) {
+        const idx = ui.getPageIndex(ui.currentPage);
+        const nextIdx = (idx + 1) % ui.pages.length;
+        const page = ui.pages[nextIdx];
+        firstPageIdx = (firstPageIdx === null) ? idx : firstPageIdx;
+        loadingComplete = (nextIdx === firstPageIdx);
+        ui.selectPage(page, true, page.viewState || null);
+      } else {
+        sidebar.updatePalette();
+        void AttributeRenderer.recalculateAllCells(ui, worker);
+        CellStyles.updateAllEdgeStyles(ui.editor.graph.model);
+      }
     }
   });
 

@@ -8,7 +8,11 @@ export abstract class AttributeProvider {
   }
 
   static shouldRenderAttribute(attribute: string): boolean {
-    return new RegExp('s*_').exec(attribute) === null;
+    return (new RegExp('s*_').exec(attribute) === null)
+      // defined attributes by draw.io
+      && attribute !== 'placeholder'
+      && attribute !== 'link'
+      && attribute !== 'name';
   }
 
   keyValuePairsToString(kvp: KeyValuePairs): string {

@@ -5,10 +5,14 @@ declare namespace Draw {
 
   class UI {
     actions: Actions;
+    currentPage: DiagramPage;
+    pages: DiagramPage[];
     menubar: Menubar;
     menus: UIMenus;
     copiedValue: null;
     getCurrentFile(): File;
+    getPageIndex(page: DiagramPage): number;
+    selectPage(page: DiagramPage, quiet?: boolean, viewState?: Object): void;
     sidebar: Sidebar;
     footerContainer: HTMLElement;
     fileNode: FileNode;
@@ -17,6 +21,11 @@ declare namespace Draw {
     showDialog(elt, w, h, modal, closable, onClose?, noScroll?, transparent?, onResize?, ignoreBgClick?);
     confirm(msg: string, okFn: () => void, cancelFn?: () => void, okLabel?: string, cancelLabel?: string, closable?: boolean): void;
     hideDialog();
+  }
+
+  class DiagramPage {
+    root: import('mxgraph').mxCell;
+    viewState: Object;
   }
 
   class Actions {
