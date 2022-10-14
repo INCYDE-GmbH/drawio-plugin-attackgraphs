@@ -134,9 +134,9 @@ export class SensitivityAnalysisNodeAttributeProvider extends NodeAttributeProvi
 export class SensitivityAnalysisRootAttributeProvider extends RootAttributeProvider {
   realAttributes: RootAttributeProvider;
   cache: SensitivityAnalysisCache;
-  constructor(graph: Draw.EditorGraph) {
-    super(graph);
-    this.realAttributes = new RootAttributeProvider(graph);
+  constructor() {
+    super();
+    this.realAttributes = new RootAttributeProvider();
     this.cache = new SensitivityAnalysisCache(this.getCellId(), this.realAttributes)
   }
 

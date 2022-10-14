@@ -1,4 +1,5 @@
 import { CellStyles } from './Analysis/CellStyles';
+import { RootAttributeProvider } from './Analysis/RootAttributeProvider';
 import { AsyncWorker } from './AsyncUtils';
 import { AttackGraphIconLegendShape } from './AttackGraphIconLegendShape';
 import { AttackGraphNodeShape } from './AttackGraphNodeShape';
@@ -61,6 +62,8 @@ Draw.loadPlugin(ui => {
 
   // Register additional text resources (for the current language)
   Resources.register(mxSettings.settings.language || 'en');
+
+  RootAttributeProvider.register(ui);
 
   AttackGraphNodeShape.register();
   AttackGraphIconLegendShape.register();

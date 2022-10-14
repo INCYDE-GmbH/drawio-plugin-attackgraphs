@@ -26,11 +26,11 @@ export class AttributeRenderer {
     }
   }
 
-  static rootAttributes(graph: Draw.EditorGraph): RootAttributeProvider {
+  static rootAttributes(): RootAttributeProvider {
     if (this._sensitivityAnalysisEnabled) {
-      return new SensitivityAnalysisRootAttributeProvider(graph);
+      return new SensitivityAnalysisRootAttributeProvider();
     } else {
-      return new RootAttributeProvider(graph);
+      return new RootAttributeProvider();
     }
   }
 
@@ -49,7 +49,7 @@ export class AttributeRenderer {
   static async refreshCellValuesUpwards(cell: import('mxgraph').mxCell, ui: Draw.UI, worker: AsyncWorker): Promise<void> {
     if (AttackGraphSettings.isAttackGraph(ui.editor.graph)) {
       if (GraphUtils.isTree(cell)) {
-        await this.updateCellValuesUpwards(this.nodeAttributes(cell), AttributeRenderer.rootAttributes(ui.editor.graph), worker);
+        await this.updateCellValuesUpwards(this.nodeAttributes(cell), AttributeRenderer.rootAttributes(), worker);
       } else {
         mxUtils.alert('Cannot recalculate the graph as it contains loops!');
       }

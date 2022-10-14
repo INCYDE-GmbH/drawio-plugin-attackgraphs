@@ -42,7 +42,7 @@ export class AttackGraphNodeShape extends mxRectangleShape {
     }
 
     const graph = this.state?.view.graph;
-    const globalAttributes = AttributeRenderer.rootAttributes(graph as unknown as Draw.EditorGraph).getGlobalAttributes();
+    const globalAttributes = AttributeRenderer.rootAttributes().getGlobalAttributes();
     let tempAttributes = Object.entries(attributes);
     if (globalAttributes !== null) {
       const renderableAttributes = RootAttributeProvider.getRenderableAttributes(globalAttributes);
@@ -70,7 +70,7 @@ export class AttackGraphNodeShape extends mxRectangleShape {
 
       let icon = `data:image/svg+xml;utf8,${Framework7Icons.Icons.question}`;
       if (graph !== undefined) {
-        const globalAttribute = AttributeRenderer.rootAttributes(graph as unknown as Draw.EditorGraph).getGlobalAttribute(key);
+        const globalAttribute = AttributeRenderer.rootAttributes().getGlobalAttribute(key);
         if (globalAttribute !== null) {
           if (Framework7Icons.Icons[globalAttribute.iconName] !== undefined) {
             icon = `data:image/svg+xml;utf8,${Framework7Icons.Icons[globalAttribute.iconName]}`;

@@ -5,10 +5,22 @@ import { AttributeProvider } from './AttributeProvider';
 export const USABLE_NAME_OF_COMPUTED_ATTRIBUTE_OF_CELL = 'label';
 
 export class RootAttributeProvider extends AttributeProvider {
-  constructor(graph: Draw.EditorGraph) {
-    super(graph.getModel().root);
+  private static ui: Draw.UI;
+
+  // TODO: Root Attrobutes (global attributes, aggregation functions, computed attributes functions) are only saved when saving on the first page
+  constructor() {
+    // Root attributes are stored on the first page
+    if (RootAttributeProvider.ui.pages) {
+      super(RootAttributeProvider.ui.pages[0].root);
+    } else {
+      // On first load, ui.pages might not be available --> use the current graph (first page) instead
+      super(RootAttributeProvider.ui.editor.graph.getModel().root);
+    }
   }
 
+  static register(ui: Draw.UI): void {
+    this.ui = ui;
+  }
 
   static getRenderableAttributes(attributes: GlobalAttribute[]): GlobalAttribute[] {
     return attributes.filter(attribute => attribute.iconName !== '' && AttributeProvider.shouldRenderAttribute(attribute.name))

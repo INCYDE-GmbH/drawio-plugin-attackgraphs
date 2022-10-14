@@ -22,7 +22,7 @@ export class Sidebar {
     let height = 75;
 
     if (this.ui !== null && this.ui.editor.graph !== null) {
-      const count = RootAttributeProvider.getRenderableAttributes(new RootAttributeProvider(this.ui.editor.graph).getGlobalAttributes() || []).length;
+      const count = RootAttributeProvider.getRenderableAttributes(new RootAttributeProvider().getGlobalAttributes() || []).length;
       AttackGraphIconLegendShape.updateHeight(count);
       height = AttackGraphIconLegendShape.getHeight();
     }
@@ -125,7 +125,7 @@ export class Sidebar {
 
   private getGlobalAttributes(): GlobalAttribute[] | null {
     if (this.ui !== null) {
-      return AttributeRenderer.rootAttributes(this.ui.editor.graph).getGlobalAttributes();
+      return AttributeRenderer.rootAttributes().getGlobalAttributes();
     } else {
       return null;
     }
@@ -133,28 +133,28 @@ export class Sidebar {
 
   private getGlobalAggregationFunctions() {
     if (this.ui) {
-      return AttributeRenderer.rootAttributes(this.ui.editor.graph).getGlobalAggregationFunctions();
+      return AttributeRenderer.rootAttributes().getGlobalAggregationFunctions();
     }
     return [];
   }
 
   private getDefaultGlobalAggregationFunctionByVertexType(type: string) {
     if (this.ui) {
-      return AttributeRenderer.rootAttributes(this.ui.editor.graph).getDefaultGlobalAggregationFunctionByVertexType(type);
+      return AttributeRenderer.rootAttributes().getDefaultGlobalAggregationFunctionByVertexType(type);
     }
     return null;
   }
 
   private getComputedAttributeFunctions() {
     if (this.ui) {
-      return AttributeRenderer.rootAttributes(this.ui.editor.graph).getGlobalComputedAttributesFunctions();
+      return AttributeRenderer.rootAttributes().getGlobalComputedAttributesFunctions();
     }
     return [];
   }
 
   private getDefaultGlobalComputedAttributesFunctionByVertexType(type: string) {
     if (this.ui) {
-      return AttributeRenderer.rootAttributes(this.ui.editor.graph).getDefaultGlobalComputedAttributesFunctionByVertexType(type);
+      return AttributeRenderer.rootAttributes().getDefaultGlobalComputedAttributesFunctionByVertexType(type);
     }
     return null;
   }
