@@ -7,6 +7,8 @@ import { AttackGraphSettings } from './AttackGraphSettings';
 import { GraphUtils } from './GraphUtils';
 import { AttackgraphFunction, CellDataCollection, ChildCellData, ChildCellDataCollection, GlobalAttribute, GlobalAttributeDict, KeyValuePairs } from './Model';
 
+const PREFIX_LINK_PAGE_ID = 'data:page/id,';
+
 export class AttributeRenderer {
   private static _sensitivityAnalysisEnabled = false;
   static sensitivityAnalysisEnabled(): boolean {
@@ -49,38 +51,59 @@ export class AttributeRenderer {
   static async refreshCellValuesUpwards(cell: import('mxgraph').mxCell, ui: Draw.UI, worker: AsyncWorker): Promise<void> {
     if (AttackGraphSettings.isAttackGraph(ui.editor.graph)) {
       if (GraphUtils.isTree(cell)) {
-        await this.updateCellValuesUpwards(this.nodeAttributes(cell), AttributeRenderer.rootAttributes(), worker);
+        await this.updateCellValuesUpwards(this.nodeAttributes(cell), AttributeRenderer.rootAttributes(), worker, ui);
       } else {
         mxUtils.alert('Cannot recalculate the graph as it contains loops!');
       }
     }
   }
 
-  private static async updateCellValuesUpwards(cell: NodeAttributeProvider, graph: RootAttributeProvider, worker: AsyncWorker): Promise<void> {
-    const globalDefaultAttributes = graph.getGlobalAttributes();
+  private static async updateCellValuesUpwards(cell: NodeAttributeProvider, root: RootAttributeProvider, worker: AsyncWorker, ui: Draw.UI): Promise<void> {
+    const globalDefaultAttributes = root.getGlobalAttributes();
     const globalDefaultAttributesDict = this.transformGlobalAttributesToGlobalAttributesDict(globalDefaultAttributes || []) as GlobalAttributeDict;
 
     const childValues = this.getChildValues(cell);
-    const aggregationFunction = cell.resolveAggregationFunction(graph);
+    const aggregationFunction = cell.resolveAggregationFunction(root);
 
     const localAttributes = cell.getCellValues();
+    let aggregatedValues: KeyValuePairs = {};
+    let aggregate = true;
 
-    const aggregatedValues = await this.aggregateAttributes({
-      globalAttributes: globalDefaultAttributesDict,
-      childAttributes: childValues,
-      localAttributes: localAttributes,
-      id: cell.getCellId()
-    }, aggregationFunction, worker);
+    // Link to another page
+    if ('link' in localAttributes) {
+      const link = localAttributes['link'];
+      const label = localAttributes['label'];
+      if (link !== undefined && label !== undefined && link.includes(PREFIX_LINK_PAGE_ID)) {
+        const idx = link.substring(PREFIX_LINK_PAGE_ID.length);
+        const page = ui.getPageById(idx);
+        if (page && page.root) {
+          const values = new NodeAttributeProvider(page.root).getCellValuesForLabel(label);
+          if (values) {
+            aggregate = false;
+            aggregatedValues = values;
+          }
+        }
+      }
+    }
+    
+    if (aggregate) {
+      aggregatedValues = await this.aggregateAttributes({
+        globalAttributes: globalDefaultAttributesDict,
+        childAttributes: childValues,
+        localAttributes: localAttributes,
+        id: cell.getCellId()
+      }, aggregationFunction, worker);
+    }
     cell.setAggregatedCellValues(aggregatedValues);
 
-    const labelFunction = cell.resolveComputedAttributesFunction(graph);
+    const labelFunction = cell.resolveComputedAttributesFunction(root);
 
     const cellAttributes = cell.getCellValues();
     const label = await this.recalculateCellLabel({ globalAttributes: globalDefaultAttributesDict, cellAttributes: { ...cellAttributes, ...aggregatedValues } }, labelFunction, worker);
     cell.setComputedAttributesForCell(label, labelFunction?.name || null);
 
     const incomingEdges = cell.cell.edges?.filter(x => x.target === cell.cell && x.source) || [];
-    await Promise.all(incomingEdges.map(x => this.updateCellValuesUpwards(this.nodeAttributes(x.source), graph, worker)));
+    await Promise.all(incomingEdges.map(x => this.updateCellValuesUpwards(this.nodeAttributes(x.source), root, worker, ui)));
   }
 
   public static transformGlobalAttributesToGlobalAttributesDict(attributes: GlobalAttribute[]): { [name: string]: KeyValuePairs } {

@@ -102,6 +102,28 @@ export class NodeAttributeProvider extends AttributeProvider {
     }
   }
 
+  getCellValuesForLabel(label: string): KeyValuePairs | null {
+    if (!this.cell.isEdge()) {
+      const values = { ...this.getCellValues(), ...this.getAggregatedCellValues() } as KeyValuePairs;
+      const cellLabel = values['label'];
+      if (cellLabel && cellLabel === label) {
+        return values;
+      }
+    }
+
+    const children = this.cell.children;
+    if (children && children.length > 0) {
+      for (const child of children) {
+        const childValues = new NodeAttributeProvider(child).getCellValuesForLabel(label);
+        if (childValues) {
+          return childValues;
+        }
+      }
+    }
+
+    return null;
+  }
+
   getAllValues(): NodeValues {
     return {
       current: { ...this.getCellValues(), ...this.getAggregatedCellValues() } as KeyValuePairs,

@@ -12,6 +12,7 @@ declare namespace Draw {
     copiedValue: null;
     getCurrentFile(): File;
     getPageIndex(page: DiagramPage): number;
+    getPageById(id: string, pages?: DiagramPage[]): DiagramPage | null;
     selectPage(page: DiagramPage, quiet?: boolean, viewState?: Object): void;
     sidebar: Sidebar;
     footerContainer: HTMLElement;
