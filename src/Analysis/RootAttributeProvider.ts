@@ -7,10 +7,10 @@ export const USABLE_NAME_OF_COMPUTED_ATTRIBUTE_OF_CELL = 'label';
 export class RootAttributeProvider extends AttributeProvider {
   private static ui: Draw.UI;
 
-  // TODO: Root Attrobutes (global attributes, aggregation functions, computed attributes functions) are only saved when saving on the first page
+  // TODO: Root attributes (global attributes, aggregation functions, computed attributes functions) are only saved when saving on the first page
   constructor() {
     // Root attributes are stored on the first page
-    if (RootAttributeProvider.ui.pages) {
+    if (RootAttributeProvider.ui.pages && RootAttributeProvider.ui.pages[0].root) {
       super(RootAttributeProvider.ui.pages[0].root);
     } else {
       // On first load, ui.pages might not be available --> use the current graph (first page) instead

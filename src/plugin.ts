@@ -188,25 +188,33 @@ Draw.loadPlugin(ui => {
     }
   });
 
-  // TODO: Cycling stops if a page is empty (no nodes --> ui.editor.graph.model.root.value === undefined)
-  // TODO: Opening a new file does not trigger a new cycle thorugh the pages
   let loadingComplete = false;
+  let pageCycling = false;
   let firstPageIdx: number | null = null;
   ui.editor.graph.addListener(mxEvent.ROOT, () => {
-    if (ui.editor.graph.model.root.value) {
+    if (ui.editor.graph.model.root.value || pageCycling) {
       // Cycle through all pages so each diagram's root is stored in ui.pages
       if (!loadingComplete) {
+        pageCycling = true;
+
         const idx = ui.getPageIndex(ui.currentPage);
         const nextIdx = (idx + 1) % ui.pages.length;
         const page = ui.pages[nextIdx];
+
         firstPageIdx = (firstPageIdx === null) ? idx : firstPageIdx;
         loadingComplete = (nextIdx === firstPageIdx);
+
         ui.selectPage(page, true, page.viewState || null);
       } else {
+        pageCycling = false;
+
         sidebar.updatePalette();
         void AttributeRenderer.recalculateAllCells(ui, worker);
         CellStyles.updateAllEdgeStyles(ui.editor.graph.model);
       }
+    } else {
+      loadingComplete = false;
+      firstPageIdx = null;
     }
   });
 

@@ -99,7 +99,7 @@ test.describe('attributes and default attributes', () => {
 
     await page.locator('text=Add...').click();
     await drawio.fillEditFunctionDialog('OR', aggFunc);
-    await drawio.selectFirstFunctionAsDefaultForVertexType('or');
+    await drawio.selectFirstFunctionAsDefaultForVertexType('link');
 
     await page.locator('text=Add...').click();
     await drawio.fillEditFunctionDialog('default', 'A');
