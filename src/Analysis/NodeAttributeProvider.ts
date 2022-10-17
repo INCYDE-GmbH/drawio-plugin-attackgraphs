@@ -143,7 +143,7 @@ export class NodeAttributeProvider extends AttributeProvider {
   }
 
   getCurrentCellValuesNotLabel(): KeyValuePairs {
-    return Object.fromEntries(Object.entries(this.getAllValues().current).filter(([k,]) => k !== 'label'));
+    return Object.fromEntries(Object.entries(this.getAllValues().current).filter(([k,]) => k !== 'label' && k !== 'placeholder' && k !== 'link' && k !== 'name'));
   }
 
   getTooltip(): string {

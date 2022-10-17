@@ -18,7 +18,8 @@ const VERTEX_TYPES: VertexType[] = [
   {type: 'activity_y', name: 'attackGraphs.activity', style: 'width:20px;height:12px;border:1px solid black;background:#FEE599;', html: '&nbsp;'},
   {type: 'measurement', name: 'attackGraphs.control', style: 'width:20px;height:12px;border:1px solid black;background:#DAE8FC;', html: '&nbsp;'},
   {type: 'or', name: 'attackGraphs.orNode', style: '', html: 'OR'},
-  {type: 'and', name: 'attackGraphs.andNode', style: '', html: 'AND'}
+  {type: 'and', name: 'attackGraphs.andNode', style: '', html: 'AND'},
+  {type: 'link', name: 'attackGraphs.link', style: 'width: 12px;height:12px;border-radius:6px;border:1px solid black;background:#FFFFFF;text-align:center;font-size:11px;', html: 'A'}
 ];
 
 export abstract class FunctionListDialog extends SettingsDialog<AttackgraphFunction[]> {

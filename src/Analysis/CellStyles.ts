@@ -1,4 +1,5 @@
 import { AttackGraphIconLegendShape } from '../AttackGraphIconLegendShape';
+import { AttackGraphLinkShape } from '../AttackGraphLinkShape';
 import { AttackGraphNodeShape } from '../AttackGraphNodeShape';
 import { AttributeRenderer } from '../AttributeRenderer';
 
@@ -11,8 +12,8 @@ export class CellStyles {
     this.cell = cell;
   }
 
-  parseStyles(): { [key: string]: string } {
-    const result: { [key: string]: string } = {};
+  parseStyles(): { [key: string]: string | null } {
+    const result: { [key: string]: string | null } = {};
     if (this.cell.style) {
       const tokens = this.cell.style.split(';');
       for (const token of tokens) {
@@ -23,6 +24,8 @@ export class CellStyles {
           const value = token.substring(pos + 1);
 
           result[key] = value;
+        } else {
+          result[token] = null;
         }
       }
     }
@@ -31,7 +34,12 @@ export class CellStyles {
 
   isAttackgraphCell(): boolean {
     const styles = this.parseStyles();
-    return 'shape' in styles && (styles['shape'] === AttackGraphNodeShape.ID || styles['shape'] === AttackGraphIconLegendShape.ID || styles['shape'] === 'or' || styles['shape'] === 'xor');
+    return 'shape' in styles
+      && (styles['shape'] === AttackGraphNodeShape.ID
+          || styles['shape'] === AttackGraphIconLegendShape.ID
+          || styles['shape'] === AttackGraphLinkShape.ID
+          || styles['shape'] === 'or'
+          || styles['shape'] === 'xor');
   }
 
   setSelected(selected: boolean): void {
@@ -42,10 +50,10 @@ export class CellStyles {
     this.marked = marked;
   }
 
-  private encodeStyles(styles: { [key: string]: string }) {
+  private encodeStyles(styles: { [key: string]: string | null }) {
     let style = '';
     for (const [k, v] of Object.entries(styles)) {
-      style += `${k}=${v};`;
+      style += (v) ? `${k}=${v};` :  `${k};` ;
     }
     return style;
   }

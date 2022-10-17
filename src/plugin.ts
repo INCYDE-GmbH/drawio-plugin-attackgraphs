@@ -2,6 +2,7 @@ import { CellStyles } from './Analysis/CellStyles';
 import { RootAttributeProvider } from './Analysis/RootAttributeProvider';
 import { AsyncWorker } from './AsyncUtils';
 import { AttackGraphIconLegendShape } from './AttackGraphIconLegendShape';
+import { AttackGraphLinkShape } from './AttackGraphLinkShape';
 import { AttackGraphNodeShape } from './AttackGraphNodeShape';
 import { ConversionHelpTool } from './ConversionHelpTool';
 import { IconLegend } from './IconLegend';
@@ -66,6 +67,7 @@ Draw.loadPlugin(ui => {
   RootAttributeProvider.register(ui);
 
   AttackGraphNodeShape.register();
+  AttackGraphLinkShape.register(ui);
   AttackGraphIconLegendShape.register();
   IconLegend.register(ui.editor.graph);
 

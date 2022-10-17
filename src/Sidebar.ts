@@ -1,5 +1,6 @@
 import { RootAttributeProvider } from './Analysis/RootAttributeProvider';
 import { AttackGraphIconLegendShape } from './AttackGraphIconLegendShape';
+import { AttackGraphLinkShape } from './AttackGraphLinkShape';
 import { AttackGraphNodeShape } from './AttackGraphNodeShape';
 import { AttributeRenderer } from './AttributeRenderer';
 import { STORAGE_NAME_AGGREGATION_FUNCTION_REFERENCE, STORAGE_NAME_COMPUTED_ATTRIBUTES_FUNCTION_REFERENCE } from './CellUtils';
@@ -91,6 +92,23 @@ export class Sidebar {
     }
 
     return sidebar.createVertexTemplate(`shape=${AttackGraphNodeShape.ID};` + style, 150, 75, value);
+  }
+
+  private createLinkVertexTemplate(
+    sidebar: Draw.Sidebar,
+    aggregationFunction: AttackgraphFunction | null
+  ): HTMLAnchorElement {
+    const doc = mxUtils.createXmlDocument();
+    const value = doc.createElement('object');
+    value.setAttribute('label', 'A');
+
+    if (aggregationFunction) {
+      const newElement = doc.createElement(STORAGE_NAME_AGGREGATION_FUNCTION_REFERENCE);
+      newElement.setAttribute(STORAGE_NAME_AGGREGATION_FUNCTION_REFERENCE, aggregationFunction.id);
+      value.appendChild(newElement);
+    }
+
+    return sidebar.createVertexTemplate(`shape=${AttackGraphLinkShape.ID};aspect=fixed;`, 40, 40, value);
   }
 
   private createVertexTemplate(
@@ -221,6 +239,8 @@ export class Sidebar {
 
         content.appendChild(this.createVertexTemplate(sidebar, 'shape=or;whiteSpace=wrap;html=1;rotation=-90;', 45, 60, 'AND', this.getDefaultGlobalAggregationFunctionByVertexType('and'), this.getDefaultGlobalComputedAttributesFunctionByVertexType('and')));
         content.appendChild(this.createVertexTemplate(sidebar, 'shape=xor;whiteSpace=wrap;html=1;rotation=-90;', 45, 60, 'OR', this.getDefaultGlobalAggregationFunctionByVertexType('or'), this.getDefaultGlobalComputedAttributesFunctionByVertexType('or')));
+
+        content.appendChild(this.createLinkVertexTemplate(sidebar, this.getDefaultGlobalAggregationFunctionByVertexType('link')));
       });
     }
 
