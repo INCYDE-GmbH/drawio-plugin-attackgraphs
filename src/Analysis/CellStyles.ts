@@ -17,6 +17,10 @@ export class CellStyles {
     if (this.cell.style) {
       const tokens = this.cell.style.split(';');
       for (const token of tokens) {
+        if (token.length === 0) {
+          continue;
+        }
+
         const pos = token.indexOf('=');
 
         if (pos >= 0) {
