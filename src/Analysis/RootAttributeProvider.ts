@@ -5,15 +5,21 @@ import { AttributeProvider } from './AttributeProvider';
 export const USABLE_NAME_OF_COMPUTED_ATTRIBUTE_OF_CELL = 'label';
 
 export class RootAttributeProvider extends AttributeProvider {
-  // TODO: Root attributes (global attributes, aggregation functions, computed attributes functions) are only saved when saving on the first page
+  private static page: Draw.DiagramPage | null = null;
+
   constructor() {
     const ui = AttributeProvider.getUI();
 
-    // Root attributes are stored on the first page
-    if (ui.pages && ui.pages[0].root) {
-      super(ui.pages[0].root);
+    if (ui.pages && ui.pages.length > 0) {
+      // Root attributes are stored on the first page
+      RootAttributeProvider.page = ui.pages[0];
+    }
+
+    if (RootAttributeProvider.page && RootAttributeProvider.page.root) {
+      super(RootAttributeProvider.page.root);
     } else {
-      // On first load, ui.pages might not be available --> use the current graph (first page) instead
+      // On first load, ui.pages might not be available
+      // --> use the current graph (first page) instead
       super(ui.editor.graph.getModel().root);
     }
   }
@@ -79,10 +85,16 @@ export class RootAttributeProvider extends AttributeProvider {
   }
 
   storeGlobalAttributesInCell(attributes: GlobalAttribute[]): void {
+    if (RootAttributeProvider.page) {
+      RootAttributeProvider.page.needsUpdate = true;
+    }
     this.storeGroupedValuesInCell<GlobalAttribute>(STORAGE_NAME_GLOBAL_ATTRIBUTES, STORAGE_NAME_GLOBAL_ATTRIBUTE, attributes);
   }
 
   static storeGlobalAttributesInElement(element: Element, attributes: GlobalAttribute[]): void {
+    if (RootAttributeProvider.page) {
+      RootAttributeProvider.page.needsUpdate = true;
+    }
     AttributeProvider.storeGroupedValuesInElement<GlobalAttribute>(STORAGE_NAME_GLOBAL_ATTRIBUTES, STORAGE_NAME_GLOBAL_ATTRIBUTE, attributes, element);
   }
 
@@ -91,10 +103,16 @@ export class RootAttributeProvider extends AttributeProvider {
   }
 
   setGlobalComputedAttributesFunctions(aggregationFunctions: AttackgraphFunction[]): void {
+    if (RootAttributeProvider.page) {
+      RootAttributeProvider.page.needsUpdate = true;
+    }
     this.setGlobalFunctions(aggregationFunctions, STORAGE_NAME_GLOBAL_COMPUTED_FUNCTION, STORAGE_NAME_GLOBAL_COMPUTED_FUNCTIONS);
   }
 
   setGlobalAggregatonFunctions(aggregationFunctions: AttackgraphFunction[]): void {
+    if (RootAttributeProvider.page) {
+      RootAttributeProvider.page.needsUpdate = true;
+    }
     this.setGlobalFunctions(aggregationFunctions, STORAGE_NAME_GLOBAL_AGGREGATION_FUNCTION, STORAGE_NAME_GLOBAL_AGGREGATION_FUNCTIONS);
   }
 

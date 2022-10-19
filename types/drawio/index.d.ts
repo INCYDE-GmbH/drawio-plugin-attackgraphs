@@ -27,6 +27,7 @@ declare namespace Draw {
   class DiagramPage {
     root: import('mxgraph').mxCell;
     viewState: Object;
+    needsUpdate: boolean;
     getName(): string;
     getId(): string;
   }
