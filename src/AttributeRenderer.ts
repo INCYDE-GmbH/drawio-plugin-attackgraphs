@@ -77,7 +77,7 @@ export class AttributeRenderer {
         const idx = link.substring(PREFIX_LINK_PAGE_ID.length);
         const page = ui.getPageById(idx);
         if (page && page.root) {
-          const values = new NodeAttributeProvider(page.root).getCellValuesForLabel(label);
+          const values = new NodeAttributeProvider(page.root).getAggregatedCellValuesForLabel(label);
           if (values) {
             aggregate = false;
             aggregatedValues = values;

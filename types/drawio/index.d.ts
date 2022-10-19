@@ -28,6 +28,7 @@ declare namespace Draw {
     root: import('mxgraph').mxCell;
     viewState: Object;
     getName(): string;
+    getId(): string;
   }
 
   class Actions {

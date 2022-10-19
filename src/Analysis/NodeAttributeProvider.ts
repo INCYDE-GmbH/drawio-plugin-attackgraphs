@@ -102,10 +102,10 @@ export class NodeAttributeProvider extends AttributeProvider {
     }
   }
 
-  getCellValuesForLabel(label: string): KeyValuePairs | null {
+  getAggregatedCellValuesForLabel(label: string): KeyValuePairs | null {
     if (!this.cell.isEdge()) {
-      const values = { ...this.getCellValues(), ...this.getAggregatedCellValues() } as KeyValuePairs;
-      const cellLabel = values['label'];
+      const values = this.getAggregatedCellValues();
+      const cellLabel = this.getCellValues()['label'];
       if (cellLabel && cellLabel === label) {
         return values;
       }
@@ -114,7 +114,7 @@ export class NodeAttributeProvider extends AttributeProvider {
     const children = this.cell.children;
     if (children && children.length > 0) {
       for (const child of children) {
-        const childValues = new NodeAttributeProvider(child).getCellValuesForLabel(label);
+        const childValues = new NodeAttributeProvider(child).getAggregatedCellValuesForLabel(label);
         if (childValues) {
           return childValues;
         }

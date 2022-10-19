@@ -1,10 +1,14 @@
 import { KeyValuePairs } from '../Model';
 
 export abstract class AttributeProvider {
+  private static ui: Draw.UI;
+  private page: Draw.DiagramPage | null;
+  private pageDetermined = false;
   cell: import('mxgraph').mxCell;
 
   constructor(cell: import('mxgraph').mxCell) {
     this.cell = cell;
+    this.page = null;
   }
 
   static shouldRenderAttribute(attribute: string): boolean {
@@ -13,6 +17,46 @@ export abstract class AttributeProvider {
       && attribute !== 'placeholder'
       && attribute !== 'link'
       && attribute !== 'name';
+  }
+
+  protected static getUI(): Draw.UI {
+    return this.ui;
+  }
+
+  static register(ui: Draw.UI): void {
+    if (!this.ui) {
+      this.ui = ui;
+    }
+  }
+
+  private isCellAncestor(cell: import('mxgraph').mxCell): boolean {
+    if (this.cell === cell) {
+      return true;
+    }
+
+    if (cell.children) {
+      for (const child of cell.children) {
+        if (this.isCellAncestor(child)) {
+          return true;
+        }
+      }
+    }
+
+    return false;
+  }
+
+  private getPageForCell(): Draw.DiagramPage | null {
+    if (AttributeProvider.ui.pages && AttributeProvider.ui.pages.length > 0) {
+      for (const page of AttributeProvider.ui.pages) {
+        if (page.root) {
+          if (this.isCellAncestor(page.root)) {
+            return page;
+          }
+        }
+      }
+    }
+
+    return null;
   }
 
   keyValuePairsToString(kvp: KeyValuePairs): string {
@@ -41,6 +85,14 @@ export abstract class AttributeProvider {
 
   getCellId(): string {
     return this.cell.id;
+  }
+
+  getPageId(): string {
+    if (!this.pageDetermined) {
+      this.page = this.getPageForCell();
+      this.pageDetermined = true;
+    }
+    return (this.page) ? this.page.getId() : '';
   }
 
   getCellValues(): KeyValuePairs {

@@ -1,5 +1,5 @@
 import { CellStyles } from './Analysis/CellStyles';
-import { RootAttributeProvider } from './Analysis/RootAttributeProvider';
+import { AttributeProvider } from './Analysis/AttributeProvider';
 import { AsyncWorker } from './AsyncUtils';
 import { AttackGraphIconLegendShape } from './AttackGraphIconLegendShape';
 import { AttackGraphLinkShape } from './AttackGraphLinkShape';
@@ -14,15 +14,6 @@ import { installVertexHandler } from './VertexHandler';
 import { KeyValuePairs } from './Model';
 
 Draw.loadPlugin(ui => {
-
-  // TODO: Multi-page diagramms (Issue #17)
-  // EditorUi.currentPage === DiagramPage (represents current page)
-  // EditorUi.pages === DiagramPage[] (holds all pages, even if length == 1)
-  // DiagramPage.root (holds <root> tag inside <diagram> tag of .drawio file --> only after was shown the first time!)
-  // Pages.js:
-  //    EditorUi.getPageIndex(page) (returns index of page in EditorUi.pages)
-  //    EditorUi.selectPage(page, quiet, viewState) (changes graph to page, quiet=true generates no undo event)
-  //    Graph.getViewState() (returns viewState of current graph)
 
   // overwrite the default pasteData action to remove the placeholder attribute &
   // copy attackgraph cell data
@@ -64,7 +55,7 @@ Draw.loadPlugin(ui => {
   // Register additional text resources (for the current language)
   Resources.register(mxSettings.settings.language || 'en');
 
-  RootAttributeProvider.register(ui);
+  AttributeProvider.register(ui);
 
   AttackGraphNodeShape.register();
   AttackGraphLinkShape.register(ui);
