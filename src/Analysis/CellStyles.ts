@@ -46,6 +46,11 @@ export class CellStyles {
           || styles['shape'] === 'xor');
   }
 
+  isLinkNode(): boolean {
+    const styles = this.parseStyles();
+    return 'shape' in styles && styles['shape'] === AttackGraphLinkShape.ID;
+  }
+
   setSelected(selected: boolean): void {
     this.selected = selected;
   }

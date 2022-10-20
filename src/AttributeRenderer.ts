@@ -6,6 +6,7 @@ import { AsyncWorker } from './AsyncUtils';
 import { AttackGraphSettings } from './AttackGraphSettings';
 import { GraphUtils } from './GraphUtils';
 import { AttackgraphFunction, CellDataCollection, ChildCellData, ChildCellDataCollection, GlobalAttribute, GlobalAttributeDict, KeyValuePairs } from './Model';
+import { CellStyles } from './Analysis/CellStyles';
 
 const PREFIX_LINK_PAGE_ID = 'data:page/id,';
 
@@ -61,6 +62,7 @@ export class AttributeRenderer {
   private static async updateCellValuesUpwards(cell: NodeAttributeProvider, root: RootAttributeProvider, worker: AsyncWorker, ui: Draw.UI): Promise<void> {
     const globalDefaultAttributes = root.getGlobalAttributes();
     const globalDefaultAttributesDict = this.transformGlobalAttributesToGlobalAttributesDict(globalDefaultAttributes || []) as GlobalAttributeDict;
+    const incomingEdges = cell.cell.edges?.filter(x => x.target === cell.cell && x.source) || [];
 
     const childValues = this.getChildValues(cell);
     const aggregationFunction = cell.resolveAggregationFunction(root);
@@ -70,29 +72,44 @@ export class AttributeRenderer {
     let aggregate = true;
 
     // Link to another page
-    if ('link' in localAttributes) {
-      const link = localAttributes['link'];
-      const label = localAttributes['label'];
-      if (link !== undefined && label !== undefined && link.includes(PREFIX_LINK_PAGE_ID)) {
-        const idx = link.substring(PREFIX_LINK_PAGE_ID.length);
-        const page = ui.getPageById(idx);
-        if (page && page.root) {
-          const values = new NodeAttributeProvider(page.root).getAggregatedCellValuesForLabel(label);
-          if (values) {
-            aggregate = false;
-            aggregatedValues = values;
+    if (new CellStyles(cell.cell).isLinkNode()) {
+      const outgoingEdges = cell.cell.edges?.filter(x => x.source === cell.cell && x.target) || [];
+      let success = false;
+
+      if (outgoingEdges.length === 0) { // source link node
+        if ('link' in localAttributes) {
+          const link = localAttributes['link'];
+          const label = localAttributes['label'];
+          if (link !== undefined && label !== undefined && link.includes(PREFIX_LINK_PAGE_ID)) {
+            const idx = link.substring(PREFIX_LINK_PAGE_ID.length);
+            const page = ui.getPageById(idx);
+            if (page && page.root && page !== ui.currentPage) {
+              const values = new NodeAttributeProvider(page.root).getAggregatedCellValuesForLabel(label);
+              if (values) {
+                aggregatedValues = values;
+                aggregate = false;
+                success = true;
+              }
+            }
           }
         }
+      } else { // destination link node
+        success = true;
+      }
+
+      if (!success) {
+        aggregatedValues['_error'] = 'true';
       }
     }
-    
+
     if (aggregate) {
-      aggregatedValues = await this.aggregateAttributes({
+      const values = await this.aggregateAttributes({
         globalAttributes: globalDefaultAttributesDict,
         childAttributes: childValues,
         localAttributes: localAttributes,
         id: cell.getCellId()
       }, aggregationFunction, worker);
+      aggregatedValues = { ...values, ...aggregatedValues }; // Include possible link errors
     }
     cell.setAggregatedCellValues(aggregatedValues);
 
@@ -102,7 +119,6 @@ export class AttributeRenderer {
     const label = await this.recalculateCellLabel({ globalAttributes: globalDefaultAttributesDict, cellAttributes: { ...cellAttributes, ...aggregatedValues } }, labelFunction, worker);
     cell.setComputedAttributesForCell(label, labelFunction?.name || null);
 
-    const incomingEdges = cell.cell.edges?.filter(x => x.target === cell.cell && x.source) || [];
     await Promise.all(incomingEdges.map(x => this.updateCellValuesUpwards(this.nodeAttributes(x.source), root, worker, ui)));
   }
 

@@ -15,7 +15,13 @@ export class AttackGraphLinkShape extends mxEllipse {
 
     if (this.state) {
       const cell = AttributeRenderer.nodeAttributes(this.state.cell);
-      const allValues = cell.getCellValues();
+      const allValues = cell.getAllValues().current;
+      const fontSize = 11;
+
+      if ('_error' in allValues) {
+        this.writeText('!! No Link !!', x + w/2, y + h + fontSize, fontSize, '#f00', c);
+        return;
+      }
 
       if ('link' in allValues) {
         const link = allValues['link'];
@@ -23,18 +29,21 @@ export class AttackGraphLinkShape extends mxEllipse {
           const idx = link.substring(PREFIX_LINK_PAGE_ID.length);
           const page = AttackGraphLinkShape.ui.getPageById(idx);
           if (page) {
-            const name = page.getName();
-            const opacity = mxUtils.getValue(this.state.style, 'opacity', '100') as number;
-            const fontSize = 11;
-
-            c.setAlpha(opacity / 100);
-            c.setFontStyle(mxConstants.DEFAULT_FONTSTYLE.toString());
-            c.setFontColor('#000');
-            c.setFontSize(fontSize);
-            c.text(x + w/2, y + h + fontSize, 0, 0, '«' + name + '»', mxConstants.ALIGN_CENTER, mxConstants.ALIGN_MIDDLE, 0, null, 0, 0, 0);
+            this.writeText('«' + page.getName() + '»', x + w/2, y + h + fontSize, fontSize, '#000', c);
           }
         }
       }
+    }
+  }
+
+  private writeText(text: string, x: number, y: number, size: number, color: string, c: import('mxgraph').mxAbstractCanvas2D): void {
+    if (this.state) {
+      const opacity = mxUtils.getValue(this.state.style, 'opacity', '100') as number;
+      c.setAlpha(opacity / 100);
+      c.setFontStyle(mxConstants.DEFAULT_FONTSTYLE.toString());
+      c.setFontColor(color);
+      c.setFontSize(size);
+      c.text(x, y, 0, 0, text, mxConstants.ALIGN_CENTER, mxConstants.ALIGN_MIDDLE, 0, null, 0, 0, 0);
     }
   }
 
