@@ -1,7 +1,5 @@
 import { AttributeRenderer as AttributeRenderer } from './AttributeRenderer';
 
-const PREFIX_LINK_PAGE_ID = 'data:page/id,';
-
 export class AttackGraphLinkShape extends mxEllipse {
   public static readonly ID = 'attackgraphs.link';
   private static ui: Draw.UI;
@@ -23,15 +21,9 @@ export class AttackGraphLinkShape extends mxEllipse {
         return;
       }
 
-      if ('link' in allValues) {
-        const link = allValues['link'];
-        if (link !== undefined && link.includes(PREFIX_LINK_PAGE_ID)) {
-          const idx = link.substring(PREFIX_LINK_PAGE_ID.length);
-          const page = AttackGraphLinkShape.ui.getPageById(idx);
-          if (page) {
-            this.writeText('«' + page.getName() + '»', x + w/2, y + h + fontSize, fontSize, '#000', c);
-          }
-        }
+      const page = cell.getReferencedPage();
+      if (page) {
+        this.writeText('«' + page.getName() + '»', x + w/2, y + h + fontSize, fontSize, '#000', c);
       }
     }
   }

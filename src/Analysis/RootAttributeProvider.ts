@@ -10,7 +10,7 @@ export class RootAttributeProvider extends AttributeProvider {
   constructor() {
     const ui = AttributeProvider.getUI();
 
-    if (ui.pages && ui.pages.length > 0) {
+    if (!RootAttributeProvider.page && ui.pages && ui.pages.length > 0) {
       // Root attributes are stored on the first page
       RootAttributeProvider.page = ui.pages[0];
     }

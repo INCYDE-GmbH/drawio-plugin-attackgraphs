@@ -8,8 +8,6 @@ import { GraphUtils } from './GraphUtils';
 import { AttackgraphFunction, CellDataCollection, ChildCellData, ChildCellDataCollection, GlobalAttribute, GlobalAttributeDict, KeyValuePairs } from './Model';
 import { CellStyles } from './Analysis/CellStyles';
 
-const PREFIX_LINK_PAGE_ID = 'data:page/id,';
-
 export class AttributeRenderer {
   private static _sensitivityAnalysisEnabled = false;
   static sensitivityAnalysisEnabled(): boolean {
@@ -73,32 +71,14 @@ export class AttributeRenderer {
 
     // Link to another page
     if (new CellStyles(cell.cell).isLinkNode()) {
-      const outgoingEdges = cell.cell.edges?.filter(x => x.source === cell.cell && x.target) || [];
-      let success = false;
-
-      if (outgoingEdges.length === 0) { // source link node
-        if ('link' in localAttributes) {
-          const link = localAttributes['link'];
-          const label = localAttributes['label'];
-          if (link !== undefined && label !== undefined && link.includes(PREFIX_LINK_PAGE_ID)) {
-            const idx = link.substring(PREFIX_LINK_PAGE_ID.length);
-            const page = ui.getPageById(idx);
-            if (page && page.root && page !== ui.currentPage) {
-              const values = new NodeAttributeProvider(page.root).getAggregatedCellValuesForLabel(label);
-              if (values) {
-                aggregatedValues = values;
-                aggregate = false;
-                success = true;
-              }
-            }
-          }
+      if (cell.isLeave()) { // source link node
+        const refCell = cell.getReferencedCell();        
+        if (refCell) {
+          aggregatedValues = refCell.getAggregatedCellValues();
+          aggregate = false;
+        } else {
+          aggregatedValues['_error'] = 'true';
         }
-      } else { // destination link node
-        success = true;
-      }
-
-      if (!success) {
-        aggregatedValues['_error'] = 'true';
       }
     }
 
