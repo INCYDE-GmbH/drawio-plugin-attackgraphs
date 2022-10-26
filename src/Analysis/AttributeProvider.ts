@@ -45,7 +45,7 @@ export abstract class AttributeProvider {
     return false;
   }
 
-  private getPageForCell(): Draw.DiagramPage | null {
+  private resolvePageForCell(): Draw.DiagramPage | null {
     if (AttributeProvider.ui.pages && AttributeProvider.ui.pages.length > 0) {
       for (const page of AttributeProvider.ui.pages) {
         if (page.root) {
@@ -87,12 +87,17 @@ export abstract class AttributeProvider {
     return this.cell.id;
   }
 
-  getPageId(): string {
+  getPage(): Draw.DiagramPage | null {
     if (!this.pageDetermined) {
-      this.page = this.getPageForCell();
+      this.page = this.resolvePageForCell();
       this.pageDetermined = true;
     }
-    return (this.page) ? this.page.getId() : '';
+    return this.page;
+  }
+
+  getPageId(): string {
+    const page = this.getPage();
+    return (page) ? page.getId() : '';
   }
 
   getCellValues(): KeyValuePairs {

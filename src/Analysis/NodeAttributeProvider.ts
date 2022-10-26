@@ -154,6 +154,51 @@ export class NodeAttributeProvider extends AttributeProvider {
     return null;
   }
 
+  getLinkNodesReferencingThisCell(): NodeAttributeProvider[] {
+    if (!(new CellStyles(this.cell)).isLinkNode()) {
+      return [];
+    }
+
+    let nodes: NodeAttributeProvider[] = [];
+    const ui = AttributeProvider.getUI();
+    const pageId = this.getPageId();
+    const label = this.getCellLabel();
+
+    if (label && ui.pages && ui.pages.length > 0) {
+      for (const page of ui.pages) {
+        if (page.getId() === pageId) {
+          continue;
+        }
+        if (page.root) {
+          const refNodes = this.getLinkNodesReferencing(new NodeAttributeProvider(page.root), pageId);
+          nodes = nodes.concat(refNodes.filter(x => x.getCellLabel() === label))
+        }
+      }
+    }
+
+    return nodes;
+  }
+
+  private getLinkNodesReferencing(root: NodeAttributeProvider, pageId: string): NodeAttributeProvider[] {
+    let nodes: NodeAttributeProvider[] = [];
+
+    if (new CellStyles(root.cell).isLinkNode()) {
+      const refPage = root.getReferencedPage();
+      if (refPage && refPage.getId() === pageId) {
+        nodes.push(root);
+      }
+    }
+
+    const children = root.cell.children;
+    if (children && children.length > 0) {
+      for (const child of children) {
+        nodes = nodes.concat(this.getLinkNodesReferencing(new NodeAttributeProvider(child), pageId));
+      }
+    }
+
+    return nodes;
+  }
+
   getAllValues(): NodeValues {
     return {
       current: { ...this.getCellValues(), ...this.getAggregatedCellValues() } as KeyValuePairs,
