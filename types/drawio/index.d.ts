@@ -125,6 +125,13 @@ declare namespace Draw {
   }
 }
 
+declare class MovePage {
+  ui: UI;
+  oldIndex: number;
+  newIndex: number;
+  execute(): void;
+}
+
 declare class Graph {
   getExportVariables: () => any;
   getTooltipForCell(cell: import('mxgraph').mxCell): void;

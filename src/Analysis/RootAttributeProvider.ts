@@ -28,6 +28,42 @@ export class RootAttributeProvider extends AttributeProvider {
     return attributes.filter(attribute => attribute.iconName !== '' && AttributeProvider.shouldRenderAttribute(attribute.name))
   }
 
+  /*
+   * Assumption: new page for root attributes already at position 0
+   */
+  static moveRootAttributes(): void {
+    if (RootAttributeProvider.page) {
+      const rootAttributes = new RootAttributeProvider();
+      const globalAttributes = rootAttributes.getGlobalAttributes();
+      const aggregationFunctions = rootAttributes.getGlobalAggregationFunctions();
+      const computedAttributes = rootAttributes.getGlobalComputedAttributesFunctions();
+      if (globalAttributes) {
+        rootAttributes.setGlobalAttributes([]);
+      }
+      rootAttributes.setGlobalAggregatonFunctions([]);
+      rootAttributes.setGlobalComputedAttributesFunctions([]);
+
+      RootAttributeProvider.page.needsUpdate = true;
+      RootAttributeProvider.page = RootAttributeProvider.getUI().pages[0];
+      RootAttributeProvider.page.needsUpdate = true;
+
+      if (globalAttributes) {
+        rootAttributes.setGlobalAttributes(globalAttributes);
+      }
+      rootAttributes.setGlobalAggregatonFunctions(aggregationFunctions);
+      rootAttributes.setGlobalComputedAttributesFunctions(computedAttributes);
+    }
+  }
+
+  /*
+   * In case the first page moved, change the current root cell to the new page's root cell
+   */
+  private check() {
+    if (RootAttributeProvider.page && RootAttributeProvider.page.root && RootAttributeProvider.page.root !== this.cell) {      
+      this.cell = RootAttributeProvider.page.root;
+    }
+  }
+
   getTooltip(): string {
     return '';
   }
@@ -73,10 +109,12 @@ export class RootAttributeProvider extends AttributeProvider {
   }
 
   getGlobalAttributesFromCell(): GlobalAttribute[] | null {
+    this.check();
     return this.getGroupedValuesFromCell<GlobalAttribute>(STORAGE_NAME_GLOBAL_ATTRIBUTES);
   }
 
   getGlobalAttributeFromCell(name: string): GlobalAttribute | null {
+    this.check();
     return this.getValueFromGroupInCell<GlobalAttribute>(STORAGE_NAME_GLOBAL_ATTRIBUTES, name);
   }
 
@@ -85,6 +123,8 @@ export class RootAttributeProvider extends AttributeProvider {
   }
 
   storeGlobalAttributesInCell(attributes: GlobalAttribute[]): void {
+    this.check();
+
     if (RootAttributeProvider.page) {
       RootAttributeProvider.page.needsUpdate = true;
     }
@@ -117,6 +157,8 @@ export class RootAttributeProvider extends AttributeProvider {
   }
 
   setGlobalFunctions(functions: AttackgraphFunction[], global_function_name: string, global_function_group_name: string): void {
+    this.check();
+
     const xml = mxUtils.createXmlDocument();
     const value = this.parseCellValue();
 
@@ -162,6 +204,8 @@ export class RootAttributeProvider extends AttributeProvider {
   }
 
   getGlobalFunctions(global_function_name: string, global_function_group_name: string): AttackgraphFunction[] {
+    this.check();
+
     const value = this.parseCellValue();
 
     const rootChildren = Array.from(value.children || []);

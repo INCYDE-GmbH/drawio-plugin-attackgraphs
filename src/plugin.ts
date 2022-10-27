@@ -12,6 +12,7 @@ import { AttributeRenderer } from './AttributeRenderer';
 import { Sidebar } from './Sidebar';
 import { installVertexHandler } from './VertexHandler';
 import { KeyValuePairs } from './Model';
+import { RootAttributeProvider } from './Analysis/RootAttributeProvider';
 
 Draw.loadPlugin(ui => {
 
@@ -249,6 +250,18 @@ Draw.loadPlugin(ui => {
       return AttributeRenderer.nodeAttributes(cell).getTooltip();
     }
     return graphGetTooltipForCell.apply(this, [cell]);
+  }
+
+  // React if the first page (with the root attributes) was moved
+  // eslint-disable-next-line @typescript-eslint/unbound-method
+  const movePageExecute = MovePage.prototype.execute;
+  MovePage.prototype.execute = function() {    
+    const firstPageMoved = (this.oldIndex === 0 || this.newIndex === 0);
+    movePageExecute.apply(this, []); // Changes this.oldIndex and this.newIndex
+
+    if (firstPageMoved) {
+      RootAttributeProvider.moveRootAttributes();
+    }
   }
 
   installVertexHandler(ui, worker);

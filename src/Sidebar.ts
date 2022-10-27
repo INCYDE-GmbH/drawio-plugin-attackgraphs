@@ -23,7 +23,7 @@ export class Sidebar {
     let height = 75;
 
     if (this.ui !== null && this.ui.editor.graph !== null) {
-      const count = RootAttributeProvider.getRenderableAttributes(new RootAttributeProvider().getGlobalAttributes() || []).length;
+      const count = RootAttributeProvider.getRenderableAttributes(AttributeRenderer.rootAttributes().getGlobalAttributes() || []).length;
       AttackGraphIconLegendShape.updateHeight(count);
       height = AttackGraphIconLegendShape.getHeight();
     }
