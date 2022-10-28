@@ -16,37 +16,48 @@ const globalAttributes = {
         value: '0',
         min: '0',
         max: '10'
-    },
+    }
 };
 
 const childAttributes = [
     {
         edgeWeight: 1,
+        id: 'node1',
         attributes: {
             'Knowledge': 3,
             'Resources': 4,
             'Location': 2
         },
-        computedAttribute: '7',
+        computedAttribute: {
+            'value': 7
+        }
     },
     {
         edgeWeight: 2,
+        id: 'node2',
         attributes: {
             'Knowledge': 7,
             'Resources': 8,
             'Location': 3
         },
-        computedAttribute: '4',
+        computedAttribute: {
+            'value': 4,
+            'fillColor': '#00f',
+            'fontColor': '#000'
+        }
     },
     {
         edgeWeight: 1,
+        id: 'node3',
         attributes: {
             'Knowledge': 9,
             'Resources': 4,
             'Location': 3
         },
-        computedAttribute: '6',
-    },
+        computedAttribute: {
+            'value': 6
+        }
+    }
 ]
 
 const cellAttributes =

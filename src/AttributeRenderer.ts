@@ -76,8 +76,8 @@ export class AttributeRenderer {
     const labelFunction = cell.resolveComputedAttributesFunction(graph);
 
     const cellAttributes = cell.getCellValues();
-    const label = await this.recalculateCellLabel({ globalAttributes: globalDefaultAttributesDict, cellAttributes: { ...cellAttributes, ...aggregatedValues } }, labelFunction, worker);
-    cell.setComputedAttributesForCell(label, labelFunction?.name || null);
+    const computedAttributes = await this.recalculateCellLabel({ globalAttributes: globalDefaultAttributesDict, cellAttributes: { ...cellAttributes, ...aggregatedValues } }, labelFunction, worker);
+    cell.setComputedAttributesForCell(computedAttributes);
 
     const incomingEdges = cell.cell.edges?.filter(x => x.target === cell.cell && x.source) || [];
     await Promise.all(incomingEdges.map(x => this.updateCellValuesUpwards(this.nodeAttributes(x.source), graph, worker)));
@@ -116,29 +116,20 @@ export class AttributeRenderer {
       const target = this.nodeAttributes(x.target);
       const cellValues = target.getCellValues();
       const aggregatedValues = target.getAggregatedCellValues();
-      const computedAttribute = Object.values(target.getComputedAttributesForCell() || {})[0];
+      const computedAttribute = target.getComputedAttributesForCell() || {};
       return { edgeWeight, attributes: { ...cellValues, ...aggregatedValues }, computedAttribute: computedAttribute, id: target.getCellId() };
     }) || [];
   }
 
-  static async recalculateCellLabel(cellAttributes: CellDataCollection, labelFunction: AttackgraphFunction | null, worker: AsyncWorker): Promise<string | null> {
-
-    if (labelFunction === null) {
-      return null;
-    }
-
-    try {
-      return this.runLabelFunctionWorker(labelFunction, cellAttributes, worker);
-    } catch (e) {
-      return null;
-    }
+  static async recalculateCellLabel(cellAttributes: CellDataCollection, labelFunction: AttackgraphFunction | null, worker: AsyncWorker): Promise<KeyValuePairs> {
+    return (labelFunction) ? this.runLabelFunctionWorker(labelFunction, cellAttributes, worker) : {};
   }
 
-  private static async runLabelFunctionWorker(labelFunction: AttackgraphFunction, attributes: CellDataCollection, worker: AsyncWorker): Promise<string> {
+  private static async runLabelFunctionWorker(labelFunction: AttackgraphFunction, attributes: CellDataCollection, worker: AsyncWorker): Promise<KeyValuePairs> {
     try {
-      return await worker.runWorkerFunction<CellDataCollection, string>(labelFunction.fn, attributes);
-    } catch (e) {
-      return '!';
+      return await worker.runWorkerFunction<CellDataCollection, KeyValuePairs>(labelFunction.fn, attributes);
+    } catch (e) {      
+      return {};
     }
   }
 }

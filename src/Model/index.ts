@@ -15,7 +15,7 @@ export type GlobalAttributeDict = { [name: string]: {name: string, value: string
 export type ChildCellData = {
   edgeWeight: string | null,
   attributes: KeyValuePairs,
-  computedAttribute: string,
+  computedAttribute: KeyValuePairs,
   id: string
 };
 

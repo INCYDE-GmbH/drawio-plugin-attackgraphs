@@ -10,8 +10,7 @@ The computed attributes function dialog allows to specify a custom computed attr
 
 ## Syntax
 - A computed attributes function receives an object containing relevant values of the cell. This object is of type `CellDataCollection`. It is a collection containing a dictionary of the globally defined attributes and the local cell attributes. Local cell attributes will be overwritten in case of an aggregation function that was executed on the cell.
-- A computed attributes function must return a single value, which will be dispayed as a batch in the top right corner of the cell. (***Computed attributes are only rendered for attackgraph shapes, yet all shapes store them.***)
-
+- A computed attributes function must return a dictionary. Its key `value` will be dispayed as a batch in the top right corner of the cell. The attribute `fillColor` sets the color of the batch and the `fontColor` sets the color of the font in the batch. (***Computed attributes are only rendered for attackgraph shapes, yet all shapes store them.***)
 - A computed attributes function must conform to the ES5 syntax as the computed attributes functions are executed in a [sandboxed environment](https://github.com/NeilFraser/JS-Interpreter) with it's own js interpreter.
 
 ### Relevant data types
@@ -35,14 +34,14 @@ type CellDataCollection = {
 ### Example of a computed attributes function accessing the value of a cell attribute
 ```js
 function(collection){
-    return parseInt(collection.cellAttributes["A"]) + 5;
+    return {"value": parseInt(collection.cellAttributes["A"]) + 5};
 }
 ```
 
 ### Example of a computed attributes function accessing a global attribute's maximum value
 ```js
 function(collection){
-    return collection.globalAttributes['Knowledge'].max;
+    return {"value": collection.globalAttributes["Knowledge"].max};
 }
 ```
 
