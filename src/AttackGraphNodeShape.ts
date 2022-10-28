@@ -134,18 +134,21 @@ export class AttackGraphNodeShape extends mxRectangleShape {
     void h;
     if (this.state) {
       const opacity = mxUtils.getValue(this.state.style, 'opacity', '100') as number;
-      const bubbleDiameter = 20;
+      const squareDiameter = 20;
       c.setFillColor('#ff0000');
-      c.setStrokeColor('#ff0000');
-      c.ellipse(w - (bubbleDiameter * 0.5), - (bubbleDiameter * 0.5), bubbleDiameter, bubbleDiameter);
+      c.setStrokeColor('#000000');
+      c.rect(w - squareDiameter, 0, squareDiameter, squareDiameter);
       c.fillAndStroke();
 
       c.setAlpha(opacity / 100);
       c.setFontStyle(mxConstants.DEFAULT_FONTSTYLE.toString());
       c.setFontColor('#fff');
       c.setFontSize(14);
-
-      c.text(w, 0, 0, 0, label === 'NaN' ? '!' : label, mxConstants.ALIGN_CENTER, mxConstants.ALIGN_MIDDLE, 0, null, 0, 0, 0);
+      c.text(
+        w - squareDiameter * 0.5,
+        squareDiameter * 0.5,
+        0, 0, label === 'NaN' ? '!' : label, mxConstants.ALIGN_CENTER, mxConstants.ALIGN_MIDDLE, 0, null, 0, 0, 0
+      );
     }
   }
 
