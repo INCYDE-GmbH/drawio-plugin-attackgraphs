@@ -108,7 +108,7 @@ export class Sidebar {
       value.appendChild(newElement);
     }
 
-    return sidebar.createVertexTemplate(`shape=${AttackGraphLinkShape.ID};aspect=fixed;`, 40, 40, value);
+    return sidebar.createVertexTemplate(`shape=${AttackGraphLinkShape.ID};aspect=fixed;fontColor=none;noLabel=1;`, 60, 60, value);
   }
 
   private createVertexTemplate(

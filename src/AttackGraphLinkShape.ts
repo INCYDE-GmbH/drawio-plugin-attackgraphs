@@ -1,30 +1,40 @@
-import { AttributeRenderer as AttributeRenderer } from './AttributeRenderer';
+import { AttributeRenderer } from './AttributeRenderer';
 
 export class AttackGraphLinkShape extends mxEllipse {
   public static readonly ID = 'attackgraphs.link';
-  private static ui: Draw.UI;
+  private static readonly defaultFontSize = 11;
+  private static readonly defaultFontColor = '#000000';
 
   constructor(bounds: import('mxgraph').mxRectangle, fill: string, stroke: string, strokewidth?: number) {
     super(bounds, fill, stroke, strokewidth);
   }
 
   paintVertexShape(c: import('mxgraph').mxAbstractCanvas2D, x: number, y: number, w: number, h: number): void {
-    super.paintVertexShape(c, x, y, w, h);
+    let circDiameter = (h > w) ? w : h;
 
     if (this.state) {
       const cell = AttributeRenderer.nodeAttributes(this.state.cell);
       const allValues = cell.getAllValues().current;
-      const fontSize = 11;
+      const fontSize = AttackGraphLinkShape.defaultFontSize;
 
       if ('_error' in allValues) {
-        this.writeText('!! No Link !!', x + w/2, y + h + fontSize, fontSize, '#f00', c);
-        return;
+        circDiameter = (h - 2 * fontSize > w) ? w : h - 2 * fontSize;
+        this.writeText('!! No Link !!', x + w * 0.5, y + circDiameter + fontSize, fontSize, '#f00', c);
+      } else {
+        const page = cell.getReferencedPage();
+        if (page) {
+          circDiameter = (h - 2 * fontSize > w) ? w : h - 2 * fontSize;
+          this.writeText('«' + page.getName() + '»', x + w * 0.5, y + circDiameter + fontSize, fontSize, AttackGraphLinkShape.defaultFontColor, c);
+        }
       }
+    }
 
-      const page = cell.getReferencedPage();
-      if (page) {
-        this.writeText('«' + page.getName() + '»', x + w/2, y + h + fontSize, fontSize, '#000', c);
-      }
+    super.paintVertexShape(c, x + (w - circDiameter) * 0.5, y, circDiameter, circDiameter);
+
+    if (this.state) {
+      const label = AttributeRenderer.nodeAttributes(this.state.cell).getCellLabel() || '';
+      const fontSize = mxUtils.getValue(this.state.style, 'fontSize', AttackGraphLinkShape.defaultFontSize + 1) as number;
+      this.writeText(label, x + w * 0.5, y + circDiameter * 0.5, fontSize, AttackGraphLinkShape.defaultFontColor, c);
     }
   }
 
@@ -39,8 +49,7 @@ export class AttackGraphLinkShape extends mxEllipse {
     }
   }
 
-  static register(ui: Draw.UI): void {
-    this.ui = ui;
+  static register(): void {
     mxCellRenderer.registerShape(AttackGraphLinkShape.ID, AttackGraphLinkShape);
   }
 }

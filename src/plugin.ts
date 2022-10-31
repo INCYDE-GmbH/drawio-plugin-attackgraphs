@@ -59,7 +59,7 @@ Draw.loadPlugin(ui => {
   AttributeProvider.register(ui);
 
   AttackGraphNodeShape.register();
-  AttackGraphLinkShape.register(ui);
+  AttackGraphLinkShape.register();
   AttackGraphIconLegendShape.register();
   IconLegend.register(ui.editor.graph);
 
