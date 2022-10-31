@@ -409,7 +409,7 @@ test.describe('sensitivity analysis', () => {
       </mxCell>
     </object>
     <object label="Consequence" Knowledge="4" tooltip="Knowledge:37  " id="NRvaHTUMJR8sC2KhB2nQ-1">
-      <ag_aggregation_custom_function ag_aggregation_custom_function="function(collection) { &#xa;    var localKnowledge = parseInt(collection.localAttributes[&#39;Knowledge&#39;]);&#xa;    var sum = 0;&#xa;    collection.childAttributes.forEach(function(child) {&#xa;        var edgeWeight = child.edgeWeight;&#xa;        var childKnowledge = parseInt(child.attributes[&#39;Knowledge&#39;]);&#xa;        var childLabel = parseInt(child.computedAttribute);&#xa;        sum += edgeWeight * (childKnowledge + childLabel)&#xa;    })&#xa;    &#xa;    return { Knowledge : localKnowledge + sum }&#xa;}" />
+      <ag_aggregation_custom_function ag_aggregation_custom_function="function(collection) { &#xa;    var localKnowledge = parseInt(collection.localAttributes[&#39;Knowledge&#39;]);&#xa;    var sum = 0;&#xa;    collection.childAttributes.forEach(function(child) {&#xa;        var edgeWeight = child.edgeWeight;&#xa;        var childKnowledge = parseInt(child.attributes[&#39;Knowledge&#39;]);&#xa;        var childLabel = parseInt(child.computedAttribute[&#39;value&#39;]);&#xa;        sum += edgeWeight * (childKnowledge + childLabel)&#xa;    })&#xa;    &#xa;    return { Knowledge : localKnowledge + sum }&#xa;}" />
       <ag_attributes Knowledge="37" />
       <ag_computed_attributes />
       <mxCell style="shape=attackgraphs.node;" parent="1" vertex="1">
@@ -417,9 +417,9 @@ test.describe('sensitivity analysis', () => {
       </mxCell>
     </object>
     <object label="Attack Step" Knowledge="1" tooltip="" id="NRvaHTUMJR8sC2KhB2nQ-2">
-      <ag_computed_attributes_custom_function ag_computed_attributes_custom_function="function() { return 2 }" />
+      <ag_computed_attributes_custom_function ag_computed_attributes_custom_function="function() { return { &#39;value&#39;: 2 }; }" />
       <ag_attributes />
-      <ag_computed_attributes custom="2" />
+      <ag_computed_attributes value="2" />
       <mxCell style="shape=attackgraphs.node;" parent="1" vertex="1">
         <mxGeometry x="200" y="300" width="150" height="75" as="geometry" />
       </mxCell>
@@ -439,7 +439,7 @@ test.describe('sensitivity analysis', () => {
 
     // Child Label 2 -> 20
     await drawio.openComputedAttributesFunctionDialogOnActivityNode();
-    await drawio.applyStringToAceEditor('function() { return 20 }');
+    await drawio.applyStringToAceEditor('function() { return { "value": 20 }; }');
 
     // Edge Label 5 -> 30
     await page.locator('.geDiagramContainer').locator('text=11').dblclick();
@@ -483,7 +483,7 @@ test.describe('sensitivity analysis', () => {
       </mxCell>
     </object>
     <object label="Consequence" Knowledge="4" tooltip="Knowledge:37  " id="NRvaHTUMJR8sC2KhB2nQ-1">
-      <ag_aggregation_custom_function ag_aggregation_custom_function="function(collection) { &#xa;    var localKnowledge = parseInt(collection.localAttributes[&#39;Knowledge&#39;]);&#xa;    var sum = 0;&#xa;    collection.childAttributes.forEach(function(child) {&#xa;        var edgeWeight = child.edgeWeight;&#xa;        var childKnowledge = parseInt(child.attributes[&#39;Knowledge&#39;]);&#xa;        var childLabel = parseInt(child.computedAttribute);&#xa;        sum += edgeWeight * (childKnowledge + childLabel)&#xa;    })&#xa;    &#xa;    return { Knowledge : localKnowledge + sum }&#xa;}" />
+      <ag_aggregation_custom_function ag_aggregation_custom_function="function(collection) { &#xa;    var localKnowledge = parseInt(collection.localAttributes[&#39;Knowledge&#39;]);&#xa;    var sum = 0;&#xa;    collection.childAttributes.forEach(function(child) {&#xa;        var edgeWeight = child.edgeWeight;&#xa;        var childKnowledge = parseInt(child.attributes[&#39;Knowledge&#39;]);&#xa;        var childLabel = parseInt(child.computedAttribute[&#39;value&#39;]);&#xa;        sum += edgeWeight * (childKnowledge + childLabel)&#xa;    })&#xa;    &#xa;    return { Knowledge : localKnowledge + sum }&#xa;}" />
       <ag_attributes Knowledge="37" />
       <ag_computed_attributes />
       <mxCell style="shape=attackgraphs.node;" parent="1" vertex="1">
@@ -491,9 +491,9 @@ test.describe('sensitivity analysis', () => {
       </mxCell>
     </object>
     <object label="Attack Step" Knowledge="1" tooltip="" id="NRvaHTUMJR8sC2KhB2nQ-2">
-      <ag_computed_attributes_custom_function ag_computed_attributes_custom_function="function() { return 2 }" />
+      <ag_computed_attributes_custom_function ag_computed_attributes_custom_function="function() { return { &#39;value&#39;: 2 }; }" />
       <ag_attributes />
-      <ag_computed_attributes custom="2" />
+      <ag_computed_attributes value="2" />
       <mxCell style="shape=attackgraphs.node;" parent="1" vertex="1">
         <mxGeometry x="200" y="300" width="150" height="75" as="geometry" />
       </mxCell>
@@ -513,7 +513,7 @@ test.describe('sensitivity analysis', () => {
 
     // Child Label 2 -> 20
     await drawio.openComputedAttributesFunctionDialogOnActivityNode();
-    await drawio.applyStringToAceEditor('function() { return 20 }');
+    await drawio.applyStringToAceEditor('function() { return { "value": 20 }; }');
 
     // Edge Label 5 -> 30
     await page.locator('.geDiagramContainer').locator('text=11').dblclick();

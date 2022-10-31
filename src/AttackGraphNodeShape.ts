@@ -122,9 +122,10 @@ export class AttackGraphNodeShape extends mxRectangleShape {
 
       const computedAttributes = cell.getComputedAttributesForCell();
       if (computedAttributes && 'value' in computedAttributes) {
-        const value = computedAttributes['value'];
-        const fillColor = computedAttributes['fillColor'] || '#f00';
-        const fontColor = computedAttributes['fontColor'] || '#fff';
+        // Force the following to be strings
+        const value = `${computedAttributes['value']}`;
+        const fillColor = `${computedAttributes['fillColor'] || '#f00'}`;
+        const fontColor = `${computedAttributes['fontColor'] || '#fff'}`;
         this.drawLabelShape(value, c, w, fillColor, fontColor);
       }
     }

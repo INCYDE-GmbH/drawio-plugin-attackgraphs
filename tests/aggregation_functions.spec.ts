@@ -61,24 +61,24 @@ test.describe('aggregation functions', () => {
     </object>
     <object label="Aktivität" tooltip="" id="ExoI5DOS8JcdbeK90SCF-3">
       <ag_attributes />
-      <ag_computed_attributes custom="1" />
-      <ag_computed_attributes_custom_function ag_computed_attributes_custom_function="function(){&#xa;    return 1;&#xa;}" />
+      <ag_computed_attributes value="1" />
+      <ag_computed_attributes_custom_function ag_computed_attributes_custom_function="function(){&#xa;    return { &#39;value&#39;: 1 };&#xa;}" />
       <mxCell style="shape=attackgraphs.node;" vertex="1" parent="1">
         <mxGeometry x="240" y="340" width="150" height="75" as="geometry" />
       </mxCell>
     </object>
     <object label="Aktivität" tooltip="" id="ExoI5DOS8JcdbeK90SCF-5">
       <ag_attributes />
-      <ag_computed_attributes custom="2" />
-      <ag_computed_attributes_custom_function ag_computed_attributes_custom_function="function(){&#xa;    return 2;&#xa;}" />
+      <ag_computed_attributes value="2" />
+      <ag_computed_attributes_custom_function ag_computed_attributes_custom_function="function(){&#xa;    return { &#39;value&#39;: 2 };&#xa;}" />
       <mxCell style="shape=attackgraphs.node;" vertex="1" parent="1">
         <mxGeometry x="400" y="340" width="150" height="75" as="geometry" />
       </mxCell>
     </object>
     <object label="Aktivität" tooltip="" id="ExoI5DOS8JcdbeK90SCF-6">
       <ag_attributes />
-      <ag_computed_attributes custom="3" />
-      <ag_computed_attributes_custom_function ag_computed_attributes_custom_function="function(){&#xa;    return 3;&#xa;}" />
+      <ag_computed_attributes value="3" />
+      <ag_computed_attributes_custom_function ag_computed_attributes_custom_function="function(){&#xa;    return { &#39;value&#39;: 3 };&#xa;}" />
       <mxCell style="shape=attackgraphs.node;" vertex="1" parent="1">
         <mxGeometry x="570" y="340" width="150" height="75" as="geometry" />
       </mxCell>
@@ -92,7 +92,7 @@ test.describe('aggregation functions', () => {
         await drawio.applyStringToAceEditor(`function(collection) {
     var sum = 0;
     collection.childAttributes.forEach(function (child) {
-        var childLabel = parseInt(child.computedAttribute);
+        var childLabel = parseInt(child.computedAttribute["value"]);
         sum += childLabel;
     })
 
