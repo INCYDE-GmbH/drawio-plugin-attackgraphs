@@ -28,9 +28,7 @@ const childAttributes = [
             'Resources': 4,
             'Location': 2
         },
-        computedAttribute: {
-            'value': 7
-        }
+        computedAttribute: 7
     },
     {
         edgeWeight: 2,
@@ -40,11 +38,7 @@ const childAttributes = [
             'Resources': 8,
             'Location': 3
         },
-        computedAttribute: {
-            'value': 4,
-            'fillColor': '#00f',
-            'fontColor': '#000'
-        }
+        computedAttribute: 4
     },
     {
         edgeWeight: 1,
@@ -54,9 +48,7 @@ const childAttributes = [
             'Resources': 4,
             'Location': 3
         },
-        computedAttribute: {
-            'value': 6
-        }
+        computedAttribute: 6
     }
 ]
 

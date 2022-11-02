@@ -116,7 +116,7 @@ export class AttributeRenderer {
       const target = this.nodeAttributes(x.target);
       const cellValues = target.getCellValues();
       const aggregatedValues = target.getAggregatedCellValues();
-      const computedAttribute = target.getComputedAttributesForCell() || {};
+      const computedAttribute = (target.getComputedAttributesForCell() || {})['value'] || '';
       return { edgeWeight, attributes: { ...cellValues, ...aggregatedValues }, computedAttribute: computedAttribute, id: target.getCellId() };
     }) || [];
   }

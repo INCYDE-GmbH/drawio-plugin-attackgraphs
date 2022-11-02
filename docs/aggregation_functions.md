@@ -32,7 +32,7 @@ type GlobalAttribute = {
 type ChildCellData = {
   edgeWeight: string | null,
   attributes: KeyValuePairs,
-  computedAttribute: KeyValuePairs,
+  computedAttribute: string,
   id: string
 }
 
@@ -58,7 +58,7 @@ function(collection){
 ### Example of an aggregation function accessing a child's label value
 ```js
 function(collection){
-    return {'Name': collection.childAttributes[0].computedAttribute['value']};
+    return {'Name': collection.childAttributes[0].computedAttribute};
 }
 ```
 ### Example of an aggregation function accessing global attributes:

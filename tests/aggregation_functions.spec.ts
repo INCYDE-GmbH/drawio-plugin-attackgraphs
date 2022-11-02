@@ -92,7 +92,7 @@ test.describe('aggregation functions', () => {
         await drawio.applyStringToAceEditor(`function(collection) {
     var sum = 0;
     collection.childAttributes.forEach(function (child) {
-        var childLabel = parseInt(child.computedAttribute["value"]);
+        var childLabel = parseInt(child.computedAttribute);
         sum += childLabel;
     })
 

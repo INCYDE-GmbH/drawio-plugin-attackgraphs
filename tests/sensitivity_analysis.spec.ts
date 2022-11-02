@@ -409,7 +409,7 @@ test.describe('sensitivity analysis', () => {
       </mxCell>
     </object>
     <object label="Consequence" Knowledge="4" tooltip="Knowledge:37  " id="NRvaHTUMJR8sC2KhB2nQ-1">
-      <ag_aggregation_custom_function ag_aggregation_custom_function="function(collection) { &#xa;    var localKnowledge = parseInt(collection.localAttributes[&#39;Knowledge&#39;]);&#xa;    var sum = 0;&#xa;    collection.childAttributes.forEach(function(child) {&#xa;        var edgeWeight = child.edgeWeight;&#xa;        var childKnowledge = parseInt(child.attributes[&#39;Knowledge&#39;]);&#xa;        var childLabel = parseInt(child.computedAttribute[&#39;value&#39;]);&#xa;        sum += edgeWeight * (childKnowledge + childLabel)&#xa;    })&#xa;    &#xa;    return { Knowledge : localKnowledge + sum }&#xa;}" />
+      <ag_aggregation_custom_function ag_aggregation_custom_function="function(collection) { &#xa;    var localKnowledge = parseInt(collection.localAttributes[&#39;Knowledge&#39;]);&#xa;    var sum = 0;&#xa;    collection.childAttributes.forEach(function(child) {&#xa;        var edgeWeight = child.edgeWeight;&#xa;        var childKnowledge = parseInt(child.attributes[&#39;Knowledge&#39;]);&#xa;        var childLabel = parseInt(child.computedAttribute);&#xa;        sum += edgeWeight * (childKnowledge + childLabel)&#xa;    })&#xa;    &#xa;    return { Knowledge : localKnowledge + sum }&#xa;}" />
       <ag_attributes Knowledge="37" />
       <ag_computed_attributes />
       <mxCell style="shape=attackgraphs.node;" parent="1" vertex="1">
@@ -483,7 +483,7 @@ test.describe('sensitivity analysis', () => {
       </mxCell>
     </object>
     <object label="Consequence" Knowledge="4" tooltip="Knowledge:37  " id="NRvaHTUMJR8sC2KhB2nQ-1">
-      <ag_aggregation_custom_function ag_aggregation_custom_function="function(collection) { &#xa;    var localKnowledge = parseInt(collection.localAttributes[&#39;Knowledge&#39;]);&#xa;    var sum = 0;&#xa;    collection.childAttributes.forEach(function(child) {&#xa;        var edgeWeight = child.edgeWeight;&#xa;        var childKnowledge = parseInt(child.attributes[&#39;Knowledge&#39;]);&#xa;        var childLabel = parseInt(child.computedAttribute[&#39;value&#39;]);&#xa;        sum += edgeWeight * (childKnowledge + childLabel)&#xa;    })&#xa;    &#xa;    return { Knowledge : localKnowledge + sum }&#xa;}" />
+      <ag_aggregation_custom_function ag_aggregation_custom_function="function(collection) { &#xa;    var localKnowledge = parseInt(collection.localAttributes[&#39;Knowledge&#39;]);&#xa;    var sum = 0;&#xa;    collection.childAttributes.forEach(function(child) {&#xa;        var edgeWeight = child.edgeWeight;&#xa;        var childKnowledge = parseInt(child.attributes[&#39;Knowledge&#39;]);&#xa;        var childLabel = parseInt(child.computedAttribute);&#xa;        sum += edgeWeight * (childKnowledge + childLabel)&#xa;    })&#xa;    &#xa;    return { Knowledge : localKnowledge + sum }&#xa;}" />
       <ag_attributes Knowledge="37" />
       <ag_computed_attributes />
       <mxCell style="shape=attackgraphs.node;" parent="1" vertex="1">
