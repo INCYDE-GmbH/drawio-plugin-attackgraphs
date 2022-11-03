@@ -10,7 +10,7 @@ The computed attributes function dialog allows to specify a custom computed attr
 
 ## Syntax
 - A computed attributes function receives an object containing relevant values of the cell. This object is of type `CellDataCollection`. It is a collection containing a dictionary of the globally defined attributes and the local cell attributes. Local cell attributes will be overwritten in case of an aggregation function that was executed on the cell.
-- A computed attributes function must return a dictionary (`KeyValuePairs`). (***Computed attributes are only rendered for attackgraph shapes, yet all shapes store them.***)
+- A computed attributes function must return a dictionary (`KeyValuePairs`). Its `value` will be displayed as a batch in the top right corner of the cell. (***Computed attributes are only rendered for attackgraph shapes, yet all shapes store them.***)
 - A computed attributes function must conform to the ES5 syntax as the computed attributes functions are executed in a [sandboxed environment](https://github.com/NeilFraser/JS-Interpreter) with it's own js interpreter.
 
 ### Expected return value
