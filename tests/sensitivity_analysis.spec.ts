@@ -2,22 +2,12 @@ import { expect } from '@playwright/test';
 import { test } from './base';
 
 test.describe('sensitivity analysis', () => {
-  test('enables sensitivity analysis via menu option', async ({ page }) => {
-    await page.click('text=Attack Graphs');
-    await page.click('text="Enable Sensitivity Analysis"');
-
-    await page.click('text=Attack Graphs');
-    // Menu entry contains tick mark
-    expect((await page.locator('text="Enable Sensitivity Analysis"').getAttribute('style')).match(/background-image/).length).toBeGreaterThan(0);
-  });
-
   test('tracks changes to node attributes', async ({ page, drawio }) => {
     await drawio.addActivityNode();
     await drawio.openDataDialogOnActivityNode();
     await drawio.addEntryToDataDialog('Knowledge', '5');
 
-    await page.click('text=Attack Graphs');
-    await page.click('text="Enable Sensitivity Analysis"');
+    await page.locator('#ag_enableSensitivityAnalysis').click();
 
     await drawio.openDataDialogOnActivityNode();
     await page.fill('textarea', '8');
@@ -32,8 +22,7 @@ test.describe('sensitivity analysis', () => {
     await drawio.openDataDialogOnActivityNode();
     await drawio.addEntryToDataDialog('Knowledge', '5');
 
-    await page.click('text=Attack Graphs');
-    await page.click('text="Enable Sensitivity Analysis"');
+    await page.locator('#ag_enableSensitivityAnalysis').click();
 
     await drawio.openDataDialogOnActivityNode();
     await page.fill('textarea', '8');
@@ -71,8 +60,7 @@ test.describe('sensitivity analysis', () => {
 
     await drawio.loadGraph(graph);
 
-    await page.click('text=Attack Graphs');
-    await page.click('text="Enable Sensitivity Analysis"');
+    await page.locator('#ag_enableSensitivityAnalysis').click();
 
     await page.locator('.geDiagramContainer').locator('text=5').dblclick();
     await page.keyboard.press('8');
@@ -112,8 +100,7 @@ test.describe('sensitivity analysis', () => {
     await drawio.loadGraph(graph);
 
     // Enable
-    await page.click('text=Attack Graphs');
-    await page.click('text="Enable Sensitivity Analysis"');
+    await page.locator('#ag_enableSensitivityAnalysis').click();
 
     // Update
     await page.locator('.geDiagramContainer').locator('text=5').dblclick();
@@ -121,9 +108,7 @@ test.describe('sensitivity analysis', () => {
     await drawio.focusCellInDiagramContainer();
 
     // Disable
-    await page.click('text=Attack Graphs');
-    await page.click('text="Enable Sensitivity Analysis"');
-    await drawio.clickDialogButton('Yes');
+    await page.locator('#ag_applyAnalysis').click();
 
     await drawio.expectToFindCellAttribute('8');
     await expect(page.locator('.geDiagramContainer').locator('text=5')).toHaveCount(0, { timeout: 100 });
@@ -159,8 +144,7 @@ test.describe('sensitivity analysis', () => {
     await drawio.loadGraph(graph);
 
     // Enable
-    await page.click('text=Attack Graphs');
-    await page.click('text="Enable Sensitivity Analysis"');
+    await page.locator('#ag_enableSensitivityAnalysis').click();
 
     // Update
     await page.locator('.geDiagramContainer').locator('text=5').dblclick();
@@ -168,9 +152,7 @@ test.describe('sensitivity analysis', () => {
     await drawio.focusCellInDiagramContainer();
 
     // Disable
-    await page.click('text=Attack Graphs');
-    await page.click('text="Enable Sensitivity Analysis"');
-    await drawio.clickDialogButton('No');
+    await page.locator('#ag_cancelAnalysis').click();
 
     await drawio.expectToFindCellAttribute('5');
     await expect(page.locator('.geDiagramContainer').locator('text=8')).toHaveCount(0, { timeout: 100 });
@@ -183,8 +165,7 @@ test.describe('sensitivity analysis', () => {
     await drawio.addEntryToDataDialog('Knowledge', '5');
 
     // Enable
-    await page.click('text=Attack Graphs');
-    await page.click('text="Enable Sensitivity Analysis"');
+    await page.locator('#ag_enableSensitivityAnalysis').click();
 
     // Update
     await drawio.openDataDialogOnActivityNode();
@@ -192,9 +173,7 @@ test.describe('sensitivity analysis', () => {
     await drawio.applyDialog();
 
     // Disable
-    await page.click('text=Attack Graphs');
-    await page.click('text="Enable Sensitivity Analysis"');
-    await drawio.clickDialogButton('Yes');
+    await page.locator('#ag_applyAnalysis').click();
 
     await drawio.expectToFindCellAttribute('8');
     await expect(page.locator('.geDiagramContainer').locator('text=5')).toHaveCount(0, { timeout: 100 });
@@ -207,8 +186,7 @@ test.describe('sensitivity analysis', () => {
     await drawio.addEntryToDataDialog('Knowledge', '5');
 
     // Enable
-    await page.click('text=Attack Graphs');
-    await page.click('text="Enable Sensitivity Analysis"');
+    await page.locator('#ag_enableSensitivityAnalysis').click();
 
     // Update
     await drawio.openDataDialogOnActivityNode();
@@ -216,9 +194,7 @@ test.describe('sensitivity analysis', () => {
     await drawio.applyDialog();
 
     // Disable
-    await page.click('text=Attack Graphs');
-    await page.click('text="Enable Sensitivity Analysis"');
-    await drawio.clickDialogButton('No');
+    await page.locator('#ag_cancelAnalysis').click();
 
     await drawio.expectToFindCellAttribute('5');
     await expect(page.locator('.geDiagramContainer').locator('text=8')).toHaveCount(0, { timeout: 100 });
@@ -230,8 +206,7 @@ test.describe('sensitivity analysis', () => {
     await page.locator('span').locator('text=Custom').locator('xpath=..').click();
     await drawio.applyStringToAceEditor('function() { return { Knowledge: 5 } }');
 
-    await page.click('text=Attack Graphs');
-    await page.click('text="Enable Sensitivity Analysis"');
+    await page.locator('#ag_enableSensitivityAnalysis').click();
 
     await drawio.openAggregationFunctionDialogOnActivityNode();
     await drawio.applyStringToAceEditor('function() { return { Knowledge: 8 } }');
@@ -248,17 +223,14 @@ test.describe('sensitivity analysis', () => {
     await drawio.applyStringToAceEditor('function() { return { Knowledge: 5 } }');
 
     // Enable
-    await page.click('text=Attack Graphs');
-    await page.click('text="Enable Sensitivity Analysis"');
+    await page.locator('#ag_enableSensitivityAnalysis').click();
 
     // Update
     await drawio.openAggregationFunctionDialogOnActivityNode();
     await drawio.applyStringToAceEditor('function() { return { Knowledge: 8 } }');
 
     // Disable
-    await page.click('text=Attack Graphs');
-    await page.click('text="Enable Sensitivity Analysis"');
-    await drawio.clickDialogButton('Yes');
+    await page.locator('#ag_applyAnalysis').click();
 
     // Wait a second...
     await drawio.expectSensitivityAnalysisDisabled();
@@ -275,17 +247,14 @@ test.describe('sensitivity analysis', () => {
     await drawio.applyStringToAceEditor('function() { return { Knowledge: 5 } }');
 
     // Enable
-    await page.click('text=Attack Graphs');
-    await page.click('text="Enable Sensitivity Analysis"');
+    await page.locator('#ag_enableSensitivityAnalysis').click();
 
     // Update
     await drawio.openAggregationFunctionDialogOnActivityNode();
     await drawio.applyStringToAceEditor('function() { return { Knowledge: 8 } }');
 
     // Disable
-    await page.click('text=Attack Graphs');
-    await page.click('text="Enable Sensitivity Analysis"');
-    await drawio.clickDialogButton('No');
+    await page.locator('#ag_cancelAnalysis').click();
 
     // Wait a second...
     await drawio.expectSensitivityAnalysisDisabled();
@@ -302,8 +271,7 @@ test.describe('sensitivity analysis', () => {
     await drawio.applyDialog();
     await drawio.addActivityNode();
 
-    await page.click('text=Attack Graphs');
-    await page.click('text="Enable Sensitivity Analysis"');
+    await page.locator('#ag_enableSensitivityAnalysis').click();
 
     await drawio.openGlobalAggregationFunctionDialog();
     await page.click('text=default >> :nth-match(span, 2)');
@@ -324,8 +292,7 @@ test.describe('sensitivity analysis', () => {
     await drawio.addActivityNode();
 
     // Enable
-    await page.click('text=Attack Graphs');
-    await page.click('text="Enable Sensitivity Analysis"');
+    await page.locator('#ag_enableSensitivityAnalysis').click();
 
     // Update
     await drawio.openGlobalAggregationFunctionDialog();
@@ -334,9 +301,7 @@ test.describe('sensitivity analysis', () => {
     await drawio.applyDialog();
 
     // Disable
-    await page.click('text=Attack Graphs');
-    await page.click('text="Enable Sensitivity Analysis"');
-    await drawio.clickDialogButton('No');
+    await page.locator('#ag_cancelAnalysis').click();
 
     // Wait a second...
     await drawio.expectSensitivityAnalysisDisabled();
@@ -350,8 +315,7 @@ test.describe('sensitivity analysis', () => {
     await drawio.openDataDialogOnActivityNode();
     await drawio.addEntryToDataDialog('Knowledge', '5');
 
-    await page.click('text=Attack Graphs');
-    await page.click('text="Enable Sensitivity Analysis"');
+    await page.locator('#ag_enableSensitivityAnalysis').click();
 
     await drawio.openDataDialogOnActivityNode();
     await page.locator('text="Knowledge:" >> xpath=.. >> a[title=Delete]').click();
@@ -368,8 +332,7 @@ test.describe('sensitivity analysis', () => {
     await drawio.addEntryToDataDialog('Knowledge', '5');
 
     // Enable
-    await page.click('text=Attack Graphs');
-    await page.click('text="Enable Sensitivity Analysis"');
+    await page.locator('#ag_enableSensitivityAnalysis').click();
 
     // Update
     await drawio.openDataDialogOnActivityNode();
@@ -377,9 +340,7 @@ test.describe('sensitivity analysis', () => {
     await drawio.applyDialog();
 
     // Disable
-    await page.click('text=Attack Graphs');
-    await page.click('text="Enable Sensitivity Analysis"');
-    await drawio.clickDialogButton('No');
+    await page.locator('#ag_cancelAnalysis').click();
 
     await drawio.expectToFindCellAttribute('5'); // todo: without strikethrough
   });
@@ -428,9 +389,7 @@ test.describe('sensitivity analysis', () => {
 </mxGraphModel>`;
 
     await drawio.loadGraph(graph);
-
-    await page.click('text=Attack Graphs');
-    await page.click('text="Enable Sensitivity Analysis"');
+    await page.locator('#ag_enableSensitivityAnalysis').click();
 
     // Child Knowledge 1 -> 10
     await drawio.openDataDialogOnActivityNode();
@@ -502,9 +461,7 @@ test.describe('sensitivity analysis', () => {
 </mxGraphModel>`;
 
     await drawio.loadGraph(graph);
-
-    await page.click('text=Attack Graphs');
-    await page.click('text="Enable Sensitivity Analysis"');
+    await page.locator('#ag_enableSensitivityAnalysis').click();
 
     // Child Knowledge 1 -> 10
     await drawio.openDataDialogOnActivityNode();
@@ -528,14 +485,12 @@ test.describe('sensitivity analysis', () => {
     await drawio.applyDialog();
 
     // Disable
-    await page.click('text=Attack Graphs');
-    await page.click('text="Enable Sensitivity Analysis"');
-    await drawio.clickDialogButton('No');
+    await page.locator('#ag_cancelAnalysis').click();
 
     // Wait a second...
     await drawio.expectSensitivityAnalysisDisabled();
 
     await drawio.expectToFindCellAttribute('37');
-    await expect(page.locator('.geDiagramContainer').locator('text=940')).toHaveCount(0, { timeout: 100 });
+    await expect(page.locator('.geDiagramContainer').locator('text=940')).toHaveCount(0, { timeout: 1000 });
   });
 });

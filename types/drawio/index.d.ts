@@ -14,7 +14,6 @@ declare namespace Draw {
     fileNode: FileNode;
     editor: Editor;
     toolbar: Toolbar;
-    toolbarContainer: HTMLElement;
     showDialog(elt, w, h, modal, closable, onClose?, noScroll?, transparent?, onResize?, ignoreBgClick?);
     confirm(msg: string, okFn: () => void, cancelFn?: () => void, okLabel?: string, cancelLabel?: string, closable?: boolean): void;
     hideDialog();

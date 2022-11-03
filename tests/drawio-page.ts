@@ -144,9 +144,7 @@ export class DrawioPage {
   }
 
   async expectSensitivityAnalysisDisabled() {
-    await this.page.click('text=Attack Graphs');
-    expect(((await this.page.locator('text="Enable Sensitivity Analysis"').getAttribute('style')) || '').match(/background-image/)).toBe(null);
-    await this.page.click('text=Attack Graphs');
+    this.page.waitForSelector('#ag_enableSensitivityAnalysis', { state: 'attached' });
   }
 
   async loadGraph(graph: string) {

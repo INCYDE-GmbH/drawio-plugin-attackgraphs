@@ -25,9 +25,6 @@ export class Menubar {
       ui.menus.addMenuItem(menu, 'attackGraphs.openDefaultAttributesDialog');
       ui.menus.addMenuItem(menu, 'attackGraphs.openComputedAttributesDialog');
       ui.menus.addMenuItem(menu, 'attackGraphs.openAggregationFunctionsDialog');
-      ui.menus.addMenuItem(menu, 'attackGraphs.enableSensitivityAnalysis');
-      ui.menus.addMenuItem(menu, 'attackGraphs.applySensitivityAnalysis');
-      ui.menus.addSubmenu('attackGraphs.applySensitivityAnalysis', menu, null);
       ui.menus.addMenuItem(menu, 'attackGraphs.documentation');
       ui.menus.addMenuItem(menu, 'attackGraphs.showVersion');
     });
@@ -81,19 +78,16 @@ export class Menubar {
 
     ui.actions.addAction('attackGraphs.applyAnalysis', () => {
       Menubar.stopSensitivityAnalysis(ui, worker, true);
-      Menubar.updateSensitivityAnalysis(ui);
     });
 
     ui.actions.addAction('attackGraphs.cancelAnalysis', () => {
       Menubar.stopSensitivityAnalysis(ui, worker, false);
-      Menubar.updateSensitivityAnalysis(ui);
     });
 
 
     const sensitivityAnalysisAction = ui.actions.addAction('attackGraphs.enableSensitivityAnalysis', () => {
       void (async () => {
         if (AttributeRenderer.sensitivityAnalysisEnabled()) {
-
           const cancel: [string, () => void][] = [[mxResources.get('attackGraphs.cancel'), () => {
             ui.hideDialog();
           }]];
@@ -115,19 +109,15 @@ export class Menubar {
             return;
           }
         }
-
-        AttributeRenderer.toggleSensitivityAnalysis();
-        await AttributeRenderer.recalculateAllCells(ui, worker);
-        this.updateSensitivityAnalysis(ui);
-        ui.editor.graph.refresh();
+        
+        Menubar.startSensitivityAnalysis(ui, worker);
       })();
     });
     sensitivityAnalysisAction.setToggleAction(true);
     sensitivityAnalysisAction.setSelectedCallback(() => AttributeRenderer.sensitivityAnalysisEnabled());
 
     ui.toolbar.addSeparator();
-    this.updateSensitivityAnalysis(ui);
-    this.updateWorkersStatus(ui);
+    this.updateWorkersStatus(ui); // Updates the sensitivity analysis toolbar
 
     ui.actions.addAction('attackGraphs.documentation', () => {
       window.open('https://incyde-gmbh.github.io/drawio-plugin-attackgraphs/', '_blank')?.focus();
@@ -138,57 +128,95 @@ export class Menubar {
     });
   }
 
-  private static updateSensitivityAnalysis(ui: Draw.UI,) {
+  private static updateSensitivityAnalysis(ui: Draw.UI, showIcons: boolean) {
+    const startBtn = document.getElementById('ag_enableSensitivityAnalysis');
+    const cnclBtn = document.getElementById('ag_cancelAnalysis');
+    const applyBtn = document.getElementById('ag_applyAnalysis');
+
     if (AttributeRenderer.sensitivityAnalysisEnabled()) {
-      const startBtn = ui.toolbar.container.lastElementChild as HTMLElement;
-      if (startBtn !== null && startBtn.title === `${mxResources.get('attackGraphs.startAnalysisTitle')}`) {
+      if (startBtn) {
         ui.toolbar.container.removeChild(startBtn);
       }
-
-      const item1 = ui.toolbar.addItem('', 'attackGraphs.applyAnalysis');
-      item1.innerHTML = ICON_APPLY_ANALYSIS;
-      item1.style.margin = '0px';
-      item1.style.padding = '2px';
-      item1.setAttribute('title', `${mxResources.get('attackGraphs.acceptAnalysisTitle')}`);
-      const item2 = ui.toolbar.addItem('', 'attackGraphs.cancelAnalysis');
-      item2.innerHTML = ICON_ABORT_ANALYSIS;
-      item2.style.margin = '0px';
-      item2.style.padding = '2px';
-      item2.setAttribute('title', `${mxResources.get('attackGraphs.abortAnalysisTitle')}`);
+      if (showIcons) {
+        if (!applyBtn) {
+          const item = ui.toolbar.addItem('', 'attackGraphs.applyAnalysis');
+          item.id = 'ag_applyAnalysis';
+          item.innerHTML = ICON_APPLY_ANALYSIS;
+          item.style.margin = '0px';
+          item.style.padding = '2px';
+          item.setAttribute('title', `${mxResources.get('attackGraphs.acceptAnalysisTitle')}`);
+        }
+        if (!cnclBtn) {
+          const item = ui.toolbar.addItem('', 'attackGraphs.cancelAnalysis');
+          item.id = 'ag_cancelAnalysis';
+          item.innerHTML = ICON_ABORT_ANALYSIS;
+          item.style.margin = '0px';
+          item.style.padding = '2px';
+          item.setAttribute('title', `${mxResources.get('attackGraphs.abortAnalysisTitle')}`);
+        }
+      } else {
+        if (applyBtn) {
+          ui.toolbar.container.removeChild(applyBtn);
+        }
+        if (cnclBtn) {
+          ui.toolbar.container.removeChild(cnclBtn);
+        }
+      }
     } else {
-
-      const item2 = ui.toolbar.container.lastElementChild as HTMLElement;
-      if (item2 !== null && item2.title === `${mxResources.get('attackGraphs.abortAnalysisTitle')}`) {
-        ui.toolbar.container.removeChild(item2);
+      if (applyBtn) {
+        ui.toolbar.container.removeChild(applyBtn);
       }
-
-      const item1 = ui.toolbar.container.lastElementChild as HTMLElement;
-      if (item1 !== null && item1.title === `${mxResources.get('attackGraphs.acceptAnalysisTitle')}`) {
-        ui.toolbar.container.removeChild(item1);
+      if (cnclBtn) {
+        ui.toolbar.container.removeChild(cnclBtn);
       }
-
-      const item = ui.toolbar.addItem('', 'attackGraphs.enableSensitivityAnalysis');
-      item.innerHTML = ICON_START_ANALYSIS;
-      item.style.margin = '0px';
-      item.style.padding = '2px';
-      item.setAttribute('title', `${mxResources.get('attackGraphs.startAnalysisTitle')}`);
+      if (showIcons) {
+        if (!startBtn) {
+          const item = ui.toolbar.addItem('', 'attackGraphs.enableSensitivityAnalysis');
+          item.id = 'ag_enableSensitivityAnalysis';
+          item.innerHTML = ICON_START_ANALYSIS;
+          item.style.margin = '0px';
+          item.style.padding = '2px';
+          item.setAttribute('title', `${mxResources.get('attackGraphs.startAnalysisTitle')}`);
+        }
+      } else {
+        if (startBtn) {
+          ui.toolbar.container.removeChild(startBtn);
+        }
+      }
     }
   }
 
-  private static updateWorkersStatus(ui: Draw.UI) {
-    const elem = document.getElementById('attackGraphs.workerStatus');
-    if (this.unfinishedWorkers > 0 && !elem) {
-      const item = document.createElement('progress');
-      item.id = 'attackGraphs.workerStatus';
-      item.title = 'Attack Graphs: Workers in progress'
-      item.style.marginLeft = '20px';
-      item.style.width = '75px';
-      item.style.height = '30px';
-
-      ui.toolbarContainer.appendChild(item);
-    } else if (elem) {
-      ui.toolbarContainer.removeChild(elem);
+  private static updateWorkersStatus(ui: Draw.UI) {    
+    const elem = document.getElementById('ag_workerStatus');
+    if (this.unfinishedWorkers > 0) {
+      if (!elem) {
+        const item = document.createElement('progress');
+        item.id = 'ag_workerStatus';
+        item.title = `${mxResources.get('attackGraphs.workerStatus')}`;
+        item.style.marginLeft = '10px';
+        item.style.width = '75px';
+        item.style.height = '30px';
+        ui.toolbar.container.appendChild(item);
+      }
+      this.updateSensitivityAnalysis(ui, false);
+    } else {
+      if (elem) {
+        ui.toolbar.container.removeChild(elem);
+      }
+      this.updateSensitivityAnalysis(ui, true);
     }
+  }
+
+  private static startSensitivityAnalysis(ui: Draw.UI, worker: AsyncWorker): void {
+    void (async () => {
+      AttributeRenderer.toggleSensitivityAnalysis();
+
+      this.updateSensitivityAnalysis(ui, false);
+      await AttributeRenderer.recalculateAllCells(ui, worker);
+      this.updateSensitivityAnalysis(ui, true);
+
+      ui.editor.graph.refresh();
+    })();
   }
 
   private static stopSensitivityAnalysis(ui: Draw.UI, worker: AsyncWorker, doApply: boolean) {
@@ -197,7 +225,11 @@ export class Menubar {
         SensitivityAnalysisCache.apply(ui.editor.graph.model);
       }
       AttributeRenderer.toggleSensitivityAnalysis();
+
+      this.updateSensitivityAnalysis(ui, false);
       await AttributeRenderer.recalculateAllCells(ui, worker);
+      this.updateSensitivityAnalysis(ui, true);
+
       ui.editor.graph.refresh();
     })();
   }
