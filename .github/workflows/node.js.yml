@@ -23,6 +23,8 @@ jobs:
       run: npx playwright install --with-deps
     - name: Create Docker image for Playwright tests
       run: npm run docker
+    - name: Start draw.io webserver
+      run: npm run start
     - name: Run Playwright tests
       run: npm run test
     - uses: actions/upload-artifact@v2
