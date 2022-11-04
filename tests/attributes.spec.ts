@@ -122,7 +122,7 @@ test.describe('attributes and default attributes', () => {
     await page.locator('table.properties').locator('tr').locator('td').locator('span').click();
     const icon = page.locator('tbody').locator('tr').last().locator('td').last();
     const path = await icon.locator('path').getAttribute('d');
-    icon.click();
+    await icon.click();
     await drawio.applyDialog();
     expect(path).toEqual(
       await page.locator('table.properties').locator('tr').locator('td[name="icon_picker"]').locator('path').getAttribute('d')
