@@ -1,7 +1,7 @@
 # Linking Attack Graphs
 
 For a better comprehensibility of an attack graph and to ease modeling such graphs, this plugin allows to split an attack graph over several pages.
-To do so, a new node -- a so called **link node** (white circle) -- was introduced.
+To do so, a new node -- a so called **link node** (white circle) -- is introduced.
 
 Linking two attack graphs together is done by linking two link nodes together.
 Each link represents an invisible edge flowing from a **source** to a **destination** link node.
