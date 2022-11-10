@@ -1,4 +1,5 @@
 declare const __COMMIT_HASH__: string;
+declare const __VERSION__: string;
 
 export class Resources {
   static register(lang: string): void {
@@ -49,7 +50,7 @@ attackGraphs.custom=Custom
 attackGraphs.mustAssignMaxValue=You have to set the max value for
 attackGraphs.setDefaultAttributes=Set default attributes for selection
 attackGraphs.setAttackGraphShape=Set selection as attackgraph nodes
-attackGraphs.showVersion=Version ${__COMMIT_HASH__}
+attackGraphs.showVersion=Version ${__VERSION__} (${__COMMIT_HASH__})
 attackGraphs.enableSensitivityAnalysis=Enable Sensitivity Analysis
 attackGraphs.applySensitivityAnalysis=Apply Sensitivity Analysis
 attackGraphs.value=Value
@@ -100,7 +101,7 @@ attackGraphs.custom=Benutzerdefiniert
 attackGraphs.mustAssignMaxValue=Sie müssen einen Maximalwert setzen für
 attackGraphs.setDefaultAttributes=Setze Standardattribute für Auswahl
 attackGraphs.setAttackGraphShape=Markiere Auswahl als Attack Graph Knoten
-attackGraphs.showVersion=Version ${__COMMIT_HASH__}
+attackGraphs.showVersion=Version ${__VERSION__} (${__COMMIT_HASH__})
 attackGraphs.enableSensitivityAnalysis=Sensitivitätsanalyse aktivieren
 attackGraphs.applySensitivityAnalysis=Sensitivitätsanalyse anwenden
 attackGraphs.value=Wert
