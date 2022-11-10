@@ -1,4 +1,4 @@
-<mxfile host="localhost" modified="2022-10-19T12:07:04.126Z" agent="5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/106.0.0.0 Safari/537.36" etag="NHb8Nmi5YlM04e661epL" compressed="false" version="20.2.8" type="device" pages="2">
+<mxfile host="localhost" modified="2022-11-10T08:50:04.922Z" agent="5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/107.0.0.0 Safari/537.36" etag="a4QCINLJQPAQggFbDMws" compressed="false" version="20.2.8" type="device" pages="2">
   <diagram id="zNMCXYOBYckHPa1j1fsk" name="Attack Graph">
     <mxGraphModel dx="1422" dy="754" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
       <root>
@@ -152,15 +152,15 @@
         <object label="" id="W0IZxeYySRvhsjoWCsxC-2">
           <ag_attributes />
           <ag_computed_attributes />
-          <mxCell style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeWidth=2;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" parent="1" source="746xIQmpy0CREaIetn3r-17" target="7we7BJ0NXWNFxULRkk0K-1" edge="1">
+          <mxCell style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeWidth=2;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" parent="1" source="746xIQmpy0CREaIetn3r-17" target="V9cLS1f8X6xZFGSrGoCA-1" edge="1">
             <mxGeometry relative="1" as="geometry">
-              <mxPoint x="215" y="760" as="targetPoint" />
+              <mxPoint x="220" y="760" as="targetPoint" />
             </mxGeometry>
           </mxCell>
         </object>
         <object id="746xIQmpy0CREaIetn3r-17">
           <ag_aggregation_function_reference ag_aggregation_function_reference="gf0d4f199018" />
-          <ag_attributes _likelihood="1" _marking="746xIQmpy0CREaIetn3r-11;746xIQmpy0CREaIetn3r-14;7we7BJ0NXWNFxULRkk0K-1" _impact="1" />
+          <ag_attributes _likelihood="1" _marking="746xIQmpy0CREaIetn3r-11;746xIQmpy0CREaIetn3r-14;V9cLS1f8X6xZFGSrGoCA-1" _impact="1" />
           <ag_computed_attributes />
           <mxCell style="shape=or;whiteSpace=wrap;html=1;rotation=-90;" parent="1" vertex="1">
             <mxGeometry x="502.5" y="630" width="45" height="60" as="geometry" />
@@ -237,12 +237,12 @@
             <mxGeometry x="520" y="242.5" width="150" height="75" as="geometry" />
           </mxCell>
         </object>
-        <object label="A" link="data:page/id,Bnu7JkcaxHlNL-usvOu0" id="7we7BJ0NXWNFxULRkk0K-1">
+        <object label="A" link="data:page/id,Bnu7JkcaxHlNL-usvOu0" id="V9cLS1f8X6xZFGSrGoCA-1">
           <ag_aggregation_function_reference ag_aggregation_function_reference="6b1d22791hih8" />
           <ag_attributes _likelihood="5" _marking="pSxKkfyopYwOmsda1UK_-2" />
           <ag_computed_attributes />
-          <mxCell style="shape=attackgraphs.link;aspect=fixed;" parent="1" vertex="1">
-            <mxGeometry x="200" y="760" width="40" height="40" as="geometry" />
+          <mxCell style="shape=attackgraphs.link;aspect=fixed;fontColor=none;noLabel=1;" parent="1" vertex="1">
+            <mxGeometry x="190" y="760" width="60" height="60" as="geometry" />
           </mxCell>
         </object>
       </root>
@@ -251,18 +251,30 @@
   <diagram id="Bnu7JkcaxHlNL-usvOu0" name="Sub-Step 23">
     <mxGraphModel dx="1422" dy="754" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
       <root>
-        <mxCell id="0" />
-        <mxCell id="1" parent="0" />
+        <object id="0">
+          <ag_attributes />
+          <ag_computed_attributes />
+          <mxCell />
+        </object>
+        <object id="1">
+          <ag_attributes />
+          <ag_computed_attributes />
+          <mxCell parent="0" />
+        </object>
         <object label="" id="pSxKkfyopYwOmsda1UK_-1">
           <ag_attributes />
           <ag_computed_attributes />
-          <mxCell style="rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeWidth=2;;exitX=0.313;exitY=1.027;exitDx=0;exitDy=0;exitPerimeter=0;" parent="1" source="pSxKkfyopYwOmsda1UK_-2" target="pSxKkfyopYwOmsda1UK_-3" edge="1">
+          <mxCell style="rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeWidth=2;exitX=0.313;exitY=1.027;exitDx=0;exitDy=0;exitPerimeter=0;" parent="1" source="pSxKkfyopYwOmsda1UK_-2" target="pSxKkfyopYwOmsda1UK_-3" edge="1">
             <mxGeometry relative="1" as="geometry" />
           </mxCell>
         </object>
-        <mxCell id="XsD5oM42NdKaJhCEsVqn-3" style="rounded=0;orthogonalLoop=1;jettySize=auto;html=1;;strokeWidth=2;exitX=0.75;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" parent="1" source="pSxKkfyopYwOmsda1UK_-2" target="XsD5oM42NdKaJhCEsVqn-2" edge="1">
-          <mxGeometry relative="1" as="geometry" />
-        </mxCell>
+        <object id="XsD5oM42NdKaJhCEsVqn-3">
+          <ag_attributes />
+          <ag_computed_attributes />
+          <mxCell style="rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeWidth=2;exitX=0.75;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" parent="1" source="pSxKkfyopYwOmsda1UK_-2" target="XsD5oM42NdKaJhCEsVqn-2" edge="1">
+            <mxGeometry relative="1" as="geometry" />
+          </mxCell>
+        </object>
         <object label="Sub-Step 23" id="pSxKkfyopYwOmsda1UK_-2">
           <ag_aggregation_function_reference ag_aggregation_function_reference="6b1d22791hih8" />
           <ag_computed_attributes_function_reference ag_computed_attributes_function_reference="dbg60ff69g9a" />
@@ -281,17 +293,6 @@
             <mxGeometry x="214" y="680" width="150" height="75" as="geometry" />
           </mxCell>
         </object>
-        <mxCell id="pSxKkfyopYwOmsda1UK_-5" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;;strokeWidth=2;" parent="1" source="pSxKkfyopYwOmsda1UK_-4" target="pSxKkfyopYwOmsda1UK_-2" edge="1">
-          <mxGeometry relative="1" as="geometry" />
-        </mxCell>
-        <object label="A" id="pSxKkfyopYwOmsda1UK_-4">
-          <ag_aggregation_function_reference ag_aggregation_function_reference="6b1d22791hih8" />
-          <ag_attributes _likelihood="5" _marking="pSxKkfyopYwOmsda1UK_-2" />
-          <ag_computed_attributes />
-          <mxCell style="shape=attackgraphs.link;aspect=fixed;" parent="1" vertex="1">
-            <mxGeometry x="398" y="415" width="40" height="40" as="geometry" />
-          </mxCell>
-        </object>
         <object label="Attack Step" Exposure="2" Vulnerability="1" id="XsD5oM42NdKaJhCEsVqn-2">
           <ag_aggregation_function_reference ag_aggregation_function_reference="jig393i6f4dh9" />
           <ag_computed_attributes_function_reference ag_computed_attributes_function_reference="dbg60ff69g9a" />
@@ -299,6 +300,21 @@
           <ag_computed_attributes default="2" />
           <mxCell style="shape=attackgraphs.node;fillColor=#D7E3BF" parent="1" vertex="1">
             <mxGeometry x="464" y="680" width="150" height="75" as="geometry" />
+          </mxCell>
+        </object>
+        <object label="" id="WLUCeCoMFsJd8fa2UCAg-2">
+          <ag_attributes />
+          <ag_computed_attributes />
+          <mxCell style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeWidth=2;" parent="1" source="WLUCeCoMFsJd8fa2UCAg-1" target="pSxKkfyopYwOmsda1UK_-2" edge="1">
+            <mxGeometry relative="1" as="geometry" />
+          </mxCell>
+        </object>
+        <object label="A" id="WLUCeCoMFsJd8fa2UCAg-1">
+          <ag_aggregation_function_reference ag_aggregation_function_reference="6b1d22791hih8" />
+          <ag_attributes _likelihood="5" _marking="pSxKkfyopYwOmsda1UK_-2" />
+          <ag_computed_attributes />
+          <mxCell style="shape=attackgraphs.link;aspect=fixed;fontColor=none;noLabel=1;" parent="1" vertex="1">
+            <mxGeometry x="388" y="400" width="60" height="60" as="geometry" />
           </mxCell>
         </object>
       </root>
