@@ -17,9 +17,9 @@ Link nodes behave as ordinary nodes within an attack graph with the only restric
 ![Attack graph with a destination link node](images/DstLinkNode.png)
 
 ## Creating links
-To create a link, first add link nodes to the pages that shall be linked.
+To create a link, first add link nodes to the two pages that shall be linked.
 Connect outgoing edges from nodes to the respective **source** link nodes and inbound edges from the **destination** link nodes to the respective attack graph nodes (cf. example above).
-Afterward, give the two link nodes that shall be connected the same label (text inside nodes).
+Then, give the two link nodes that shall be connected the same label (text inside nodes).
 Finally, right-click on the **source** link node, click `Edit Link...`, and select the page in the drop-down menu (2nd bullet point) that contains the **destination** link node.
 
 To test whether the linking was successful, hover both over the **source** and **destination** link nodes.
