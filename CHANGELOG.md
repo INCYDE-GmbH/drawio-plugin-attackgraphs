@@ -1,6 +1,6 @@
 # Changelog
 
-## 1.1.0 - 2022-11-20
+## [1.1.0](https://github.com/INCYDE-GmbH/drawio-plugin-attackgraphs/compare/v1.0.0...v1.1.0) - 2022-11-10
 
 Start of this changelog, which is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/). This version contains several backwards compatible new features and bug fixes. The versioning of the attack graphs plugin will adhere to [Semantic Versioning](https://semver.org/) beginning with this version.
 
@@ -33,7 +33,7 @@ Start of this changelog, which is based on [Keep a Changelog](https://keepachang
 - `Enable Sensitivity Analysis` menu item from the `Attack Graphs` menu
 - Default attributes are not added to white attack step nodes when adding them from the Sidebar.
 
-## 1.0.0 - 2022-02-07
+## [1.0.0](https://github.com/INCYDE-GmbH/drawio-plugin-attackgraphs/releases/tag/v1.0.0) - 2022-02-07
 
 First release of the Attack Graphs Plugin for draw.io.
 
