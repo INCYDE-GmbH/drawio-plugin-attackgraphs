@@ -1,4 +1,5 @@
 const path = require('path');
+const version = require('./package.json').version;
 const webpack = require('webpack');
 const CopyPlugin = require('copy-webpack-plugin');
 
@@ -12,7 +13,8 @@ module.exports = {
   devtool: 'source-map',
   plugins: [
     new webpack.DefinePlugin({
-      __COMMIT_HASH__: JSON.stringify(commitHash)
+      __COMMIT_HASH__: JSON.stringify(commitHash),
+      __VERSION__: JSON.stringify(version)
     }),
     new CopyPlugin({
       patterns: [
