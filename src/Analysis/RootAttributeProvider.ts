@@ -5,13 +5,63 @@ import { AttributeProvider } from './AttributeProvider';
 export const USABLE_NAME_OF_COMPUTED_ATTRIBUTE_OF_CELL = 'label';
 
 export class RootAttributeProvider extends AttributeProvider {
-  constructor(graph: Draw.EditorGraph) {
-    super(graph.getModel().root);
-  }
+  private static page: Draw.DiagramPage | null = null;
 
+  constructor() {
+    const ui = AttributeProvider.getUI();
+
+    if (!RootAttributeProvider.page && ui.pages && ui.pages.length > 0) {
+      // Root attributes are stored on the first page
+      RootAttributeProvider.page = ui.pages[0];
+    }
+
+    if (RootAttributeProvider.page && RootAttributeProvider.page.root) {
+      super(RootAttributeProvider.page.root);
+    } else {
+      // On first load, ui.pages might not be available
+      // --> use the current graph (first page) instead
+      super(ui.editor.graph.getModel().root);
+    }
+  }
 
   static getRenderableAttributes(attributes: GlobalAttribute[]): GlobalAttribute[] {
     return attributes.filter(attribute => attribute.iconName !== '' && AttributeProvider.shouldRenderAttribute(attribute.name))
+  }
+
+  /*
+   * Assumption: new page for root attributes already at position 0
+   */
+  static moveRootAttributes(): void {
+    if (RootAttributeProvider.page) {
+      const rootAttributes = new RootAttributeProvider();
+      const globalAttributes = rootAttributes.getGlobalAttributes();
+      const aggregationFunctions = rootAttributes.getGlobalAggregationFunctions();
+      const computedAttributes = rootAttributes.getGlobalComputedAttributesFunctions();
+      if (globalAttributes) {
+        rootAttributes.setGlobalAttributes([]);
+      }
+      rootAttributes.setGlobalAggregatonFunctions([]);
+      rootAttributes.setGlobalComputedAttributesFunctions([]);
+
+      RootAttributeProvider.page.needsUpdate = true;
+      RootAttributeProvider.page = RootAttributeProvider.getUI().pages[0];
+      RootAttributeProvider.page.needsUpdate = true;
+
+      if (globalAttributes) {
+        rootAttributes.setGlobalAttributes(globalAttributes);
+      }
+      rootAttributes.setGlobalAggregatonFunctions(aggregationFunctions);
+      rootAttributes.setGlobalComputedAttributesFunctions(computedAttributes);
+    }
+  }
+
+  /*
+   * In case the first page moved, change the current root cell to the new page's root cell
+   */
+  private check() {
+    if (RootAttributeProvider.page && RootAttributeProvider.page.root && RootAttributeProvider.page.root !== this.cell) {      
+      this.cell = RootAttributeProvider.page.root;
+    }
   }
 
   getTooltip(): string {
@@ -59,10 +109,12 @@ export class RootAttributeProvider extends AttributeProvider {
   }
 
   getGlobalAttributesFromCell(): GlobalAttribute[] | null {
+    this.check();
     return this.getGroupedValuesFromCell<GlobalAttribute>(STORAGE_NAME_GLOBAL_ATTRIBUTES);
   }
 
   getGlobalAttributeFromCell(name: string): GlobalAttribute | null {
+    this.check();
     return this.getValueFromGroupInCell<GlobalAttribute>(STORAGE_NAME_GLOBAL_ATTRIBUTES, name);
   }
 
@@ -71,10 +123,18 @@ export class RootAttributeProvider extends AttributeProvider {
   }
 
   storeGlobalAttributesInCell(attributes: GlobalAttribute[]): void {
+    this.check();
+
+    if (RootAttributeProvider.page) {
+      RootAttributeProvider.page.needsUpdate = true;
+    }
     this.storeGroupedValuesInCell<GlobalAttribute>(STORAGE_NAME_GLOBAL_ATTRIBUTES, STORAGE_NAME_GLOBAL_ATTRIBUTE, attributes);
   }
 
   static storeGlobalAttributesInElement(element: Element, attributes: GlobalAttribute[]): void {
+    if (RootAttributeProvider.page) {
+      RootAttributeProvider.page.needsUpdate = true;
+    }
     AttributeProvider.storeGroupedValuesInElement<GlobalAttribute>(STORAGE_NAME_GLOBAL_ATTRIBUTES, STORAGE_NAME_GLOBAL_ATTRIBUTE, attributes, element);
   }
 
@@ -83,14 +143,22 @@ export class RootAttributeProvider extends AttributeProvider {
   }
 
   setGlobalComputedAttributesFunctions(aggregationFunctions: AttackgraphFunction[]): void {
+    if (RootAttributeProvider.page) {
+      RootAttributeProvider.page.needsUpdate = true;
+    }
     this.setGlobalFunctions(aggregationFunctions, STORAGE_NAME_GLOBAL_COMPUTED_FUNCTION, STORAGE_NAME_GLOBAL_COMPUTED_FUNCTIONS);
   }
 
   setGlobalAggregatonFunctions(aggregationFunctions: AttackgraphFunction[]): void {
+    if (RootAttributeProvider.page) {
+      RootAttributeProvider.page.needsUpdate = true;
+    }
     this.setGlobalFunctions(aggregationFunctions, STORAGE_NAME_GLOBAL_AGGREGATION_FUNCTION, STORAGE_NAME_GLOBAL_AGGREGATION_FUNCTIONS);
   }
 
   setGlobalFunctions(functions: AttackgraphFunction[], global_function_name: string, global_function_group_name: string): void {
+    this.check();
+
     const xml = mxUtils.createXmlDocument();
     const value = this.parseCellValue();
 
@@ -136,6 +204,8 @@ export class RootAttributeProvider extends AttributeProvider {
   }
 
   getGlobalFunctions(global_function_name: string, global_function_group_name: string): AttackgraphFunction[] {
+    this.check();
+
     const value = this.parseCellValue();
 
     const rootChildren = Array.from(value.children || []);

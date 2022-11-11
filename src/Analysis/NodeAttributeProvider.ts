@@ -1,7 +1,10 @@
 import { STORAGE_NAME_AGGREGATION_FUNCTION_REFERENCE, STORAGE_NAME_CUSTOM_AGGREGATION_FUNCTION, STORAGE_NAME_COMPUTED_ATTRIBUTES_FUNCTION_REFERENCE, STORAGE_NAME_CUSTOM_COMPUTED_ATTRIBUTES, STORAGE_NAME_ATTRIBUTES, STORAGE_NAME_COMPUTED_ATTRIBUTES, STORAGE_NAME_CUSTOM_FUNCTION } from '../CellUtils';
 import { AttackgraphFunctionFormat, CellFunctionFormat, KeyValuePairs, AttackgraphFunction, CellFunctionType, NodeValues } from '../Model';
 import { AttributeProvider } from './AttributeProvider';
+import { CellStyles } from './CellStyles';
 import { RootAttributeProvider } from './RootAttributeProvider';
+
+const PREFIX_LINK_PAGE_ID = 'data:page/id,';
 
 export class NodeAttributeProvider extends AttributeProvider {
   resolveComputedAttributesFunction(graph: RootAttributeProvider): AttackgraphFunction | null {
@@ -102,6 +105,100 @@ export class NodeAttributeProvider extends AttributeProvider {
     }
   }
 
+  getReferencedPage(): Draw.DiagramPage | null {
+    const values = this.getCellValues();
+
+    if ('link' in values) {
+      const link = values['link'];
+      if (link !== undefined && link.includes(PREFIX_LINK_PAGE_ID)) {
+        const idx = link.substring(PREFIX_LINK_PAGE_ID.length);
+        return AttributeProvider.getUI().getPageById(idx);
+      }
+    }
+
+    return null;
+  }
+
+  getReferencedCell(): NodeAttributeProvider | null {
+    if (!(new CellStyles(this.cell)).isLinkNode()) {
+      return null;
+    }
+
+    const page = this.getReferencedPage();
+    const label = this.getCellLabel();
+    if (label && page && page.root && page !== AttributeProvider.getUI().currentPage) {
+      return this.findCellWithLabel(new NodeAttributeProvider(page.root), label);
+    }
+
+    return null;
+  }
+
+  private findCellWithLabel(root: NodeAttributeProvider, label: string): NodeAttributeProvider | null {
+    if (!root.cell.isEdge()) {
+      const cellLabel = root.getCellLabel();
+      if (cellLabel && cellLabel === label) {
+        return root;
+      }
+    }
+
+    const children = root.cell.children;
+    if (children && children.length > 0) {
+      for (const child of children) {
+        const refCell = this.findCellWithLabel(new NodeAttributeProvider(child), label);
+        if (refCell) {
+          return refCell;
+        }
+      }
+    }
+
+    return null;
+  }
+
+  getLinkNodesReferencingThisCell(): NodeAttributeProvider[] {
+    if (!(new CellStyles(this.cell)).isLinkNode()) {
+      return [];
+    }
+
+    let nodes: NodeAttributeProvider[] = [];
+    const ui = AttributeProvider.getUI();
+    const pageId = this.getPageId();
+    const label = this.getCellLabel();
+
+    if (label && ui.pages && ui.pages.length > 0) {
+      for (const page of ui.pages) {
+        if (page.getId() === pageId) {
+          continue;
+        }
+        if (page.root) {
+          const refNodes = this.getLinkNodesReferencing(new NodeAttributeProvider(page.root), pageId);
+          nodes = nodes.concat(refNodes.filter(x => x.getCellLabel() === label))
+        }
+      }
+    }
+
+    return nodes;
+  }
+
+  private getLinkNodesReferencing(root: NodeAttributeProvider, pageId: string): NodeAttributeProvider[] {
+    let nodes: NodeAttributeProvider[] = [];
+
+    if (new CellStyles(root.cell).isLinkNode()) {
+      const refPage = root.getReferencedPage();
+      if (refPage && refPage.getId() === pageId) {
+        nodes.push(root);
+      }
+    }
+
+    const children = root.cell.children;
+    if (children && children.length > 0) {
+      for (const child of children) {
+        nodes = nodes.concat(this.getLinkNodesReferencing(new NodeAttributeProvider(child), pageId));
+      }
+    }
+
+    return nodes;
+  }
+
   getAllValues(): NodeValues {
     return {
       current: { ...this.getCellValues(), ...this.getAggregatedCellValues() } as KeyValuePairs,
@@ -121,10 +218,14 @@ export class NodeAttributeProvider extends AttributeProvider {
   }
 
   getCurrentCellValuesNotLabel(): KeyValuePairs {
-    return Object.fromEntries(Object.entries(this.getAllValues().current).filter(([k,]) => k !== 'label'));
+    return Object.fromEntries(Object.entries(this.getAllValues().current).filter(([k,]) => k !== 'label' && k !== 'placeholder' && k !== 'link' && k !== 'name'));
   }
 
   getTooltip(): string {
     return super.keyValuePairsToString(this.getCurrentCellValuesNotLabel());
+  }
+
+  isLeave(): boolean {
+    return (this.cell.edges?.filter(x => x.source === this.cell && x.target) || []).length === 0;
   }
 }

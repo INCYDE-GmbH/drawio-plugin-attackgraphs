@@ -1,6 +1,8 @@
 import { CellStyles } from './Analysis/CellStyles';
+import { AttributeProvider } from './Analysis/AttributeProvider';
 import { AsyncWorker } from './AsyncUtils';
 import { AttackGraphIconLegendShape } from './AttackGraphIconLegendShape';
+import { AttackGraphLinkShape } from './AttackGraphLinkShape';
 import { AttackGraphNodeShape } from './AttackGraphNodeShape';
 import { ConversionHelpTool } from './ConversionHelpTool';
 import { IconLegend } from './IconLegend';
@@ -10,6 +12,7 @@ import { AttributeRenderer } from './AttributeRenderer';
 import { Sidebar } from './Sidebar';
 import { installVertexHandler } from './VertexHandler';
 import { KeyValuePairs } from './Model';
+import { RootAttributeProvider } from './Analysis/RootAttributeProvider';
 
 Draw.loadPlugin(ui => {
 
@@ -53,7 +56,10 @@ Draw.loadPlugin(ui => {
   // Register additional text resources (for the current language)
   Resources.register(mxSettings.settings.language || 'en');
 
+  AttributeProvider.register(ui);
+
   AttackGraphNodeShape.register();
+  AttackGraphLinkShape.register();
   AttackGraphIconLegendShape.register();
   IconLegend.register(ui.editor.graph);
 
@@ -174,11 +180,33 @@ Draw.loadPlugin(ui => {
     }
   });
 
+  let loadingComplete = false;
+  let pageCycling = false;
+  let firstPageIdx: number | null = null;
   ui.editor.graph.addListener(mxEvent.ROOT, () => {
-    if (ui.editor.graph.model.root.value) {
-      sidebar.updatePalette();
-      void AttributeRenderer.recalculateAllCells(ui, worker);
-      CellStyles.updateAllEdgeStyles(ui.editor.graph.model);
+    if (ui.editor.graph.model.root.value || pageCycling) {
+      // Cycle through all pages so each diagram's root is stored in ui.pages
+      if (!loadingComplete) {
+        pageCycling = true;
+
+        const idx = ui.getPageIndex(ui.currentPage);
+        const nextIdx = (idx + 1) % ui.pages.length;
+        const page = ui.pages[nextIdx];
+
+        firstPageIdx = (firstPageIdx === null) ? idx : firstPageIdx;
+        loadingComplete = (nextIdx === firstPageIdx);
+
+        ui.selectPage(page, true, page.viewState || null);
+      } else {
+        pageCycling = false;
+
+        sidebar.updatePalette();
+        void AttributeRenderer.recalculateAllCells(ui, worker);
+        CellStyles.updateAllEdgeStyles(ui.editor.graph.model);
+      }
+    } else {
+      loadingComplete = false;
+      firstPageIdx = null;
     }
   });
 
@@ -222,6 +250,18 @@ Draw.loadPlugin(ui => {
       return AttributeRenderer.nodeAttributes(cell).getTooltip();
     }
     return graphGetTooltipForCell.apply(this, [cell]);
+  }
+
+  // React if the first page (with the root attributes) was moved
+  // eslint-disable-next-line @typescript-eslint/unbound-method
+  const movePageExecute = MovePage.prototype.execute;
+  MovePage.prototype.execute = function() {    
+    const firstPageMoved = (this.oldIndex === 0 || this.newIndex === 0);
+    movePageExecute.apply(this, []); // Changes this.oldIndex and this.newIndex
+
+    if (firstPageMoved) {
+      RootAttributeProvider.moveRootAttributes();
+    }
   }
 
   installVertexHandler(ui, worker);

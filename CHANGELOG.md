@@ -1,5 +1,20 @@
 # Changelog
 
+## [Unreleased](https://github.com/INCYDE-GmbH/drawio-plugin-attackgraphs/compare/v1.1.0...HEAD)
+
+### Added
+
+- Splitting attack graphs over several pages and linking them together with link nodes
+- Documentation on how to link attack graphs on different pages together
+
+### Fixes and Improvements
+
+- Exporting attack graphs to PNG does not cut off attack graph nodes anymore 
+- Changed computed attributes batch from a bubble to a square
+- Made default attributes, aggregation functions, and computed attributes functions available on every page of a diagram
+- Sensitivity analysis can now operate on diagrams with several pages
+- Update templates for new feature (splitting attack graphs over several diagram pages)
+
 ## [1.1.0](https://github.com/INCYDE-GmbH/drawio-plugin-attackgraphs/compare/v1.0.0...v1.1.0) - 2022-11-10
 
 Start of this changelog, which is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/). This version contains several backwards compatible new features and bug fixes. The versioning of the attack graphs plugin will adhere to [Semantic Versioning](https://semver.org/) beginning with this version.

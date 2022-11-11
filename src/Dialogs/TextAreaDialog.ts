@@ -370,7 +370,7 @@ export abstract class EditCellFunctionDialog extends TextAreaDialog {
 export class EditAggregationFunctionDialog extends EditCellFunctionDialog {
 
   getFunctionItems(): AttackgraphFunction[] {
-    return AttributeRenderer.rootAttributes(this.ui.editor.graph).getGlobalAggregationFunctions();
+    return AttributeRenderer.rootAttributes().getGlobalAggregationFunctions();
   }
 
   setCellFunction(): void {
@@ -378,7 +378,7 @@ export class EditAggregationFunctionDialog extends EditCellFunctionDialog {
   }
 
   getCellFunction(): AttackgraphFunction | null {
-    return this.getCellReferenceOrCustomFunction(() => this.cell.resolveAggregationFunctionIDOfCell(), () => this.cell.resolveAggregationFunction(AttributeRenderer.rootAttributes(this.ui.editor.graph)))
+    return this.getCellReferenceOrCustomFunction(() => this.cell.resolveAggregationFunctionIDOfCell(), () => this.cell.resolveAggregationFunction(AttributeRenderer.rootAttributes()))
   }
 }
 
@@ -386,7 +386,7 @@ export class EditAggregationFunctionDialog extends EditCellFunctionDialog {
 export class EditComputedAttributesFunctionDialog extends EditCellFunctionDialog {
 
   getFunctionItems(): AttackgraphFunction[] {
-    return AttributeRenderer.rootAttributes(this.ui.editor.graph).getGlobalComputedAttributesFunctions();
+    return AttributeRenderer.rootAttributes().getGlobalComputedAttributesFunctions();
   }
 
   setCellFunction(): void {
@@ -394,7 +394,7 @@ export class EditComputedAttributesFunctionDialog extends EditCellFunctionDialog
   }
 
   getCellFunction(): AttackgraphFunction | null {
-    return this.getCellReferenceOrCustomFunction(() => this.cell.resolveComputedAttributesFunctionIDOfCell(), () => this.cell.resolveComputedAttributesFunction(AttributeRenderer.rootAttributes(this.ui.editor.graph)))
+    return this.getCellReferenceOrCustomFunction(() => this.cell.resolveComputedAttributesFunctionIDOfCell(), () => this.cell.resolveComputedAttributesFunction(AttributeRenderer.rootAttributes()))
   }
 
 }

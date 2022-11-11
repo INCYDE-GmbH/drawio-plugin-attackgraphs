@@ -63,6 +63,7 @@ attackGraphs.acceptAnalysisTitle=Accept analysis
 attackGraphs.abortAnalysisTitle=Abort analysis
 attackGraphs.acceptAnalysisDialog=Do you want to apply the current analysis to the graph?
 attackGraphs.documentation=Documentation...
+attackGraphs.pageReferenceTooltip=Referenced from
 attackGraphs.workerStatus=Background workers in progress to update the attack graph! Please wait...
 `);
   }
@@ -114,6 +115,7 @@ attackGraphs.acceptAnalysisTitle=Analyse anwenden
 attackGraphs.abortAnalysisTitle=Analyse verwerfen
 attackGraphs.acceptAnalysisDialog=Wollen sie die aktuelle Sensitivitätsanalyse auf den Graphen anwenden?
 attackGraphs.documentation=Dokumentation...
+attackGraphs.pageReferenceTooltip=Referenziert von
 attackGraphs.workerStatus=Hintergrundprozesse in Arbeit, um den Attack-Graph zu aktualisieren! Bitte warten Sie...
   `);
   }

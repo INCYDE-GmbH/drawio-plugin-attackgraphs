@@ -12,7 +12,7 @@ export class ConversionHelpTool {
     static setDefaultAttributes(): void {
         ConversionHelpTool.setAttackGraphShape();
         const cells = this.graph.getSelectionCells();
-        const attributes = AttributeRenderer.rootAttributes(ConversionHelpTool.graph).getGlobalAttributes();
+        const attributes = AttributeRenderer.rootAttributes().getGlobalAttributes();
         for (const cell of cells) {
             AttributeRenderer.nodeAttributes(cell).setCellAttributes(attributes || []);
         }

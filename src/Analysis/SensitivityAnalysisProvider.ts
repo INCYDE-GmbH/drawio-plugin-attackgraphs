@@ -6,88 +6,157 @@ import { RootAttributeProvider } from './RootAttributeProvider';
 
 type CellAttributeData = { [attribute: string]: KeyValuePairs };
 type CellGroupedData = { [group: string]: [KeyValuePairs[], string] };
-type CellData = { [id: string]: { attributes: CellAttributeData, cellProperties: KeyValuePairs, groups: CellGroupedData } };
+type CellData = { attributes: CellAttributeData, cellProperties: KeyValuePairs | null, groups: CellGroupedData };
+type CellCache = { [id: string]: CellData};
+type PageData = { [id: string]: CellCache };
+
+type Cells = { [k: string]: import('mxgraph').mxCell };
 
 export class SensitivityAnalysisCache {
-  static cellValues: CellData = {};
+  static pageData: PageData = {};
+  pageId: string;
   cellId: string;
   realAttributes: AttributeProvider;
 
   public static reset(): void {
-    this.cellValues = {};
+    this.pageData = {};
   }
 
-  static apply(graphModel: import('mxgraph').mxGraphModel): void {
-    const cells = graphModel.cells as { [k: string]: import('mxgraph').mxCell }
-    for (const [cellId, cellData] of Object.entries(this.cellValues)) {
-      const cell = cells[cellId];
-      if (cell !== null) {
-        const provider = new NodeAttributeProvider(cell);
-        for (const [attribute, value] of Object.entries(cellData.attributes)) {
-          provider.storeValuesInCell(attribute, value);
+  static apply(ui: Draw.UI): void {
+    for (const [pageId, pageCells] of Object.entries(this.pageData)) {
+      let cells: Cells = {};
+      if (pageId === ui.currentPage.getId()) {
+        cells = ui.editor.graph.getModel().cells as Cells;
+      } else {
+        const page = ui.getPageById(pageId);
+        if (page && page.root) {
+          cells = this.flattenCells(page.root);
         }
-        for (const [groupName, [attributes, singleName]] of Object.entries(cellData.groups)) {
-          provider.storeGroupedValuesInCell(groupName, singleName, attributes);
-        }
-        const values = provider.getCellValues();
-        if (cellData.cellProperties !== undefined) {
-          for (const [attribute, value] of Object.entries(cellData.cellProperties)) {
-            values[attribute] = value;
+      }
+
+      for (const [cellId, cellData] of Object.entries(pageCells)) {
+        const cell = cells[cellId];
+        if (cell !== null) {
+          const provider = new NodeAttributeProvider(cell);
+          for (const [attribute, value] of Object.entries(cellData.attributes)) {
+            provider.storeValuesInCell(attribute, value);
           }
-          provider.setCellAttributes(Object.entries(values).map(([key, value]) => {
-            return { name: key, value: value }
-          }));
+          for (const [groupName, [attributes, singleName]] of Object.entries(cellData.groups)) {
+            provider.storeGroupedValuesInCell(groupName, singleName, attributes);
+          }
+          const values = provider.getCellValues();
+          if (cellData.cellProperties) {
+            for (const [attribute, value] of Object.entries(cellData.cellProperties)) {
+              values[attribute] = value;
+            }
+            provider.setCellAttributes(Object.entries(values).map(([key, value]) => {
+              return { name: key, value: value }
+            }));
+          }
         }
       }
     }
   }
 
-  constructor(cellId: string, realAttributes: AttributeProvider) {
+  private static flattenCells(cell: import('mxgraph').mxCell): Cells {
+    let cells: Cells = {};
+    if (cell.children) {
+      for (const child of cell.children) {
+        cells = { ...cells, ...this.flattenCells(child) };
+      }
+    }
+    cells[cell.id] = cell;
+    return cells;
+  }
+
+  constructor(pageId: string, cellId: string, realAttributes: AttributeProvider) {
+    this.pageId = pageId;
     this.cellId = cellId;
     this.realAttributes = realAttributes;
   }
 
   getValuesStoredInCell(name: string): KeyValuePairs | null {
-    const attributes = SensitivityAnalysisCache.cellValues[this.cellId];
-    if (attributes && attributes.attributes[name] !== undefined) {
-      return attributes.attributes[name];
+    const cells = SensitivityAnalysisCache.pageData[this.pageId];
+    if (cells) {
+      const attributes = cells[this.cellId];
+      if (attributes && attributes.attributes[name] !== undefined) {
+        return attributes.attributes[name];
+      }
     }
 
     return this.realAttributes.getValuesStoredInCell(name);
   }
 
   storeValuesInCell(name: string, keyValuePairs: KeyValuePairs): void {
-    const attributes = SensitivityAnalysisCache.cellValues[this.cellId] || { attributes: {}, groups: {} };
+    let attributes = { attributes: {}, cellProperties: null, groups: {} } as CellData;
+    const cells = SensitivityAnalysisCache.pageData[this.pageId];
+    if (cells) {
+      attributes = cells[this.cellId] || attributes;
+    }
     attributes.attributes[name] = keyValuePairs;
-    SensitivityAnalysisCache.cellValues[this.cellId] = attributes;
+    if (cells) {
+      SensitivityAnalysisCache.pageData[this.pageId][this.cellId] = attributes;
+    } else {
+      const cache: CellCache = {};
+      cache[this.cellId] = attributes;
+      SensitivityAnalysisCache.pageData[this.pageId] = cache;
+    }
+
   }
 
   getGroupedValuesFromCell<T extends KeyValuePairs>(groupName: string): T[] | null {
-    const attributes = SensitivityAnalysisCache.cellValues[this.cellId];
-    if (attributes && attributes.groups[groupName] !== undefined) {
-      return attributes.groups[groupName][0] as unknown as T[];
+    const cells = SensitivityAnalysisCache.pageData[this.pageId];
+    if (cells) {
+      const attributes = cells[this.cellId];
+      if (attributes && attributes.groups[groupName] !== undefined) {
+        return attributes.groups[groupName][0] as unknown as T[];
+      }
     }
 
     return this.realAttributes.getGroupedValuesFromCell(groupName);
   }
 
   storeGroupedValuesInCell<T extends KeyValuePairs>(groupName: string, _singleName: string, keyValuePairs: T[]): void {
-    const attributes = SensitivityAnalysisCache.cellValues[this.cellId] || { attributes: {}, groups: {} };
+    let attributes = { attributes: {}, cellProperties: null, groups: {} } as CellData;
+    const cells = SensitivityAnalysisCache.pageData[this.pageId];
+    if (cells) {
+      attributes = cells[this.cellId] || attributes;
+    }
     attributes.groups[groupName] = [keyValuePairs, _singleName];
-    SensitivityAnalysisCache.cellValues[this.cellId] = attributes;
+    if (cells) {
+      SensitivityAnalysisCache.pageData[this.pageId][this.cellId] = attributes;
+    } else {
+      const cache: CellCache = {};
+      cache[this.cellId] = attributes;
+      SensitivityAnalysisCache.pageData[this.pageId] = cache;
+    }
   }
 
   storeCellProperties(cellProperties: KeyValuePairs) {
-    SensitivityAnalysisCache.cellValues[this.cellId].cellProperties = cellProperties;
+    let attributes = { attributes: {}, cellProperties: null, groups: {} } as CellData;
+    const cells = SensitivityAnalysisCache.pageData[this.pageId];
+    if (cells) {
+      attributes = cells[this.cellId] || attributes;
+    }
+    attributes.cellProperties = cellProperties;
+    if (cells) {
+      SensitivityAnalysisCache.pageData[this.pageId][this.cellId] = attributes;
+    } else {
+      const cache: CellCache = {};
+      cache[this.cellId] = attributes;
+      SensitivityAnalysisCache.pageData[this.pageId] = cache;
+    }
   }
 
   getCellProperties(): KeyValuePairs | null {
-    const cellValues = SensitivityAnalysisCache.cellValues[this.cellId];
-    if (cellValues !== undefined) {
-      return cellValues.cellProperties;
-    } else {
-      return null;
+    const cells = SensitivityAnalysisCache.pageData[this.pageId];
+    if (cells) {
+      const cellValues = cells[this.cellId];
+      if (cellValues !== undefined) {
+        return cellValues.cellProperties;
+      }
     }
+    return null;
   }
 }
 
@@ -97,7 +166,7 @@ export class SensitivityAnalysisNodeAttributeProvider extends NodeAttributeProvi
   constructor(cell: import('mxgraph').mxCell) {
     super(cell);
     this.realAttributes = new NodeAttributeProvider(cell);
-    this.cache = new SensitivityAnalysisCache(this.getCellId(), this.realAttributes)
+    this.cache = new SensitivityAnalysisCache(this.getPageId(), this.getCellId(), this.realAttributes)
   }
 
   getValuesStoredInCell(name: string): KeyValuePairs | null {
@@ -134,10 +203,10 @@ export class SensitivityAnalysisNodeAttributeProvider extends NodeAttributeProvi
 export class SensitivityAnalysisRootAttributeProvider extends RootAttributeProvider {
   realAttributes: RootAttributeProvider;
   cache: SensitivityAnalysisCache;
-  constructor(graph: Draw.EditorGraph) {
-    super(graph);
-    this.realAttributes = new RootAttributeProvider(graph);
-    this.cache = new SensitivityAnalysisCache(this.getCellId(), this.realAttributes)
+  constructor() {
+    super();
+    this.realAttributes = new RootAttributeProvider();
+    this.cache = new SensitivityAnalysisCache(this.getPageId(), this.getCellId(), this.realAttributes)
   }
 
   setGlobalFunctions(aggregationFunctions: AttackgraphFunction[], global_function_name: string, global_function_group_name: string): void {
@@ -148,11 +217,14 @@ export class SensitivityAnalysisRootAttributeProvider extends RootAttributeProvi
   }
 
   getGlobalFunctions(global_function_name: string, global_function_group_name: string): AttackgraphFunction[] {
-    const attributes = SensitivityAnalysisCache.cellValues[this.getCellId()];
-    if (attributes && attributes.groups[global_function_group_name] !== undefined) {
-      return attributes.groups[global_function_group_name][0].map(f => {
-        return { name: f.name, id: f.id, fn: f.fn, default: f.default.split(';') };
-      }) as unknown as AttackgraphFunction[];
+    const cells = SensitivityAnalysisCache.pageData[this.getPageId()];
+    if (cells) {
+      const attributes = cells[this.getCellId()];
+      if (attributes && attributes.groups[global_function_group_name] !== undefined) {
+        return attributes.groups[global_function_group_name][0].map(f => {
+          return { name: f.name, id: f.id, fn: f.fn, default: f.default.split(';') };
+        }) as unknown as AttackgraphFunction[];
+      }
     }
 
     return this.realAttributes.getGlobalFunctions(global_function_name, global_function_group_name);
@@ -181,7 +253,7 @@ export class SensitivityAnalysisEdgeAttributeProvider extends EdgeAttributeProvi
   constructor(cell: import('mxgraph').mxCell) {
     super(cell);
     this.realAttributes = new EdgeAttributeProvider(cell);
-    this.cache = new SensitivityAnalysisCache(this.getCellId(), this.realAttributes)
+    this.cache = new SensitivityAnalysisCache(this.getPageId(), this.getCellId(), this.realAttributes)
   }
 
   getCellLabel(): string | null {

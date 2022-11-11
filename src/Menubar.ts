@@ -103,7 +103,7 @@ export class Menubar {
           ).show();
           if (result !== undefined) {
             if (result) {
-              SensitivityAnalysisCache.apply(ui.editor.graph.model);
+              SensitivityAnalysisCache.apply(ui);
             }
           } else {
             return;
@@ -222,7 +222,7 @@ export class Menubar {
   private static stopSensitivityAnalysis(ui: Draw.UI, worker: AsyncWorker, doApply: boolean) {
     void (async () => {
       if (doApply) {
-        SensitivityAnalysisCache.apply(ui.editor.graph.model);
+        SensitivityAnalysisCache.apply(ui);
       }
       AttributeRenderer.toggleSensitivityAnalysis();
 
