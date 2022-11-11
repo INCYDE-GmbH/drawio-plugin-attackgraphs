@@ -30,6 +30,7 @@ https://incyde-gmbh.github.io/drawio-plugin-attackgraphs/app/templates/basic/att
 - [Default Attributes](default_attributes.md)
 - [Aggregation Functions](aggregation_functions.md)
 - [Computed Attributes](computed_attributes_functions.md)
+- [Linking Attack Graphs](link_graphs.md)
 - [Function Templates](templates.md)
 
 ### Acknowledgements
