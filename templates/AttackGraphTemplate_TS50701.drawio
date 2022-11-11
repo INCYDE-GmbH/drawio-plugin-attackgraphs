@@ -237,7 +237,7 @@
             <mxGeometry x="520" y="242.5" width="150" height="75" as="geometry" />
           </mxCell>
         </object>
-        <object label="A" link="data:page/id,Bnu7JkcaxHlNL-usvOu0" id="V9cLS1f8X6xZFGSrGoCA-1">
+        <object label="B" link="data:page/id,Bnu7JkcaxHlNL-usvOu0" id="V9cLS1f8X6xZFGSrGoCA-1">
           <ag_aggregation_function_reference ag_aggregation_function_reference="6b1d22791hih8" />
           <ag_attributes _likelihood="5" _marking="pSxKkfyopYwOmsda1UK_-2" />
           <ag_computed_attributes />
@@ -309,7 +309,7 @@
             <mxGeometry relative="1" as="geometry" />
           </mxCell>
         </object>
-        <object label="A" id="WLUCeCoMFsJd8fa2UCAg-1">
+        <object label="B" id="WLUCeCoMFsJd8fa2UCAg-1">
           <ag_aggregation_function_reference ag_aggregation_function_reference="6b1d22791hih8" />
           <ag_attributes _likelihood="5" _marking="pSxKkfyopYwOmsda1UK_-2" />
           <ag_computed_attributes />
