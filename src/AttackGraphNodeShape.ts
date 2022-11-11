@@ -120,30 +120,30 @@ export class AttackGraphNodeShape extends mxRectangleShape {
 
       this.drawAttributeShapes(c, x, y, w, h, allValues);
 
-      const label = cell.getComputedAttributesForCell();
-      if (label !== null) {
-        for (const [, value] of Object.entries(label)) {
-          this.drawLabelShape(value.toString(), c, x, y, w, h);
-          break;  // Only draw the 'first' computed attribute
-        }
+      const computedAttributes = cell.getComputedAttributesForCell();
+      if (computedAttributes && 'value' in computedAttributes) {
+        // Force the following to be strings
+        const value = `${computedAttributes['value']}`;
+        const fillColor = `${computedAttributes['fillColor'] || '#f00'}`;
+        const fontColor = `${computedAttributes['fontColor'] || '#fff'}`;
+        this.drawLabelShape(value, c, w, fillColor, fontColor);
       }
     }
   }
 
-  private drawLabelShape(label: string, c: import('mxgraph').mxAbstractCanvas2D, x: number, y: number, w: number, h: number) {
-    void h;
+  private drawLabelShape(label: string, c: import('mxgraph').mxAbstractCanvas2D, w: number, fillColor: string, fontColor: string) {
     if (this.state) {
       const opacity = mxUtils.getValue(this.state.style, 'opacity', '100') as number;
       const squareDiameter = 20;
-      c.setFillColor('#ff0000');
+      c.setFillColor(fillColor);
       c.setStrokeColor('#000000');
       c.rect(w - squareDiameter, 0, squareDiameter, squareDiameter);
       c.fillAndStroke();
 
       c.setAlpha(opacity / 100);
       c.setFontStyle(mxConstants.DEFAULT_FONTSTYLE.toString());
-      c.setFontColor('#fff');
-      c.setFontSize(14);
+      c.setFontColor(fontColor);
+      c.setFontSize(13);
       c.text(
         w - squareDiameter * 0.5,
         squareDiameter * 0.5,

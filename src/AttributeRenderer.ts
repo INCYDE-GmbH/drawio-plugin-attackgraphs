@@ -6,6 +6,7 @@ import { AsyncWorker } from './AsyncUtils';
 import { AttackGraphSettings } from './AttackGraphSettings';
 import { GraphUtils } from './GraphUtils';
 import { AttackgraphFunction, CellDataCollection, ChildCellData, ChildCellDataCollection, GlobalAttribute, GlobalAttributeDict, KeyValuePairs } from './Model';
+import { Menubar } from './Menubar';
 import { CellStyles } from './Analysis/CellStyles';
 
 export class AttributeRenderer {
@@ -50,7 +51,9 @@ export class AttributeRenderer {
   static async refreshCellValuesUpwards(cell: import('mxgraph').mxCell, ui: Draw.UI, worker: AsyncWorker): Promise<void> {
     if (AttackGraphSettings.isAttackGraph(ui.editor.graph)) {
       if (GraphUtils.isTree(cell)) {
+        Menubar.increaseUnfinishedWorkers(ui);
         await this.updateCellValuesUpwards(this.nodeAttributes(cell), AttributeRenderer.rootAttributes(), worker, ui);
+        Menubar.decreaseUnfinishedWorkers(ui);
       } else {
         mxUtils.alert('Cannot recalculate the graph as it contains loops!');
       }
@@ -96,8 +99,8 @@ export class AttributeRenderer {
     const labelFunction = cell.resolveComputedAttributesFunction(root);
 
     const cellAttributes = cell.getCellValues();
-    const label = await this.recalculateCellLabel({ globalAttributes: globalDefaultAttributesDict, cellAttributes: { ...cellAttributes, ...aggregatedValues } }, labelFunction, worker);
-    cell.setComputedAttributesForCell(label, labelFunction?.name || null);
+    const computedAttributes = await this.recalculateCellLabel({ globalAttributes: globalDefaultAttributesDict, cellAttributes: { ...cellAttributes, ...aggregatedValues } }, labelFunction, worker);
+    cell.setComputedAttributesForCell(computedAttributes);
 
     await Promise.all(incomingEdges.map(x => this.updateCellValuesUpwards(this.nodeAttributes(x.source), root, worker, ui)));
   }
@@ -123,6 +126,7 @@ export class AttributeRenderer {
   }
 
   static async recalculateAllCells(ui: Draw.UI, worker: AsyncWorker): Promise<void> {
+    // TODO: Improve to avoid recalculating nodes already calculated
     await Promise.all(Object.entries(ui.editor.graph.getModel().cells as { [id: string]: import('mxgraph').mxCell }).map(([, cell]) =>
       this.refreshCellValuesUpwards(cell, ui, worker)
     ));
@@ -135,29 +139,20 @@ export class AttributeRenderer {
       const target = this.nodeAttributes(x.target);
       const cellValues = target.getCellValues();
       const aggregatedValues = target.getAggregatedCellValues();
-      const computedAttribute = Object.values(target.getComputedAttributesForCell() || {})[0];
+      const computedAttribute = (target.getComputedAttributesForCell() || {})['value'] || '';
       return { edgeWeight, attributes: { ...cellValues, ...aggregatedValues }, computedAttribute: computedAttribute, id: target.getCellId() };
     }) || [];
   }
 
-  static async recalculateCellLabel(cellAttributes: CellDataCollection, labelFunction: AttackgraphFunction | null, worker: AsyncWorker): Promise<string | null> {
-
-    if (labelFunction === null) {
-      return null;
-    }
-
-    try {
-      return this.runLabelFunctionWorker(labelFunction, cellAttributes, worker);
-    } catch (e) {
-      return null;
-    }
+  static async recalculateCellLabel(cellAttributes: CellDataCollection, labelFunction: AttackgraphFunction | null, worker: AsyncWorker): Promise<KeyValuePairs> {
+    return (labelFunction) ? this.runLabelFunctionWorker(labelFunction, cellAttributes, worker) : {};
   }
 
-  private static async runLabelFunctionWorker(labelFunction: AttackgraphFunction, attributes: CellDataCollection, worker: AsyncWorker): Promise<string> {
+  private static async runLabelFunctionWorker(labelFunction: AttackgraphFunction, attributes: CellDataCollection, worker: AsyncWorker): Promise<KeyValuePairs> {
     try {
-      return await worker.runWorkerFunction<CellDataCollection, string>(labelFunction.fn, attributes);
-    } catch (e) {
-      return '!';
+      return await worker.runWorkerFunction<CellDataCollection, KeyValuePairs>(labelFunction.fn, attributes);
+    } catch (e) {      
+      return {};
     }
   }
 }

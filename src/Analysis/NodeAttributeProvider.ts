@@ -75,11 +75,11 @@ export class NodeAttributeProvider extends AttributeProvider {
     this.storeValuesInCell(STORAGE_NAME_ATTRIBUTES, values);
   }
 
-  setComputedAttributesForCell(label: string | null, computedAttributeName: string | null): void {
-    if (label !== null && computedAttributeName !== null) {
-      this.storeValuesInCell(STORAGE_NAME_COMPUTED_ATTRIBUTES, { [computedAttributeName]: label });
+  setComputedAttributesForCell(computedAttributes: KeyValuePairs): void {
+    if (typeof computedAttributes !== 'object') { // Old computed attributes format
+      this.storeValuesInCell(STORAGE_NAME_COMPUTED_ATTRIBUTES, { 'value': computedAttributes });
     } else {
-      this.storeValuesInCell(STORAGE_NAME_COMPUTED_ATTRIBUTES, {});
+      this.storeValuesInCell(STORAGE_NAME_COMPUTED_ATTRIBUTES, computedAttributes);
     }
   }
 
