@@ -1,5 +1,6 @@
 import { RootAttributeProvider } from './Analysis/RootAttributeProvider';
 import { AttackGraphIconLegendShape } from './AttackGraphIconLegendShape';
+import { AttackGraphLinkShape } from './AttackGraphLinkShape';
 import { AttackGraphNodeShape } from './AttackGraphNodeShape';
 import { AttributeRenderer } from './AttributeRenderer';
 import { STORAGE_NAME_AGGREGATION_FUNCTION_REFERENCE, STORAGE_NAME_COMPUTED_ATTRIBUTES_FUNCTION_REFERENCE } from './CellUtils';
@@ -22,7 +23,7 @@ export class Sidebar {
     let height = 75;
 
     if (this.ui !== null && this.ui.editor.graph !== null) {
-      const count = RootAttributeProvider.getRenderableAttributes(new RootAttributeProvider(this.ui.editor.graph).getGlobalAttributes() || []).length;
+      const count = RootAttributeProvider.getRenderableAttributes(AttributeRenderer.rootAttributes().getGlobalAttributes() || []).length;
       AttackGraphIconLegendShape.updateHeight(count);
       height = AttackGraphIconLegendShape.getHeight();
     }
@@ -93,15 +94,37 @@ export class Sidebar {
     return sidebar.createVertexTemplate(`shape=${AttackGraphNodeShape.ID};` + style, 150, 75, value);
   }
 
+  private createLinkVertexTemplate(
+    sidebar: Draw.Sidebar,
+    aggregationFunction: AttackgraphFunction | null
+  ): HTMLAnchorElement {
+    const doc = mxUtils.createXmlDocument();
+    const value = doc.createElement('object');
+    value.setAttribute('label', 'A');
+
+    if (aggregationFunction) {
+      const newElement = doc.createElement(STORAGE_NAME_AGGREGATION_FUNCTION_REFERENCE);
+      newElement.setAttribute(STORAGE_NAME_AGGREGATION_FUNCTION_REFERENCE, aggregationFunction.id);
+      value.appendChild(newElement);
+    }
+
+    return sidebar.createVertexTemplate(`shape=${AttackGraphLinkShape.ID};aspect=fixed;fontColor=none;noLabel=1;`, 60, 60, value);
+  }
+
   private createVertexTemplate(
     sidebar: Draw.Sidebar,
     style: string,
     width: number, height: number,
+    label: string | null,
     aggregationFunction: AttackgraphFunction | null,
     computedAttributeFunction: AttackgraphFunction | null
     ): HTMLAnchorElement {
     const doc = mxUtils.createXmlDocument();
     const value = doc.createElement('object');
+
+    if (label) {
+      value.setAttribute('label', label);
+    }
 
     if (aggregationFunction) {
       const newElement = doc.createElement(STORAGE_NAME_AGGREGATION_FUNCTION_REFERENCE);
@@ -120,7 +143,7 @@ export class Sidebar {
 
   private getGlobalAttributes(): GlobalAttribute[] | null {
     if (this.ui !== null) {
-      return AttributeRenderer.rootAttributes(this.ui.editor.graph).getGlobalAttributes();
+      return AttributeRenderer.rootAttributes().getGlobalAttributes();
     } else {
       return null;
     }
@@ -128,28 +151,28 @@ export class Sidebar {
 
   private getGlobalAggregationFunctions() {
     if (this.ui) {
-      return AttributeRenderer.rootAttributes(this.ui.editor.graph).getGlobalAggregationFunctions();
+      return AttributeRenderer.rootAttributes().getGlobalAggregationFunctions();
     }
     return [];
   }
 
   private getDefaultGlobalAggregationFunctionByVertexType(type: string) {
     if (this.ui) {
-      return AttributeRenderer.rootAttributes(this.ui.editor.graph).getDefaultGlobalAggregationFunctionByVertexType(type);
+      return AttributeRenderer.rootAttributes().getDefaultGlobalAggregationFunctionByVertexType(type);
     }
     return null;
   }
 
   private getComputedAttributeFunctions() {
     if (this.ui) {
-      return AttributeRenderer.rootAttributes(this.ui.editor.graph).getGlobalComputedAttributesFunctions();
+      return AttributeRenderer.rootAttributes().getGlobalComputedAttributesFunctions();
     }
     return [];
   }
 
   private getDefaultGlobalComputedAttributesFunctionByVertexType(type: string) {
     if (this.ui) {
-      return AttributeRenderer.rootAttributes(this.ui.editor.graph).getDefaultGlobalComputedAttributesFunctionByVertexType(type);
+      return AttributeRenderer.rootAttributes().getDefaultGlobalComputedAttributesFunctionByVertexType(type);
     }
     return null;
   }
@@ -214,8 +237,10 @@ export class Sidebar {
         content.appendChild(this.createYellowActivityVertexTemplate(sidebar, this.getDefaultGlobalAggregationFunctionByVertexType('activity_y'), this.getDefaultGlobalComputedAttributesFunctionByVertexType('activity_y')));
         content.appendChild(this.createControlVertexTemplate(sidebar, this.getDefaultGlobalAggregationFunctionByVertexType('measurement'), this.getDefaultGlobalComputedAttributesFunctionByVertexType('measurement')));
 
-        content.appendChild(this.createVertexTemplate(sidebar, 'shape=or;whiteSpace=wrap;html=1;rotation=-90;', 45, 60, this.getDefaultGlobalAggregationFunctionByVertexType('and'), this.getDefaultGlobalComputedAttributesFunctionByVertexType('and')));
-        content.appendChild(this.createVertexTemplate(sidebar, 'shape=xor;whiteSpace=wrap;html=1;rotation=-90;', 45, 60, this.getDefaultGlobalAggregationFunctionByVertexType('or'), this.getDefaultGlobalComputedAttributesFunctionByVertexType('or')));
+        content.appendChild(this.createVertexTemplate(sidebar, 'shape=or;whiteSpace=wrap;html=1;rotation=-90;', 45, 60, 'AND', this.getDefaultGlobalAggregationFunctionByVertexType('and'), this.getDefaultGlobalComputedAttributesFunctionByVertexType('and')));
+        content.appendChild(this.createVertexTemplate(sidebar, 'shape=xor;whiteSpace=wrap;html=1;rotation=-90;', 45, 60, 'OR', this.getDefaultGlobalAggregationFunctionByVertexType('or'), this.getDefaultGlobalComputedAttributesFunctionByVertexType('or')));
+
+        content.appendChild(this.createLinkVertexTemplate(sidebar, this.getDefaultGlobalAggregationFunctionByVertexType('link')));
       });
     }
 

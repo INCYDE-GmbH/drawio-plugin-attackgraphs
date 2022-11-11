@@ -1,8 +1,9 @@
 import { AttackGraphIconLegendShape } from '../AttackGraphIconLegendShape';
+import { AttackGraphLinkShape } from '../AttackGraphLinkShape';
 import { AttackGraphNodeShape } from '../AttackGraphNodeShape';
 import { AttributeRenderer } from '../AttributeRenderer';
 
-type CellStyle = { [key: string]: string };
+type CellStyle = { [key: string]: string | null };
 
 export class CellStyles {
   cell: import('mxgraph').mxCell;
@@ -16,6 +17,10 @@ export class CellStyles {
     if (this.cell.style) {
       const tokens = this.cell.style.split(';');
       for (const token of tokens) {
+        if (token.length === 0) {
+          continue;
+        }
+
         const pos = token.indexOf('=');
 
         if (pos >= 0) {
@@ -23,6 +28,8 @@ export class CellStyles {
           const value = token.substring(pos + 1);
 
           result[key] = value;
+        } else {
+          result[token] = null;
         }
       }
     }
@@ -31,13 +38,23 @@ export class CellStyles {
 
   isAttackgraphCell(): boolean {
     const styles = this.parseStyles();
-    return 'shape' in styles && (styles['shape'] === AttackGraphNodeShape.ID || styles['shape'] === AttackGraphIconLegendShape.ID || styles['shape'] === 'or' || styles['shape'] === 'xor');
+    return 'shape' in styles
+      && (styles['shape'] === AttackGraphNodeShape.ID
+          || styles['shape'] === AttackGraphIconLegendShape.ID
+          || styles['shape'] === AttackGraphLinkShape.ID
+          || styles['shape'] === 'or'
+          || styles['shape'] === 'xor');
+  }
+
+  isLinkNode(): boolean {
+    const styles = this.parseStyles();
+    return 'shape' in styles && styles['shape'] === AttackGraphLinkShape.ID;
   }
 
   private encodeStyles(styles: CellStyle) {
     let style = '';
     for (const [k, v] of Object.entries(styles)) {
-      style += `${k}=${v};`;
+      style += (v) ? `${k}=${v};` :  `${k};` ;
     }
     return style;
   }

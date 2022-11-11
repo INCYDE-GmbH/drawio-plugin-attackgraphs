@@ -9,14 +9,14 @@ export class AggregationFunctionListDialog extends FunctionListDialog {
   setFunctionItems(aggregationFunctions: AttackgraphFunction[]): void {
     const graph = this.ui?.editor.graph;
     if (graph) {
-      AttributeRenderer.rootAttributes(graph).setGlobalAggregatonFunctions(aggregationFunctions);
+      AttributeRenderer.rootAttributes().setGlobalAggregatonFunctions(aggregationFunctions);
     }
   }
 
   getFunctionItems(): AttackgraphFunction[] {
     const graph = this.ui?.editor.graph;
     if (graph) {
-      return AttributeRenderer.rootAttributes(graph).getGlobalAggregationFunctions();
+      return AttributeRenderer.rootAttributes().getGlobalAggregationFunctions();
     } else {
       return [];
     }

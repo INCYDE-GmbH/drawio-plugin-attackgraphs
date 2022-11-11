@@ -9,14 +9,14 @@ export class ComputedAttributesDialog extends FunctionListDialog {
   setFunctionItems(aggregationFunctions: AttackgraphFunction[]): void {
     const graph = this.ui?.editor.graph;
     if (graph) {
-      AttributeRenderer.rootAttributes(graph).setGlobalComputedAttributesFunctions(aggregationFunctions);
+      AttributeRenderer.rootAttributes().setGlobalComputedAttributesFunctions(aggregationFunctions);
     }
   }
 
   getFunctionItems(): AttackgraphFunction[] {
     const graph = this.ui?.editor.graph;
     if (graph !== undefined) {
-      return AttributeRenderer.rootAttributes(graph).getGlobalComputedAttributesFunctions();
+      return AttributeRenderer.rootAttributes().getGlobalComputedAttributesFunctions();
     } else {
       return [];
     }

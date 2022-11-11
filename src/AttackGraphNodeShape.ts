@@ -42,7 +42,7 @@ export class AttackGraphNodeShape extends mxRectangleShape {
     }
 
     const graph = this.state?.view.graph;
-    const globalAttributes = AttributeRenderer.rootAttributes(graph as unknown as Draw.EditorGraph).getGlobalAttributes();
+    const globalAttributes = AttributeRenderer.rootAttributes().getGlobalAttributes();
     let tempAttributes = Object.entries(attributes);
     if (globalAttributes !== null) {
       const renderableAttributes = RootAttributeProvider.getRenderableAttributes(globalAttributes);
@@ -70,7 +70,7 @@ export class AttackGraphNodeShape extends mxRectangleShape {
 
       let icon = `data:image/svg+xml;utf8,${Framework7Icons.Icons.question}`;
       if (graph !== undefined) {
-        const globalAttribute = AttributeRenderer.rootAttributes(graph as unknown as Draw.EditorGraph).getGlobalAttribute(key);
+        const globalAttribute = AttributeRenderer.rootAttributes().getGlobalAttribute(key);
         if (globalAttribute !== null) {
           if (Framework7Icons.Icons[globalAttribute.iconName] !== undefined) {
             icon = `data:image/svg+xml;utf8,${Framework7Icons.Icons[globalAttribute.iconName]}`;
@@ -120,32 +120,35 @@ export class AttackGraphNodeShape extends mxRectangleShape {
 
       this.drawAttributeShapes(c, x, y, w, h, allValues);
 
-      const label = cell.getComputedAttributesForCell();
-      if (label !== null) {
-        for (const [, value] of Object.entries(label)) {
-          this.drawLabelShape(value.toString(), c, x, y, w, h);
-          break;  // Only draw the 'first' computed attribute
-        }
+      const computedAttributes = cell.getComputedAttributesForCell();
+      if (computedAttributes && 'value' in computedAttributes) {
+        // Force the following to be strings
+        const value = `${computedAttributes['value']}`;
+        const fillColor = `${computedAttributes['fillColor'] || '#f00'}`;
+        const fontColor = `${computedAttributes['fontColor'] || '#fff'}`;
+        this.drawLabelShape(value, c, w, fillColor, fontColor);
       }
     }
   }
 
-  private drawLabelShape(label: string, c: import('mxgraph').mxAbstractCanvas2D, x: number, y: number, w: number, h: number) {
-    void h;
+  private drawLabelShape(label: string, c: import('mxgraph').mxAbstractCanvas2D, w: number, fillColor: string, fontColor: string) {
     if (this.state) {
       const opacity = mxUtils.getValue(this.state.style, 'opacity', '100') as number;
-      const bubbleDiameter = 20;
-      c.setFillColor('#ff0000');
-      c.setStrokeColor('#ff0000');
-      c.ellipse(w - (bubbleDiameter * 0.5), - (bubbleDiameter * 0.5), bubbleDiameter, bubbleDiameter);
+      const squareDiameter = 20;
+      c.setFillColor(fillColor);
+      c.setStrokeColor('#000000');
+      c.rect(w - squareDiameter, 0, squareDiameter, squareDiameter);
       c.fillAndStroke();
 
       c.setAlpha(opacity / 100);
       c.setFontStyle(mxConstants.DEFAULT_FONTSTYLE.toString());
-      c.setFontColor('#fff');
-      c.setFontSize(14);
-
-      c.text(w, 0, 0, 0, label === 'NaN' ? '!' : label, mxConstants.ALIGN_CENTER, mxConstants.ALIGN_MIDDLE, 0, null, 0, 0, 0);
+      c.setFontColor(fontColor);
+      c.setFontSize(13);
+      c.text(
+        w - squareDiameter * 0.5,
+        squareDiameter * 0.5,
+        0, 0, label === 'NaN' ? '!' : label, mxConstants.ALIGN_CENTER, mxConstants.ALIGN_MIDDLE, 0, null, 0, 0, 0
+      );
     }
   }
 

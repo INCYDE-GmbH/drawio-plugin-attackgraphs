@@ -1,6 +1,6 @@
-<mxfile host="Electron" modified="2022-07-29T14:50:22.270Z" agent="5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) draw.io/19.0.3 Chrome/102.0.5005.63 Electron/19.0.3 Safari/537.36" etag="WY6WU_yDAfmDmkcymqXp" compressed="false" version="19.0.3" type="device">
-  <diagram id="zNMCXYOBYckHPa1j1fsk" name="Seite-1">
-    <mxGraphModel dx="1422" dy="857" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
+<mxfile host="localhost" modified="2022-11-11T09:15:57.413Z" agent="5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/107.0.0.0 Safari/537.36" etag="sl55bcK0vzhqt4LVG98P" compressed="false" version="20.2.8" type="device" pages="2">
+  <diagram id="zNMCXYOBYckHPa1j1fsk" name="Attack Graph">
+    <mxGraphModel dx="1422" dy="754" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
       <root>
         <object tooltip="" id="0">
           <ag_global_attributes>
@@ -11,14 +11,14 @@
           <ag_attributes />
           <ag_computed_attributes />
           <ag_aggregation_functions>
-            <ag_aggregation_function name="default" id="6b1d22791hih8" default="activity_w" fn="function (collection) { &#xa;    var result = null; &#xa;    if (collection.childAttributes.length == 1) { &#xa;        result = collection.childAttributes[0].attributes; &#xa;    } else { &#xa;        var candidates = []; &#xa;        var worstValue = 0; &#xa;        collection.childAttributes.forEach(function(child) { &#xa;            var value = parseInt(child.computedAttribute); &#xa;            if (value &gt; worstValue) { &#xa;                worstValue = value; &#xa;                candidates = []; &#xa;                candidates.push(child); &#xa;            } else if (value == worstValue) { &#xa;                candidates.push(child); &#xa;            } &#xa;        }); &#xa;        var tiebreaker = function(candidates, name, max) { &#xa;            var min_value = max; &#xa;            candidates.forEach(function(node) { &#xa;                min_value = Math.min(min_value, node.attributes[name]); &#xa;            }); &#xa;            result = []; &#xa;            candidates.forEach(function(node) { &#xa;                if (node.attributes[name] == min_value) { &#xa;                    result.push(node); &#xa;                } &#xa;            }); &#xa;            return result; &#xa;        }; &#xa;        if (candidates.length &gt; 1) { &#xa;            candidates = tiebreaker(candidates, &quot;Resources&quot;, collection.globalAttributes[&quot;Resources&quot;].max); &#xa;            if (candidates.length &gt; 1) { &#xa;                candidates = tiebreaker(candidates, &quot;Knowledge&quot;, collection.globalAttributes[&quot;Knowledge&quot;].max); &#xa;            } &#xa;        } &#xa;        result = candidates[0].attributes; &#xa;    } &#xa;    return result; &#xa;}" />
+            <ag_aggregation_function name="default" id="6b1d22791hih8" default="activity_w;link" fn="function (collection) { &#xa;    var result = null; &#xa;    if (collection.childAttributes.length == 1) { &#xa;        result = collection.childAttributes[0].attributes; &#xa;    } else { &#xa;        var candidates = []; &#xa;        var worstValue = 0; &#xa;        collection.childAttributes.forEach(function(child) { &#xa;            var value = parseInt(child.computedAttribute); &#xa;            if (value &gt; worstValue) { &#xa;                worstValue = value; &#xa;                candidates = []; &#xa;                candidates.push(child); &#xa;            } else if (value == worstValue) { &#xa;                candidates.push(child); &#xa;            } &#xa;        }); &#xa;        var tiebreaker = function(candidates, name, max) { &#xa;            var min_value = max; &#xa;            candidates.forEach(function(node) { &#xa;                min_value = Math.min(min_value, node.attributes[name]); &#xa;            }); &#xa;            result = []; &#xa;            candidates.forEach(function(node) { &#xa;                if (node.attributes[name] == min_value) { &#xa;                    result.push(node); &#xa;                } &#xa;            }); &#xa;            return result; &#xa;        }; &#xa;        if (candidates.length &gt; 1) { &#xa;            candidates = tiebreaker(candidates, &quot;Resources&quot;, collection.globalAttributes[&quot;Resources&quot;].max); &#xa;            if (candidates.length &gt; 1) { &#xa;                candidates = tiebreaker(candidates, &quot;Knowledge&quot;, collection.globalAttributes[&quot;Knowledge&quot;].max); &#xa;            } &#xa;        } &#xa;        result = candidates[0].attributes; &#xa;    } &#xa;    return result; &#xa;}" />
             <ag_aggregation_function name="AND" id="gf0d4f199018" default="and" fn="function (collection) { &#xa;    var result = {}; &#xa;    collection.childAttributes.forEach(function(child) { &#xa;    for (var attribute in child.attributes) { &#xa;            if (attribute in result) { &#xa;                result[attribute] += parseInt(child.attributes[attribute]); &#xa;            } else { &#xa;                result[attribute] = parseInt(child.attributes[attribute]); &#xa;            } &#xa;        } &#xa;    }); &#xa;    for (var attribute in result) { &#xa;        if (attribute in collection.globalAttributes) { &#xa;            result[attribute] = Math.min(collection.globalAttributes[attribute].max, result[attribute]); &#xa;        } &#xa;    } &#xa;    return result; &#xa;}" />
             <ag_aggregation_function name="Security Control" id="73f575i0ghij5" default="activity_g;activity_y" fn="function (collection) { &#xa;    var result = {}; &#xa;    for (var attribute in collection.localAttributes) { &#xa;        result[attribute] = parseInt(collection.localAttributes[attribute]); &#xa;    } &#xa;    collection.childAttributes.forEach(function(child) { &#xa;        for (var attribute in child.attributes) { &#xa;            if (attribute in collection.globalAttributes) { &#xa;                if (attribute in result) { &#xa;                    result[attribute] += parseInt(child.attributes[attribute]); &#xa;                } &#xa;            } &#xa;        } &#xa;    }); &#xa;    for (var attribute in result) { &#xa;        if (attribute in collection.globalAttributes) { &#xa;            result[attribute] = Math.min(collection.globalAttributes[attribute].max, result[attribute]); &#xa;        } &#xa;    } &#xa;    return result; &#xa;}" />
             <ag_aggregation_function name="Risk" id="egf49jfgj408" default="consequence" fn="function (collection) {  &#xa;    var minRisk = &quot;L&quot;; &#xa;    var matrix = [ &#xa;        [&quot;L&quot;, &quot;L&quot;, &quot;L&quot;, &quot;L&quot;, &quot;L&quot;], &#xa;        [&quot;L&quot;, &quot;L&quot;, &quot;M&quot;, &quot;M&quot;, &quot;M&quot;], &#xa;        [&quot;L&quot;, &quot;M&quot;, &quot;M&quot;, &quot;S&quot;, &quot;S&quot;], &#xa;        [&quot;L&quot;, &quot;M&quot;, &quot;S&quot;, &quot;V&quot;, &quot;V&quot;], &#xa;        [&quot;L&quot;, &quot;M&quot;, &quot;S&quot;, &quot;V&quot;, &quot;V&quot;], &#xa;    ] &#xa; &#xa;    var compareRisk = function(risk1, risk2) { &#xa;        var values = [&quot;L&quot;, &quot;M&quot;, &quot;S&quot;, &quot;V&quot;]; &#xa;        var index_risk1 = values.indexOf(risk1); &#xa;        var index_risk2 = values.indexOf(risk2); &#xa; &#xa;        if (index_risk1 == -1 || index_risk2 == -1) { &#xa;            return null; &#xa;        } &#xa;        return index_risk1 - index_risk2; &#xa; &#xa;    } &#xa;     &#xa;    collection.childAttributes.forEach(function(child) {  &#xa;        var impact = 1;  &#xa;        if (child.edgeWeight !== null) {  &#xa;            impact = parseInt(child.edgeWeight);  &#xa;        }  &#xa;        risk = matrix[parseInt(child.computedAttribute) - 1][impact - 1]; &#xa;        if (compareRisk(risk, minRisk) &gt; 0) { &#xa;            minRisk = risk; &#xa;        } &#xa;    });  &#xa;  &#xa;    return {&#39;_risk&#39;: minRisk};  &#xa;}" />
           </ag_aggregation_functions>
           <ag_computed_attributes_functions>
-            <ag_computed_attributes_function name="default" id="dbg60ff69g9a" default="activity_w;activity_g;activity_y" fn="function (collection) { &#xa; var matrix = [ &#xa;        [5, 5, 4, 3, 2], &#xa;        [5, 4, 4, 3, 2], &#xa;        [5, 4, 4, 3, 2], &#xa;        [4, 3, 3, 2, 1], &#xa;        [3, 2, 2, 1, 1], &#xa;    ]; &#xa; &#xa;    var knowledgeIndex = parseInt(collection.cellAttributes[&quot;Knowledge&quot;]) - 1; &#xa;    var resourcesIndex = parseInt(collection.cellAttributes[&quot;Resources&quot;]) - 1; &#xa; &#xa;    return Math.min(5, &#xa;        Math.max(collection.globalAttributes[&quot;Location&quot;].max, &#xa;            Math.max( matrix[knowledgeIndex][resourcesIndex] - parseInt(collection.cellAttributes[&quot;Location&quot;])) &#xa;        )); &#xa;}" />
-            <ag_computed_attributes_function name="Risk" id="6c831697g9i0a" default="consequence" fn="function(collection){ &#xa;    return collection.cellAttributes[&quot;_risk&quot;]; &#xa;}" />
+            <ag_computed_attributes_function name="default" id="dbg60ff69g9a" default="activity_w;activity_g;activity_y" fn="function (collection) { &#xa;    var colorMatrix = {&#xa;        5: {&quot;fillColor&quot;: &quot;#cc0000&quot;, &quot;fontColor&quot;: &quot;#ffffff&quot;},&#xa;        4: {&quot;fillColor&quot;: &quot;#ff4000&quot;, &quot;fontColor&quot;: &quot;#ffffff&quot;},&#xa;        3: {&quot;fillColor&quot;: &quot;#ffdd00&quot;, &quot;fontColor&quot;: &quot;#000000&quot;},&#xa;        2: {&quot;fillColor&quot;: &quot;#d4ff00&quot;, &quot;fontColor&quot;: &quot;#000000&quot;},&#xa;        1: {&quot;fillColor&quot;: &quot;#40ff00&quot;, &quot;fontColor&quot;: &quot;#000000&quot;}&#xa;    }&#xa;    var matrix = [ &#xa;        [5, 5, 4, 3, 2], &#xa;        [5, 4, 4, 3, 2], &#xa;        [5, 4, 4, 3, 2], &#xa;        [4, 3, 3, 2, 1], &#xa;        [3, 2, 2, 1, 1], &#xa;    ];&#xa;    var result = {};&#xa;    &#xa;    if (&quot;Knowledge&quot; in collection.cellAttributes &amp;&amp; &quot;Resources&quot; in collection.cellAttributes) {&#xa;        var knowledgeIndex = parseInt(collection.cellAttributes[&quot;Knowledge&quot;]) - 1; &#xa;        var resourcesIndex = parseInt(collection.cellAttributes[&quot;Resources&quot;]) - 1;&#xa;        &#xa;        var value = Math.min(5, &#xa;            Math.max(collection.globalAttributes[&quot;Location&quot;].max, &#xa;                Math.max( matrix[knowledgeIndex][resourcesIndex] - parseInt(collection.cellAttributes[&quot;Location&quot;])) &#xa;            ));&#xa;        result = colorMatrix[value] || result;&#xa;        result[&quot;value&quot;] = value;&#xa;    }&#xa;    &#xa;    return result;&#xa;}" />
+            <ag_computed_attributes_function name="Risk" id="6c831697g9i0a" default="consequence" fn="function(collection){&#xa;    var riskMatrix = {&#xa;        &quot;V&quot;: {&quot;fillColor&quot;: &quot;#cc0000&quot;, &quot;fontColor&quot;: &quot;#ffffff&quot;},&#xa;        &quot;S&quot;: {&quot;fillColor&quot;: &quot;#ff4000&quot;, &quot;fontColor&quot;: &quot;#ffffff&quot;},&#xa;        &quot;M&quot;: {&quot;fillColor&quot;: &quot;#ffdd00&quot;, &quot;fontColor&quot;: &quot;#000000&quot;},&#xa;        &quot;L&quot;: {&quot;fillColor&quot;: &quot;#40ff00&quot;, &quot;fontColor&quot;: &quot;#000000&quot;},&#xa;    };&#xa;    var result = {};&#xa;    &#xa;    if (&quot;_risk&quot; in collection.cellAttributes) {&#xa;        var risk = collection.cellAttributes[&quot;_risk&quot;];&#xa;        result = riskMatrix[risk] || result;&#xa;        result[&quot;value&quot;] = risk;&#xa;    }&#xa;    &#xa;    return result; &#xa;}" />
           </ag_computed_attributes_functions>
           <mxCell />
         </object>
@@ -45,7 +45,7 @@
           <ag_aggregation_function_reference ag_aggregation_function_reference="egf49jfgj408" />
           <ag_computed_attributes_function_reference ag_computed_attributes_function_reference="6c831697g9i0a" />
           <ag_attributes _risk="S" />
-          <ag_computed_attributes Risk="S" />
+          <ag_computed_attributes fillColor="#ff4000" fontColor="#ffffff" value="S" />
           <mxCell style="shape=attackgraphs.node;rounded=1" parent="1" vertex="1">
             <mxGeometry x="180" y="170" width="150" height="75" as="geometry" />
           </mxCell>
@@ -68,7 +68,7 @@
           <ag_aggregation_function_reference ag_aggregation_function_reference="6b1d22791hih8" />
           <ag_computed_attributes_function_reference ag_computed_attributes_function_reference="dbg60ff69g9a" />
           <ag_attributes label="Sub-Step 1" Resources="3" Knowledge="3" Location="1" />
-          <ag_computed_attributes default="3" />
+          <ag_computed_attributes fillColor="#ffdd00" fontColor="#000000" value="3" />
           <mxCell style="shape=attackgraphs.node;" parent="1" vertex="1">
             <mxGeometry x="315" y="330" width="150" height="75" as="geometry" />
           </mxCell>
@@ -77,7 +77,7 @@
           <ag_aggregation_function_reference ag_aggregation_function_reference="6b1d22791hih8" />
           <ag_computed_attributes_function_reference ag_computed_attributes_function_reference="dbg60ff69g9a" />
           <ag_attributes />
-          <ag_computed_attributes default="3" />
+          <ag_computed_attributes fillColor="#ffdd00" fontColor="#000000" value="3" />
           <mxCell style="shape=attackgraphs.node;fillColor=#FEE599" parent="1" vertex="1">
             <mxGeometry x="200" y="510" width="150" height="75" as="geometry" />
           </mxCell>
@@ -92,8 +92,8 @@
         <object label="Sup-Step 2" id="-ZSPk6_3D4UuBSjLZNT9-10">
           <ag_aggregation_function_reference ag_aggregation_function_reference="6b1d22791hih8" />
           <ag_computed_attributes_function_reference ag_computed_attributes_function_reference="dbg60ff69g9a" />
-          <ag_attributes label="NaN" Resources="4" Knowledge="5" Location="1" />
-          <ag_computed_attributes default="1" />
+          <ag_attributes label="NaN" Resources="5" Knowledge="5" Location="1" link="NaN" />
+          <ag_computed_attributes fillColor="#40ff00" fontColor="#000000" value="1" />
           <mxCell style="shape=attackgraphs.node;" parent="1" vertex="1">
             <mxGeometry x="450" y="510" width="150" height="75" as="geometry" />
           </mxCell>
@@ -109,7 +109,7 @@
           <ag_aggregation_function_reference ag_aggregation_function_reference="73f575i0ghij5" />
           <ag_computed_attributes_function_reference ag_computed_attributes_function_reference="dbg60ff69g9a" />
           <ag_attributes label="NaN" Resources="3" Knowledge="3" Location="1" />
-          <ag_computed_attributes default="3" />
+          <ag_computed_attributes fillColor="#ffdd00" fontColor="#000000" value="3" />
           <mxCell style="shape=attackgraphs.node;fillColor=#D7E3BF" parent="1" vertex="1">
             <mxGeometry x="350" y="760" width="150" height="75" as="geometry" />
           </mxCell>
@@ -132,7 +132,7 @@
           <ag_aggregation_function_reference ag_aggregation_function_reference="73f575i0ghij5" />
           <ag_computed_attributes_function_reference ag_computed_attributes_function_reference="dbg60ff69g9a" />
           <ag_attributes label="NaN" Resources="1" Knowledge="4" Location="1" />
-          <ag_computed_attributes default="3" />
+          <ag_computed_attributes fillColor="#ffdd00" fontColor="#000000" value="3" />
           <mxCell style="shape=attackgraphs.node;fillColor=#D7E3BF" parent="1" vertex="1">
             <mxGeometry x="560" y="760" width="150" height="75" as="geometry" />
           </mxCell>
@@ -151,9 +151,18 @@
             <mxGeometry relative="1" as="geometry" />
           </mxCell>
         </object>
+        <object label="" id="3zErZUHH6OUMWw2IMUxi-3">
+          <ag_attributes />
+          <ag_computed_attributes />
+          <mxCell style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeWidth=2;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" parent="1" source="-ZSPk6_3D4UuBSjLZNT9-16" target="4WCP9U6U9G8ELGJs8Io0-1" edge="1">
+            <mxGeometry relative="1" as="geometry">
+              <mxPoint x="220" y="760" as="targetPoint" />
+            </mxGeometry>
+          </mxCell>
+        </object>
         <object id="-ZSPk6_3D4UuBSjLZNT9-16">
           <ag_aggregation_function_reference ag_aggregation_function_reference="gf0d4f199018" />
-          <ag_attributes label="NaN" Resources="4" Knowledge="5" Location="1" />
+          <ag_attributes label="NaN" Resources="5" Knowledge="5" Location="1" link="NaN" />
           <ag_computed_attributes />
           <mxCell style="shape=or;whiteSpace=wrap;html=1;rotation=-90;" parent="1" vertex="1">
             <mxGeometry x="502.5" y="630" width="45" height="60" as="geometry" />
@@ -184,7 +193,7 @@
           <ag_aggregation_function_reference ag_aggregation_function_reference="egf49jfgj408" />
           <ag_computed_attributes_function_reference ag_computed_attributes_function_reference="6c831697g9i0a" />
           <ag_attributes _risk="M" />
-          <ag_computed_attributes Risk="M" />
+          <ag_computed_attributes fillColor="#ffdd00" fontColor="#000000" value="M" />
           <mxCell style="shape=attackgraphs.node;rounded=1" parent="1" vertex="1">
             <mxGeometry x="450" y="170" width="150" height="75" as="geometry" />
           </mxCell>
@@ -199,6 +208,86 @@
           <ag_computed_attributes />
           <mxCell style="shape=attackgraphs.iconLegend;" parent="1" vertex="1">
             <mxGeometry x="40" y="290" width="150" height="132" as="geometry" />
+          </mxCell>
+        </object>
+        <object label="B" link="data:page/id,r5QY2ARX7aWHe5jPy6K_" id="4WCP9U6U9G8ELGJs8Io0-1">
+          <ag_aggregation_function_reference ag_aggregation_function_reference="6b1d22791hih8" />
+          <ag_attributes label="Attack Step" Knowledge="1" Location="1" Resources="1" />
+          <ag_computed_attributes />
+          <mxCell style="shape=attackgraphs.link;aspect=fixed;fontColor=none;noLabel=1;" parent="1" vertex="1">
+            <mxGeometry x="190" y="760" width="60" height="60" as="geometry" />
+          </mxCell>
+        </object>
+      </root>
+    </mxGraphModel>
+  </diagram>
+  <diagram id="r5QY2ARX7aWHe5jPy6K_" name="Sub-Step 23">
+    <mxGraphModel dx="1422" dy="754" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
+      <root>
+        <object id="0">
+          <ag_attributes />
+          <ag_computed_attributes />
+          <mxCell />
+        </object>
+        <object id="1">
+          <ag_attributes />
+          <ag_computed_attributes />
+          <mxCell parent="0" />
+        </object>
+        <object label="" id="DvYhvmozxNm6kFIWp_we-1">
+          <ag_attributes />
+          <ag_computed_attributes />
+          <mxCell style="rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeWidth=2;exitX=0.313;exitY=1.027;exitDx=0;exitDy=0;exitPerimeter=0;" parent="1" source="DvYhvmozxNm6kFIWp_we-3" target="DvYhvmozxNm6kFIWp_we-4" edge="1">
+            <mxGeometry relative="1" as="geometry" />
+          </mxCell>
+        </object>
+        <object id="DvYhvmozxNm6kFIWp_we-2">
+          <ag_attributes />
+          <ag_computed_attributes />
+          <mxCell style="rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeWidth=2;exitX=0.75;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" parent="1" source="DvYhvmozxNm6kFIWp_we-3" target="DvYhvmozxNm6kFIWp_we-7" edge="1">
+            <mxGeometry relative="1" as="geometry" />
+          </mxCell>
+        </object>
+        <object label="Sub-Step 23" id="DvYhvmozxNm6kFIWp_we-3">
+          <ag_aggregation_function_reference ag_aggregation_function_reference="6b1d22791hih8" />
+          <ag_computed_attributes_function_reference ag_computed_attributes_function_reference="dbg60ff69g9a" />
+          <ag_attributes label="Attack Step" Knowledge="1" Location="1" Resources="1" />
+          <ag_computed_attributes fillColor="#ff4000" fontColor="#ffffff" value="4" />
+          <mxCell style="shape=attackgraphs.node;" parent="1" vertex="1">
+            <mxGeometry x="343" y="510" width="150" height="75" as="geometry" />
+          </mxCell>
+        </object>
+        <object label="Attack Step" Knowledge="1" Location="1" Resources="1" id="DvYhvmozxNm6kFIWp_we-4">
+          <ag_aggregation_function_reference ag_aggregation_function_reference="jig393i6f4dh9" />
+          <ag_computed_attributes_function_reference ag_computed_attributes_function_reference="dbg60ff69g9a" />
+          <ag_attributes />
+          <ag_computed_attributes fillColor="#ff4000" fontColor="#ffffff" value="4" />
+          <mxCell style="shape=attackgraphs.node;fillColor=#D7E3BF" parent="1" vertex="1">
+            <mxGeometry x="214" y="680" width="150" height="75" as="geometry" />
+          </mxCell>
+        </object>
+        <object label="Attack Step" Resources="3" Knowledge="3" Location="1" id="DvYhvmozxNm6kFIWp_we-7">
+          <ag_aggregation_function_reference ag_aggregation_function_reference="jig393i6f4dh9" />
+          <ag_computed_attributes_function_reference ag_computed_attributes_function_reference="dbg60ff69g9a" />
+          <ag_attributes />
+          <ag_computed_attributes fillColor="#ffdd00" fontColor="#000000" value="3" />
+          <mxCell style="shape=attackgraphs.node;fillColor=#D7E3BF" parent="1" vertex="1">
+            <mxGeometry x="464" y="680" width="150" height="75" as="geometry" />
+          </mxCell>
+        </object>
+        <object label="" id="bFrVWXC9bmY56Xob-LU1-3">
+          <ag_attributes />
+          <ag_computed_attributes />
+          <mxCell style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeWidth=2;" parent="1" source="bFrVWXC9bmY56Xob-LU1-1" target="DvYhvmozxNm6kFIWp_we-3" edge="1">
+            <mxGeometry relative="1" as="geometry" />
+          </mxCell>
+        </object>
+        <object label="B" id="bFrVWXC9bmY56Xob-LU1-1">
+          <ag_aggregation_function_reference ag_aggregation_function_reference="6b1d22791hih8" />
+          <ag_attributes label="Attack Step" Knowledge="1" Location="1" Resources="1" />
+          <ag_computed_attributes />
+          <mxCell style="shape=attackgraphs.link;aspect=fixed;fontColor=none;noLabel=1;" parent="1" vertex="1">
+            <mxGeometry x="388" y="400" width="60" height="60" as="geometry" />
           </mxCell>
         </object>
       </root>

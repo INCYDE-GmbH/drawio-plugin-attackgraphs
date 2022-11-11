@@ -98,16 +98,16 @@ test.describe('attributes and default attributes', () => {
     await drawio.openGlobalAggregationFunctionDialog();
 
     await page.locator('text=Add...').click();
-    await drawio.fillEditFunctionDialog('OR', aggFunc);
-    await drawio.selectFirstFunctionAsDefaultForVertexType('or');
+    await drawio.fillEditFunctionDialog('activity', aggFunc);
+    await drawio.selectFirstFunctionAsDefaultForVertexType('activity_w');
 
     await page.locator('text=Add...').click();
     await drawio.fillEditFunctionDialog('default', 'A');
 
     await drawio.applyDialog();
 
-    // Instantiate an Or-Shape
-    await page.locator('.geSidebarContainer').locator('.geSidebar').first().locator('.geItem').last().click();
+    // Instantiate an attack step shape
+    await page.locator('.geSidebarContainer').locator('.geSidebar').first().locator('text=Attack Step').first().click();
     await page.locator('img.ag_function_handle').last().click();
 
     await expect(page.locator(`.ace_content`)).toHaveText(aggFunc);
@@ -122,7 +122,7 @@ test.describe('attributes and default attributes', () => {
     await page.locator('table.properties').locator('tr').locator('td').locator('span').click();
     const icon = page.locator('tbody').locator('tr').last().locator('td').last();
     const path = await icon.locator('path').getAttribute('d');
-    icon.click();
+    await icon.click();
     await drawio.applyDialog();
     expect(path).toEqual(
       await page.locator('table.properties').locator('tr').locator('td[name="icon_picker"]').locator('path').getAttribute('d')

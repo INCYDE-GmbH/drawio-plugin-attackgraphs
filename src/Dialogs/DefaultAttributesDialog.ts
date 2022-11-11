@@ -22,7 +22,7 @@ export class DefaultAttributesDialog extends SettingsDialog<true> {
 
   private getGlobalAttributes(): GlobalAttribute[] {
     if (this.ui !== null) {
-      return AttributeRenderer.rootAttributes(this.ui.editor.graph).getGlobalAttributes() || [];
+      return AttributeRenderer.rootAttributes().getGlobalAttributes() || [];
     }
     return [];
   }
@@ -48,7 +48,7 @@ export class DefaultAttributesDialog extends SettingsDialog<true> {
 
   saveAttributes(): void {
     if (this.ui !== null) {
-      AttributeRenderer.rootAttributes(this.ui.editor.graph).setGlobalAttributes(this.collectValues());
+      AttributeRenderer.rootAttributes().setGlobalAttributes(this.collectValues());
     }
   }
 

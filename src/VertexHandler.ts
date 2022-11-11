@@ -3,12 +3,55 @@ import { EditAggregationFunctionDialog, EditComputedAttributesFunctionDialog } f
 import { AsyncWorker } from './AsyncUtils';
 import { AttributeRenderer } from './AttributeRenderer';
 import { AttackGraphSettings } from './AttackGraphSettings';
+import { NodeAttributeProvider } from './Analysis/NodeAttributeProvider';
 
 
 const IMAGE_WIDTH = 24;
 const IMAGE_HEIGHT = 24;
 class VertexHandler extends mxVertexHandler {
   functionHandles: HTMLImageElement[] | null = null;
+  tooltipHandle: TooltipHandle | null = null;
+}
+class TooltipHandle {
+  private width: number;
+  private handle: HTMLElement;
+
+  constructor(width: number) {
+    this.width = width;
+    this.handle = this.createHandle();
+  }
+
+  getHandle(): HTMLElement {
+    return this.handle;
+  }
+
+  reset(): void {
+    this.handle.innerHTML = '';
+  }
+
+  setContent(content: string): void {
+    this.handle.innerHTML = content;
+  }
+
+  redraw(state: import('mxgraph').mxCellState): void {
+    this.handle.style.left = `${Math.round(state.x - this.width - 10)}px`;
+    this.handle.style.top = `${state.y}px`;
+  }
+
+  private createHandle(): HTMLElement {
+    const elem = document.createElement('div');
+    elem.innerHTML = '';
+    elem.style.position = 'absolute';
+    elem.style.fontSize = '11px';
+    elem.style.background = '#f5f5f5';
+    elem.style.border = '1px solid black';
+    elem.style.boxShadow = '0 0 5px 0 rgba(0,0,0,0.4)';
+    elem.style.boxSizing = 'border-box';
+    elem.style.width = `${this.width}px`;
+    elem.style.padding = '5px';
+    elem.style.opacity = '85%';
+    return elem;
+  }
 }
 
 export const installVertexHandler = (ui: Draw.UI, worker: AsyncWorker): void => {
@@ -71,12 +114,26 @@ export const installVertexHandler = (ui: Draw.UI, worker: AsyncWorker): void => 
     vertexHandler.graph.container.appendChild(aggregationFunctionHandle);
   }
 
+  const drawTooltipHandle = (vertexHandler: VertexHandler) => {
+    if (new CellStyles(vertexHandler.state.cell).isLinkNode()) {
+      const cell = new NodeAttributeProvider(vertexHandler.state.cell);
+      const pages = cell.getLinkNodesReferencingThisCell().map(x => x.getPage()?.getName()).filter((v, i, a) => a.indexOf(v) === i);
+
+      if (pages.length > 0) {
+        vertexHandler.tooltipHandle = new TooltipHandle(125);
+        vertexHandler.tooltipHandle.setContent(`<strong>${mxResources.get('attackGraphs.pageReferenceTooltip')}:</strong><br/>` + pages.join('<br/>'));
+        vertexHandler.graph.container.appendChild(vertexHandler.tooltipHandle.getHandle());
+      }
+    }
+  };
+
   // eslint-disable-next-line @typescript-eslint/unbound-method
   const vertexHandlerInit = mxVertexHandler.prototype.init;
   mxVertexHandler.prototype.init = function (this: VertexHandler, ...rest) {
     vertexHandlerInit.apply(this, rest);
     if (AttackGraphSettings.isAttackGraph(ui.editor.graph) && this.graph.getSelectionCount() === 1) {
       drawFunctionHandle(this);
+      drawTooltipHandle(this);
       this.redrawHandles();
     }
   }
@@ -85,6 +142,10 @@ export const installVertexHandler = (ui: Draw.UI, worker: AsyncWorker): void => 
   const vertexHandlerSetHandlesVisible = mxVertexHandler.prototype.setHandlesVisible;
   mxVertexHandler.prototype.setHandlesVisible = function (this: VertexHandler, visible, ...rest) {
     vertexHandlerSetHandlesVisible.apply(this, [visible, ...rest]);
+
+    if (this.tooltipHandle) {
+      this.tooltipHandle.getHandle().style.visibility = (visible) ? '' : 'hidden';
+    }
 
     if (this.functionHandles) {
       for (const functionHandle of this.functionHandles) {
@@ -96,16 +157,33 @@ export const installVertexHandler = (ui: Draw.UI, worker: AsyncWorker): void => 
   // eslint-disable-next-line @typescript-eslint/unbound-method
   const vertexHandlerRedrawHandles = mxVertexHandler.prototype.redrawHandles;
   mxVertexHandler.prototype.redrawHandles = function (this: VertexHandler) {
-    if (this.functionHandles) {
-      const b = this.state;
-      this.functionHandles[0].style.left = `${Math.round(b.x + b.width + 5)}px`;
-      this.functionHandles[0].style.top = `${b.y}px`;
-      this.functionHandles[1].style.left = `${Math.round(b.x - IMAGE_WIDTH - 5)}px`;
-      this.functionHandles[1].style.top = `${b.y}px`;
+    const b = this.state;
 
-      for (const functionHandle of this.functionHandles) {
-        // Shows function handles only if one vertex is selected
-        functionHandle.style.display = this.graph.getSelectionCount() === 1 ? '' : 'none';
+    if (this.tooltipHandle) {
+      this.tooltipHandle.redraw(b);
+      this.tooltipHandle.getHandle().style.display = this.graph.getSelectionCount() === 1 ? '' : 'none';
+    }
+
+    if (this.functionHandles) {
+      if (new CellStyles(this.state.cell).isLinkNode()) {
+        this.functionHandles[0].style.display = 'none'; // Hide computed attributes
+        if (!(new NodeAttributeProvider(this.state.cell)).isLeave()) { // destination link node
+          this.functionHandles[1].style.top = `${b.y}px`;
+          this.functionHandles[1].style.left = `${Math.round(b.x + b.width + 5)}px`;
+          this.functionHandles[1].style.display = this.graph.getSelectionCount() === 1 ? '' : 'none';
+        } else { // source link node
+          this.functionHandles[1].style.display = 'none';
+        }
+      } else {
+        this.functionHandles[0].style.left = `${Math.round(b.x + b.width + 5)}px`;
+        this.functionHandles[0].style.top = `${b.y}px`;
+        this.functionHandles[1].style.left = `${Math.round(b.x - IMAGE_WIDTH - 5)}px`;
+        this.functionHandles[1].style.top = `${b.y}px`;
+
+        for (const functionHandle of this.functionHandles) {
+          // Shows function handles only if one vertex is selected
+          functionHandle.style.display = this.graph.getSelectionCount() === 1 ? '' : 'none';
+        }
       }
     }
 
@@ -116,6 +194,14 @@ export const installVertexHandler = (ui: Draw.UI, worker: AsyncWorker): void => 
   const vertexHandlerDestroy = mxVertexHandler.prototype.destroy;
   mxVertexHandler.prototype.destroy = function (this: VertexHandler, ...rest) {
     vertexHandlerDestroy.apply(this, rest);
+
+    if (this.tooltipHandle) {
+      const tooltipHandle = this.tooltipHandle.getHandle();
+      if (tooltipHandle.parentNode) {
+        tooltipHandle.parentNode.removeChild(tooltipHandle);
+      }
+      this.tooltipHandle = null;
+    }
 
     if (this.functionHandles) {
       for (const functionHandle of this.functionHandles) {
@@ -132,6 +218,10 @@ export const installVertexHandler = (ui: Draw.UI, worker: AsyncWorker): void => 
   const vertexHandlerMouseUp = mxVertexHandler.prototype.mouseUp;
   mxVertexHandler.prototype.mouseUp = function(this: VertexHandler, ...rest) {
     vertexHandlerMouseUp.apply(this, rest);
+
+    if (this.tooltipHandle) {
+      this.tooltipHandle.getHandle().style.display = (this.graph.getSelectionCount() === 1) ? '' : 'none';
+    }
 
     // Shows function handles only if one vertex is selected
     if (this.functionHandles) {

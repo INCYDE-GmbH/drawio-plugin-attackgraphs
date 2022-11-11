@@ -1,6 +1,6 @@
-<mxfile host="Electron" modified="2022-08-10T14:59:36.729Z" agent="5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) draw.io/19.0.2 Chrome/102.0.5005.63 Electron/19.0.3 Safari/537.36" etag="e9V6mLg8rtl42Bk1PRIL" compressed="false" version="19.0.2" type="device">
-  <diagram id="zNMCXYOBYckHPa1j1fsk" name="Seite-1">
-    <mxGraphModel dx="904" dy="568" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
+<mxfile host="localhost" modified="2022-11-11T09:15:28.505Z" agent="5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/107.0.0.0 Safari/537.36" etag="n_vUexAJadhW4ECBImqN" compressed="false" version="20.2.8" type="device" pages="2">
+  <diagram id="zNMCXYOBYckHPa1j1fsk" name="Attack Graph">
+    <mxGraphModel dx="1422" dy="754" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
       <root>
         <object tooltip="" id="0">
           <ag_global_attributes>
@@ -11,12 +11,12 @@
           <ag_attributes />
           <ag_computed_attributes />
           <ag_aggregation_functions>
-            <ag_aggregation_function name="default" id="6b1d22791hih8" default="consequence;activity_w;or" fn="function (collection) { &#xa;    var worstNodeLike = collection.childAttributes[0]; &#xa;    var worstNodeRisk = collection.childAttributes[0]; &#xa;    var maxLikelihood = 0; &#xa;    var maxRisk = &quot;L&quot;; &#xa;    var maxImpactLike = 0; &#xa;    var maxImpactRisk = null; &#xa;    var hadEdgeWeight = false; &#xa;    var riskMatrix = { &#xa;        &quot;D&quot;: [&quot;L&quot;, &quot;L&quot;, &quot;L&quot;, &quot;M&quot;, &quot;S&quot;], &#xa;        &quot;C&quot;: [&quot;L&quot;, &quot;L&quot;, &quot;M&quot;, &quot;S&quot;, &quot;H&quot;], &#xa;        &quot;B&quot;: [&quot;L&quot;, &quot;M&quot;, &quot;S&quot;, &quot;H&quot;, &quot;H&quot;], &#xa;        &quot;A&quot;: [&quot;M&quot;, &quot;S&quot;, &quot;H&quot;, &quot;H&quot;, &quot;V&quot;] &#xa;    }; &#xa;    var edgeWeights = [&quot;D&quot;, &quot;C&quot;, &quot;B&quot;, &quot;A&quot;]; &#xa; &#xa;    /* &#xa;    Returns &#xa;        - &lt; 0 if risk1 &lt; risk2 &#xa;        - = 0 if risk1 = risk2 &#xa;        - &gt; 0 if risk1 &gt; risk2 &#xa;        - null if either risk is not in [&quot;L&quot;, &quot;M&quot;, &quot;S&quot;, &quot;H&quot;, &quot;V&quot;] &#xa;    */ &#xa;    var compareRisk = function(risk1, risk2) { &#xa;        var values = [&quot;L&quot;, &quot;M&quot;, &quot;S&quot;, &quot;H&quot;, &quot;V&quot;]; &#xa;        var index_risk1 = values.indexOf(risk1); &#xa;        var index_risk2 = values.indexOf(risk2); &#xa; &#xa;        if (index_risk1 == -1 || index_risk2 == -1) { &#xa;            return null; &#xa;        } &#xa;        return index_risk1 - index_risk2; &#xa;    } &#xa;    collection.childAttributes.forEach(function(child) { &#xa;        var likelihood = 0; &#xa; &#xa;        if (&quot;_likelihood&quot; in child.attributes) { &#xa;            likelihood = child.attributes[&quot;_likelihood&quot;]; &#xa;        } else if (&quot;Exposure&quot; in child.attributes &amp;&amp; &quot;Vulnerability&quot; in child.attributes) { &#xa;            likelihood = parseInt(child.attributes[&quot;Exposure&quot;]) + parseInt(child.attributes[&quot;Vulnerability&quot;]) - 1; &#xa;        } &#xa; &#xa;        if (edgeWeights.indexOf(child.edgeWeight) &gt;= 0) { &#xa;            hadEdgeWeight = true; &#xa;            var reduceImpact = 0; &#xa;            if (&quot;_impact&quot; in child.attributes) { &#xa;                reduceImpact = child.attributes[&quot;_impact&quot;]; &#xa;            } else if (&quot;Impact&quot; in child.attributes) { &#xa;                reduceImpact = child.attributes[&quot;Impact&quot;]; &#xa;            } &#xa;            var idxImpact = Math.max(Math.min(edgeWeights.indexOf(child.edgeWeight) - reduceImpact, edgeWeights.length), 0); &#xa;            var impact = edgeWeights[idxImpact]; &#xa;            var risk = riskMatrix[impact][likelihood - 1]; &#xa;            if (!maxImpactRisk) { &#xa;                maxImpactRisk = impact; &#xa;            } &#xa;            if (compareRisk(risk, maxRisk) &gt; 0) { &#xa;                maxRisk = risk; &#xa;                maxLikelihood = likelihood; &#xa;                maxImpactRisk = impact; &#xa;                worstNodeRisk = child; &#xa;            } &#xa;        } else { &#xa;            if (likelihood &gt; maxLikelihood) { &#xa;                maxLikelihood = likelihood; &#xa;                worstNodeLike = child; &#xa;            } &#xa;            if (&quot;_impact&quot; in child.attributes) { &#xa;                maxImpactLike = Math.max(maxImpactLike, child.attributes[&quot;_impact&quot;]); &#xa;            } else if (&quot;Impact&quot; in child.attributes) { &#xa;                maxImpactLike = Math.max(maxImpactLike, child.attributes[&quot;Impact&quot;]); &#xa;            } &#xa;        } &#xa;    }); &#xa; &#xa;    if(hadEdgeWeight) { &#xa;        var result = {&quot;_risk&quot;: maxRisk, &quot;_marking&quot;: worstNodeRisk.id}; &#xa;        if (maxImpactRisk) { &#xa;            result.Impact = maxImpactRisk; &#xa;        } &#xa;        return result; &#xa;    } else { &#xa;        var result = {&quot;_likelihood&quot;: maxLikelihood, &quot;_marking&quot;: worstNodeLike.id}; &#xa;        if (maxImpactLike) { &#xa;            result._impact = maxImpactLike; &#xa;        } &#xa;        return result; &#xa;    } &#xa;} &#xa;" />
+            <ag_aggregation_function name="default" id="6b1d22791hih8" default="consequence;activity_w;or;link" fn="function (collection) { &#xa;    var worstNodeLike = collection.childAttributes[0]; &#xa;    var worstNodeRisk = collection.childAttributes[0]; &#xa;    var maxLikelihood = 0; &#xa;    var maxRisk = &quot;L&quot;; &#xa;    var maxImpactLike = 0; &#xa;    var maxImpactRisk = null; &#xa;    var hadEdgeWeight = false; &#xa;    var riskMatrix = { &#xa;        &quot;D&quot;: [&quot;L&quot;, &quot;L&quot;, &quot;L&quot;, &quot;M&quot;, &quot;S&quot;], &#xa;        &quot;C&quot;: [&quot;L&quot;, &quot;L&quot;, &quot;M&quot;, &quot;S&quot;, &quot;H&quot;], &#xa;        &quot;B&quot;: [&quot;L&quot;, &quot;M&quot;, &quot;S&quot;, &quot;H&quot;, &quot;H&quot;], &#xa;        &quot;A&quot;: [&quot;M&quot;, &quot;S&quot;, &quot;H&quot;, &quot;H&quot;, &quot;V&quot;] &#xa;    }; &#xa;    var edgeWeights = [&quot;D&quot;, &quot;C&quot;, &quot;B&quot;, &quot;A&quot;]; &#xa; &#xa;    /* &#xa;    Returns &#xa;        - &lt; 0 if risk1 &lt; risk2 &#xa;        - = 0 if risk1 = risk2 &#xa;        - &gt; 0 if risk1 &gt; risk2 &#xa;        - null if either risk is not in [&quot;L&quot;, &quot;M&quot;, &quot;S&quot;, &quot;H&quot;, &quot;V&quot;] &#xa;    */ &#xa;    var compareRisk = function(risk1, risk2) { &#xa;        var values = [&quot;L&quot;, &quot;M&quot;, &quot;S&quot;, &quot;H&quot;, &quot;V&quot;]; &#xa;        var index_risk1 = values.indexOf(risk1); &#xa;        var index_risk2 = values.indexOf(risk2); &#xa; &#xa;        if (index_risk1 == -1 || index_risk2 == -1) { &#xa;            return null; &#xa;        } &#xa;        return index_risk1 - index_risk2; &#xa;    } &#xa;    collection.childAttributes.forEach(function(child) { &#xa;        var likelihood = 0; &#xa; &#xa;        if (&quot;_likelihood&quot; in child.attributes) { &#xa;            likelihood = child.attributes[&quot;_likelihood&quot;]; &#xa;        } else if (&quot;Exposure&quot; in child.attributes &amp;&amp; &quot;Vulnerability&quot; in child.attributes) { &#xa;            likelihood = parseInt(child.attributes[&quot;Exposure&quot;]) + parseInt(child.attributes[&quot;Vulnerability&quot;]) - 1; &#xa;        } &#xa; &#xa;        if (edgeWeights.indexOf(child.edgeWeight) &gt;= 0) { &#xa;            hadEdgeWeight = true; &#xa;            var reduceImpact = 0; &#xa;            if (&quot;_impact&quot; in child.attributes) { &#xa;                reduceImpact = child.attributes[&quot;_impact&quot;]; &#xa;            } else if (&quot;Impact&quot; in child.attributes) { &#xa;                reduceImpact = child.attributes[&quot;Impact&quot;]; &#xa;            } &#xa;            var idxImpact = Math.max(Math.min(edgeWeights.indexOf(child.edgeWeight) - reduceImpact, edgeWeights.length), 0); &#xa;            var impact = edgeWeights[idxImpact]; &#xa;            var risk = riskMatrix[impact][likelihood - 1]; &#xa;            if (!maxImpactRisk) { &#xa;                maxImpactRisk = impact; &#xa;            } &#xa;            if (compareRisk(risk, maxRisk) &gt; 0) { &#xa;                maxRisk = risk; &#xa;                maxLikelihood = likelihood; &#xa;                maxImpactRisk = impact; &#xa;                worstNodeRisk = child; &#xa;            } &#xa;        } else { &#xa;            if (likelihood &gt; maxLikelihood) { &#xa;                maxLikelihood = likelihood; &#xa;                worstNodeLike = child; &#xa;            } &#xa;            if (&quot;_impact&quot; in child.attributes) { &#xa;                maxImpactLike = Math.max(maxImpactLike, child.attributes[&quot;_impact&quot;]); &#xa;            } else if (&quot;Impact&quot; in child.attributes) { &#xa;                maxImpactLike = Math.max(maxImpactLike, child.attributes[&quot;Impact&quot;]); &#xa;            } &#xa;        } &#xa;    }); &#xa; &#xa;    if(hadEdgeWeight) { &#xa;        var result = {&quot;_risk&quot;: maxRisk, &quot;_marking&quot;: worstNodeRisk.id}; &#xa;        if (maxImpactRisk) { &#xa;            result.Impact = maxImpactRisk; &#xa;        } &#xa;        return result; &#xa;    } else { &#xa;        var result = {&quot;_likelihood&quot;: maxLikelihood, &quot;_marking&quot;: worstNodeLike.id}; &#xa;        if (maxImpactLike) { &#xa;            result._impact = maxImpactLike; &#xa;        } &#xa;        return result; &#xa;    } &#xa;} &#xa;" />
             <ag_aggregation_function name="AND" id="gf0d4f199018" default="and" fn="function(collection){&#xa;&#xa;    var product = 1;&#xa;    var n = 0;&#xa;    var ids = [];&#xa;&#xa;    collection.childAttributes.forEach(function(child){        &#xa;        var likelihood = (&quot;_likelihood&quot; in child.attributes)&#xa;            ? parseInt(child.attributes[&quot;_likelihood&quot;])&#xa;            : parseInt(child.attributes[&quot;Exposure&quot;]) + parseInt(child.attributes[&quot;Vulnerability&quot;]) - 1;&#xa;        n += 1;&#xa;        product *= likelihood;&#xa;        &#xa;        ids.push(child.id);&#xa;    });&#xa;&#xa;    product = Math.ceil(product / Math.pow(5, n-1));&#xa;    result = {&quot;_likelihood&quot;: product, &quot;_marking&quot;: ids.join(&quot;;&quot;)};&#xa;&#xa;    // Calc impact&#xa;    var impact = 0;&#xa;    collection.childAttributes.forEach(function(child){&#xa;        if (&#39;_impact&#39; in child.attributes) {&#xa;            impact = Math.max(child.attributes[&#39;_impact&#39;], impact);&#xa;        } else if (&#39;Impact&#39; in child.attributes) {&#xa;            impact = Math.max(child.attributes[&#39;Impact&#39;], impact);&#xa;        }&#xa;    });&#xa;    if (impact) {&#xa;        result._impact = impact;&#xa;    }&#xa;&#xa;    return result;&#xa;}" />
             <ag_aggregation_function name="Leaf Node" id="jig393i6f4dh9" default="activity_g;activity_y" fn="function(collection){ &#xa;    result = {}; &#xa;    for (localAttribute in collection.localAttributes){ &#xa;        value = parseInt(collection.localAttributes[localAttribute]); &#xa;        collection.childAttributes.forEach(function(child){ &#xa;            if (localAttribute in child.attributes) { &#xa;                v = parseInt(child.attributes[localAttribute]); &#xa;                if (!isNaN(v)) { &#xa;                    value -= v; &#xa;                } &#xa;            } &#xa;        }); &#xa;        if (localAttribute in collection.globalAttributes){ &#xa;            value = Math.max(collection.globalAttributes[localAttribute].min, Math.min(collection.globalAttributes[localAttribute].max, value)); &#xa;        } &#xa;        result[localAttribute] = value; &#xa;    }&#xa;    &#xa;    // Calculate impact&#xa;    var impact = 0;&#xa;    collection.childAttributes.forEach(function(child){&#xa;        if (&#39;Impact&#39; in child.attributes) {&#xa;            impact = Math.max(child.attributes[&#39;Impact&#39;], impact);&#xa;        }&#xa;    });&#xa;    if (impact) {&#xa;        result._impact = impact;&#xa;    }&#xa;    &#xa;    return result; &#xa;}" />
           </ag_aggregation_functions>
           <ag_computed_attributes_functions>
-            <ag_computed_attributes_function name="default" id="dbg60ff69g9a" default="consequence;activity_w;activity_g;activity_y" fn="function(collection){ &#xa;    if (&quot;_risk&quot; in collection.cellAttributes) {  &#xa;        return collection.cellAttributes[&quot;_risk&quot;];  &#xa;    } else if (&quot;_likelihood&quot; in collection.cellAttributes){&#xa;        return collection.cellAttributes[&quot;_likelihood&quot;];&#xa;    } else { &#xa;        return parseInt(collection.cellAttributes[&quot;Exposure&quot;]) + parseInt(collection.cellAttributes[&quot;Vulnerability&quot;]) - 1; &#xa;    } &#xa;}" />
+            <ag_computed_attributes_function name="default" id="dbg60ff69g9a" default="consequence;activity_w;activity_g;activity_y" fn="function(collection){&#xa;    var riskMatrix = {&#xa;        &quot;V&quot;: {&quot;fillColor&quot;: &quot;#cc0000&quot;, &quot;fontColor&quot;: &quot;#ffffff&quot;},&#xa;        &quot;H&quot;: {&quot;fillColor&quot;: &quot;#ff4000&quot;, &quot;fontColor&quot;: &quot;#ffffff&quot;},&#xa;        &quot;S&quot;: {&quot;fillColor&quot;: &quot;#ffdd00&quot;, &quot;fontColor&quot;: &quot;#000000&quot;},&#xa;        &quot;M&quot;: {&quot;fillColor&quot;: &quot;#d4ff00&quot;, &quot;fontColor&quot;: &quot;#000000&quot;},&#xa;        &quot;L&quot;: {&quot;fillColor&quot;: &quot;#40ff00&quot;, &quot;fontColor&quot;: &quot;#000000&quot;}&#xa;    };&#xa;    var likelihoodMatrix = {&#xa;        5: riskMatrix[&quot;V&quot;],&#xa;        4: riskMatrix[&quot;H&quot;],&#xa;        3: riskMatrix[&quot;S&quot;],&#xa;        2: riskMatrix[&quot;M&quot;],&#xa;        1: riskMatrix[&quot;L&quot;]&#xa;    }&#xa;    &#xa;    var result = {};&#xa;    if (&quot;_risk&quot; in collection.cellAttributes) {&#xa;        var risk = collection.cellAttributes[&quot;_risk&quot;];&#xa;        result = riskMatrix[risk] || result;&#xa;        result[&quot;value&quot;] = risk;&#xa;    } else if (&quot;_likelihood&quot; in collection.cellAttributes){&#xa;        var likelihood = parseInt(collection.cellAttributes[&quot;_likelihood&quot;]);&#xa;        result = likelihoodMatrix[likelihood] || result;&#xa;        result[&quot;value&quot;] = likelihood;&#xa;    } else {&#xa;        var likelihood = parseInt(collection.cellAttributes[&quot;Exposure&quot;]) + parseInt(collection.cellAttributes[&quot;Vulnerability&quot;]) - 1;&#xa;        result = likelihoodMatrix[likelihood] || result;&#xa;        result[&quot;value&quot;] = likelihood;&#xa;    }&#xa;    &#xa;    return result;&#xa;}" />
           </ag_computed_attributes_functions>
           <mxCell />
         </object>
@@ -43,7 +43,7 @@
           <ag_aggregation_function_reference ag_aggregation_function_reference="6b1d22791hih8" />
           <ag_computed_attributes_function_reference ag_computed_attributes_function_reference="dbg60ff69g9a" />
           <ag_attributes _risk="M" _marking="746xIQmpy0CREaIetn3r-6" Impact="B" />
-          <ag_computed_attributes default="M" />
+          <ag_computed_attributes fillColor="#d4ff00" fontColor="#000000" value="M" />
           <mxCell style="shape=attackgraphs.node;rounded=1" parent="1" vertex="1">
             <mxGeometry x="160" y="150" width="150" height="75" as="geometry" />
           </mxCell>
@@ -66,7 +66,7 @@
           <ag_aggregation_function_reference ag_aggregation_function_reference="6b1d22791hih8" />
           <ag_computed_attributes_function_reference ag_computed_attributes_function_reference="dbg60ff69g9a" />
           <ag_attributes _likelihood="2" _marking="746xIQmpy0CREaIetn3r-7" _impact="1" />
-          <ag_computed_attributes default="2" />
+          <ag_computed_attributes fillColor="#d4ff00" fontColor="#000000" value="2" />
           <mxCell style="shape=attackgraphs.node;" parent="1" vertex="1">
             <mxGeometry x="315" y="330" width="150" height="75" as="geometry" />
           </mxCell>
@@ -75,7 +75,7 @@
           <ag_aggregation_function_reference ag_aggregation_function_reference="jig393i6f4dh9" />
           <ag_computed_attributes_function_reference ag_computed_attributes_function_reference="dbg60ff69g9a" />
           <ag_attributes label="NaN" Exposure="1" Vulnerability="2" />
-          <ag_computed_attributes default="2" />
+          <ag_computed_attributes fillColor="#d4ff00" fontColor="#000000" value="2" />
           <mxCell style="shape=attackgraphs.node;fillColor=#FEE599" parent="1" vertex="1">
             <mxGeometry x="200" y="510" width="150" height="75" as="geometry" />
           </mxCell>
@@ -91,7 +91,7 @@
           <ag_aggregation_function_reference ag_aggregation_function_reference="6b1d22791hih8" />
           <ag_computed_attributes_function_reference ag_computed_attributes_function_reference="dbg60ff69g9a" />
           <ag_attributes _likelihood="1" _marking="746xIQmpy0CREaIetn3r-17" _impact="1" />
-          <ag_computed_attributes default="1" />
+          <ag_computed_attributes fillColor="#40ff00" fontColor="#000000" value="1" />
           <mxCell style="shape=attackgraphs.node;" parent="1" vertex="1">
             <mxGeometry x="450" y="510" width="150" height="75" as="geometry" />
           </mxCell>
@@ -107,7 +107,7 @@
           <ag_aggregation_function_reference ag_aggregation_function_reference="jig393i6f4dh9" />
           <ag_computed_attributes_function_reference ag_computed_attributes_function_reference="dbg60ff69g9a" />
           <ag_attributes label="NaN" Exposure="1" Vulnerability="1" />
-          <ag_computed_attributes default="1" />
+          <ag_computed_attributes fillColor="#40ff00" fontColor="#000000" value="1" />
           <mxCell style="shape=attackgraphs.node;fillColor=#D7E3BF" parent="1" vertex="1">
             <mxGeometry x="350" y="760" width="150" height="75" as="geometry" />
           </mxCell>
@@ -130,7 +130,7 @@
           <ag_aggregation_function_reference ag_aggregation_function_reference="jig393i6f4dh9" />
           <ag_computed_attributes_function_reference ag_computed_attributes_function_reference="dbg60ff69g9a" />
           <ag_attributes label="NaN" Exposure="1" Vulnerability="1" _impact="1" />
-          <ag_computed_attributes default="1" />
+          <ag_computed_attributes fillColor="#40ff00" fontColor="#000000" value="1" />
           <mxCell style="shape=attackgraphs.node;fillColor=#D7E3BF" parent="1" vertex="1">
             <mxGeometry x="560" y="760" width="150" height="75" as="geometry" />
           </mxCell>
@@ -152,13 +152,15 @@
         <object label="" id="W0IZxeYySRvhsjoWCsxC-2">
           <ag_attributes />
           <ag_computed_attributes />
-          <mxCell style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeWidth=2;" parent="1" source="746xIQmpy0CREaIetn3r-17" target="W0IZxeYySRvhsjoWCsxC-1" edge="1">
-            <mxGeometry relative="1" as="geometry" />
+          <mxCell style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeWidth=2;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" parent="1" source="746xIQmpy0CREaIetn3r-17" target="V9cLS1f8X6xZFGSrGoCA-1" edge="1">
+            <mxGeometry relative="1" as="geometry">
+              <mxPoint x="220" y="760" as="targetPoint" />
+            </mxGeometry>
           </mxCell>
         </object>
         <object id="746xIQmpy0CREaIetn3r-17">
           <ag_aggregation_function_reference ag_aggregation_function_reference="gf0d4f199018" />
-          <ag_attributes _likelihood="1" _marking="746xIQmpy0CREaIetn3r-11;746xIQmpy0CREaIetn3r-14;W0IZxeYySRvhsjoWCsxC-1" _impact="1" />
+          <ag_attributes _likelihood="1" _marking="746xIQmpy0CREaIetn3r-11;746xIQmpy0CREaIetn3r-14;V9cLS1f8X6xZFGSrGoCA-1" _impact="1" />
           <ag_computed_attributes />
           <mxCell style="shape=or;whiteSpace=wrap;html=1;rotation=-90;" parent="1" vertex="1">
             <mxGeometry x="502.5" y="630" width="45" height="60" as="geometry" />
@@ -189,7 +191,7 @@
           <ag_aggregation_function_reference ag_aggregation_function_reference="6b1d22791hih8" />
           <ag_computed_attributes_function_reference ag_computed_attributes_function_reference="dbg60ff69g9a" />
           <ag_attributes _risk="L" _marking="W0IZxeYySRvhsjoWCsxC-5" Impact="C" />
-          <ag_computed_attributes default="L" />
+          <ag_computed_attributes fillColor="#40ff00" fontColor="#000000" value="L" />
           <mxCell style="shape=attackgraphs.node;rounded=1" parent="1" vertex="1">
             <mxGeometry x="470" y="150" width="150" height="75" as="geometry" />
           </mxCell>
@@ -203,31 +205,6 @@
           <ag_computed_attributes />
           <mxCell style="shape=attackgraphs.iconLegend;" parent="1" vertex="1">
             <mxGeometry x="10" y="300" width="150" height="132" as="geometry" />
-          </mxCell>
-        </object>
-        <object label="" id="W0IZxeYySRvhsjoWCsxC-4">
-          <ag_attributes />
-          <ag_computed_attributes />
-          <mxCell style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeWidth=2;" parent="1" source="W0IZxeYySRvhsjoWCsxC-1" target="W0IZxeYySRvhsjoWCsxC-3" edge="1">
-            <mxGeometry relative="1" as="geometry" />
-          </mxCell>
-        </object>
-        <object label="Sub-Step 23" id="W0IZxeYySRvhsjoWCsxC-1">
-          <ag_aggregation_function_reference ag_aggregation_function_reference="6b1d22791hih8" />
-          <ag_computed_attributes_function_reference ag_computed_attributes_function_reference="dbg60ff69g9a" />
-          <ag_attributes _likelihood="5" _marking="W0IZxeYySRvhsjoWCsxC-3" />
-          <ag_computed_attributes default="5" />
-          <mxCell style="shape=attackgraphs.node;" parent="1" vertex="1">
-            <mxGeometry x="140" y="760" width="150" height="75" as="geometry" />
-          </mxCell>
-        </object>
-        <object label="Attack Step" Exposure="3" Vulnerability="3" id="W0IZxeYySRvhsjoWCsxC-3">
-          <ag_aggregation_function_reference ag_aggregation_function_reference="jig393i6f4dh9" />
-          <ag_computed_attributes_function_reference ag_computed_attributes_function_reference="dbg60ff69g9a" />
-          <ag_attributes label="NaN" Exposure="3" Vulnerability="3" />
-          <ag_computed_attributes default="5" />
-          <mxCell style="shape=attackgraphs.node;fillColor=#D7E3BF" parent="1" vertex="1">
-            <mxGeometry x="140" y="930" width="150" height="75" as="geometry" />
           </mxCell>
         </object>
         <object label="" id="W0IZxeYySRvhsjoWCsxC-7">
@@ -258,6 +235,86 @@
           <ag_computed_attributes />
           <mxCell style="shape=attackgraphs.node;fillColor=#DAE8FC" parent="1" vertex="1">
             <mxGeometry x="520" y="242.5" width="150" height="75" as="geometry" />
+          </mxCell>
+        </object>
+        <object label="B" link="data:page/id,Bnu7JkcaxHlNL-usvOu0" id="V9cLS1f8X6xZFGSrGoCA-1">
+          <ag_aggregation_function_reference ag_aggregation_function_reference="6b1d22791hih8" />
+          <ag_attributes _likelihood="5" _marking="pSxKkfyopYwOmsda1UK_-2" />
+          <ag_computed_attributes />
+          <mxCell style="shape=attackgraphs.link;aspect=fixed;fontColor=none;noLabel=1;" parent="1" vertex="1">
+            <mxGeometry x="190" y="760" width="60" height="60" as="geometry" />
+          </mxCell>
+        </object>
+      </root>
+    </mxGraphModel>
+  </diagram>
+  <diagram id="Bnu7JkcaxHlNL-usvOu0" name="Sub-Step 23">
+    <mxGraphModel dx="1422" dy="754" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
+      <root>
+        <object id="0">
+          <ag_attributes />
+          <ag_computed_attributes />
+          <mxCell />
+        </object>
+        <object id="1">
+          <ag_attributes />
+          <ag_computed_attributes />
+          <mxCell parent="0" />
+        </object>
+        <object label="" id="pSxKkfyopYwOmsda1UK_-1">
+          <ag_attributes />
+          <ag_computed_attributes />
+          <mxCell style="rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeWidth=2;exitX=0.313;exitY=1.027;exitDx=0;exitDy=0;exitPerimeter=0;" parent="1" source="pSxKkfyopYwOmsda1UK_-2" target="pSxKkfyopYwOmsda1UK_-3" edge="1">
+            <mxGeometry relative="1" as="geometry" />
+          </mxCell>
+        </object>
+        <object id="XsD5oM42NdKaJhCEsVqn-3">
+          <ag_attributes />
+          <ag_computed_attributes />
+          <mxCell style="rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeWidth=2;exitX=0.75;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" parent="1" source="pSxKkfyopYwOmsda1UK_-2" target="XsD5oM42NdKaJhCEsVqn-2" edge="1">
+            <mxGeometry relative="1" as="geometry" />
+          </mxCell>
+        </object>
+        <object label="Sub-Step 23" id="pSxKkfyopYwOmsda1UK_-2">
+          <ag_aggregation_function_reference ag_aggregation_function_reference="6b1d22791hih8" />
+          <ag_computed_attributes_function_reference ag_computed_attributes_function_reference="dbg60ff69g9a" />
+          <ag_attributes _likelihood="5" _marking="pSxKkfyopYwOmsda1UK_-3" />
+          <ag_computed_attributes fillColor="#cc0000" fontColor="#ffffff" value="5" />
+          <mxCell style="shape=attackgraphs.node;" parent="1" vertex="1">
+            <mxGeometry x="343" y="510" width="150" height="75" as="geometry" />
+          </mxCell>
+        </object>
+        <object label="Attack Step" Exposure="3" Vulnerability="3" id="pSxKkfyopYwOmsda1UK_-3">
+          <ag_aggregation_function_reference ag_aggregation_function_reference="jig393i6f4dh9" />
+          <ag_computed_attributes_function_reference ag_computed_attributes_function_reference="dbg60ff69g9a" />
+          <ag_attributes label="NaN" Exposure="3" Vulnerability="3" />
+          <ag_computed_attributes fillColor="#cc0000" fontColor="#ffffff" value="5" />
+          <mxCell style="shape=attackgraphs.node;fillColor=#D7E3BF" parent="1" vertex="1">
+            <mxGeometry x="214" y="680" width="150" height="75" as="geometry" />
+          </mxCell>
+        </object>
+        <object label="Attack Step" Exposure="2" Vulnerability="1" id="XsD5oM42NdKaJhCEsVqn-2">
+          <ag_aggregation_function_reference ag_aggregation_function_reference="jig393i6f4dh9" />
+          <ag_computed_attributes_function_reference ag_computed_attributes_function_reference="dbg60ff69g9a" />
+          <ag_attributes label="NaN" Exposure="2" Vulnerability="1" />
+          <ag_computed_attributes fillColor="#d4ff00" fontColor="#000000" value="2" />
+          <mxCell style="shape=attackgraphs.node;fillColor=#D7E3BF" parent="1" vertex="1">
+            <mxGeometry x="464" y="680" width="150" height="75" as="geometry" />
+          </mxCell>
+        </object>
+        <object label="" id="WLUCeCoMFsJd8fa2UCAg-2">
+          <ag_attributes />
+          <ag_computed_attributes />
+          <mxCell style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeWidth=2;" parent="1" source="WLUCeCoMFsJd8fa2UCAg-1" target="pSxKkfyopYwOmsda1UK_-2" edge="1">
+            <mxGeometry relative="1" as="geometry" />
+          </mxCell>
+        </object>
+        <object label="B" id="WLUCeCoMFsJd8fa2UCAg-1">
+          <ag_aggregation_function_reference ag_aggregation_function_reference="6b1d22791hih8" />
+          <ag_attributes _likelihood="5" _marking="pSxKkfyopYwOmsda1UK_-2" />
+          <ag_computed_attributes />
+          <mxCell style="shape=attackgraphs.link;aspect=fixed;fontColor=none;noLabel=1;" parent="1" vertex="1">
+            <mxGeometry x="388" y="400" width="60" height="60" as="geometry" />
           </mxCell>
         </object>
       </root>

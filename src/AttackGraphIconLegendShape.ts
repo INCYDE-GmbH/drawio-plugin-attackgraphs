@@ -47,9 +47,8 @@ export class AttackGraphIconLegendShape extends mxRectangleShape {
   paintVertexShape(c: import('mxgraph').mxAbstractCanvas2D, x: number, y: number, w: number, h: number): void {
 
     if (this.state) {
-      const graph = this.state.view.graph as unknown as Draw.EditorGraph;
       const cell = AttributeRenderer.nodeAttributes(this.state.cell);
-      const globalAttributes = AttributeRenderer.rootAttributes(graph).getGlobalAttributes();
+      const globalAttributes = AttributeRenderer.rootAttributes().getGlobalAttributes();
       const localattributes = cell.getGroupedValuesFromCell(STORAGE_NAME_GLOBAL_ATTRIBUTES);
       const attributes = (globalAttributes !== null) ? globalAttributes : localattributes;
       const renderableAttributes = RootAttributeProvider.getRenderableAttributes(attributes as GlobalAttribute[]);

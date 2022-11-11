@@ -1,4 +1,5 @@
 declare const __COMMIT_HASH__: string;
+declare const __VERSION__: string;
 
 export class Resources {
   static register(lang: string): void {
@@ -49,7 +50,7 @@ attackGraphs.custom=Custom
 attackGraphs.mustAssignMaxValue=You have to set the max value for
 attackGraphs.setDefaultAttributes=Set default attributes for selection
 attackGraphs.setAttackGraphShape=Set selection as attackgraph nodes
-attackGraphs.showVersion=Version ${__COMMIT_HASH__}
+attackGraphs.showVersion=Version ${__VERSION__} (${__COMMIT_HASH__})
 attackGraphs.enableSensitivityAnalysis=Enable Sensitivity Analysis
 attackGraphs.applySensitivityAnalysis=Apply Sensitivity Analysis
 attackGraphs.value=Value
@@ -62,6 +63,8 @@ attackGraphs.acceptAnalysisTitle=Accept analysis
 attackGraphs.abortAnalysisTitle=Abort analysis
 attackGraphs.acceptAnalysisDialog=Do you want to apply the current analysis to the graph?
 attackGraphs.documentation=Documentation...
+attackGraphs.pageReferenceTooltip=Referenced from
+attackGraphs.workerStatus=Background workers in progress to update the attack graph! Please wait...
 `);
   }
 
@@ -99,7 +102,7 @@ attackGraphs.custom=Benutzerdefiniert
 attackGraphs.mustAssignMaxValue=Sie müssen einen Maximalwert setzen für
 attackGraphs.setDefaultAttributes=Setze Standardattribute für Auswahl
 attackGraphs.setAttackGraphShape=Markiere Auswahl als Attack Graph Knoten
-attackGraphs.showVersion=Version ${__COMMIT_HASH__}
+attackGraphs.showVersion=Version ${__VERSION__} (${__COMMIT_HASH__})
 attackGraphs.enableSensitivityAnalysis=Sensitivitätsanalyse aktivieren
 attackGraphs.applySensitivityAnalysis=Sensitivitätsanalyse anwenden
 attackGraphs.value=Wert
@@ -112,6 +115,8 @@ attackGraphs.acceptAnalysisTitle=Analyse anwenden
 attackGraphs.abortAnalysisTitle=Analyse verwerfen
 attackGraphs.acceptAnalysisDialog=Wollen sie die aktuelle Sensitivitätsanalyse auf den Graphen anwenden?
 attackGraphs.documentation=Dokumentation...
+attackGraphs.pageReferenceTooltip=Referenziert von
+attackGraphs.workerStatus=Hintergrundprozesse in Arbeit, um den Attack-Graph zu aktualisieren! Bitte warten Sie...
   `);
   }
 }

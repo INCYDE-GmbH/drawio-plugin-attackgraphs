@@ -6,6 +6,8 @@ import { AsyncWorker } from './AsyncUtils';
 import { AttackGraphSettings } from './AttackGraphSettings';
 import { GraphUtils } from './GraphUtils';
 import { AttackgraphFunction, CellDataCollection, ChildCellData, ChildCellDataCollection, GlobalAttribute, GlobalAttributeDict, KeyValuePairs } from './Model';
+import { Menubar } from './Menubar';
+import { CellStyles } from './Analysis/CellStyles';
 
 export class AttributeRenderer {
   private static _sensitivityAnalysisEnabled = false;
@@ -26,11 +28,11 @@ export class AttributeRenderer {
     }
   }
 
-  static rootAttributes(graph: Draw.EditorGraph): RootAttributeProvider {
+  static rootAttributes(): RootAttributeProvider {
     if (this._sensitivityAnalysisEnabled) {
-      return new SensitivityAnalysisRootAttributeProvider(graph);
+      return new SensitivityAnalysisRootAttributeProvider();
     } else {
-      return new RootAttributeProvider(graph);
+      return new RootAttributeProvider();
     }
   }
 
@@ -49,38 +51,58 @@ export class AttributeRenderer {
   static async refreshCellValuesUpwards(cell: import('mxgraph').mxCell, ui: Draw.UI, worker: AsyncWorker): Promise<void> {
     if (AttackGraphSettings.isAttackGraph(ui.editor.graph)) {
       if (GraphUtils.isTree(cell)) {
-        await this.updateCellValuesUpwards(this.nodeAttributes(cell), AttributeRenderer.rootAttributes(ui.editor.graph), worker);
+        Menubar.increaseUnfinishedWorkers(ui);
+        await this.updateCellValuesUpwards(this.nodeAttributes(cell), AttributeRenderer.rootAttributes(), worker, ui);
+        Menubar.decreaseUnfinishedWorkers(ui);
       } else {
         mxUtils.alert('Cannot recalculate the graph as it contains loops!');
       }
     }
   }
 
-  private static async updateCellValuesUpwards(cell: NodeAttributeProvider, graph: RootAttributeProvider, worker: AsyncWorker): Promise<void> {
-    const globalDefaultAttributes = graph.getGlobalAttributes();
+  private static async updateCellValuesUpwards(cell: NodeAttributeProvider, root: RootAttributeProvider, worker: AsyncWorker, ui: Draw.UI): Promise<void> {
+    const globalDefaultAttributes = root.getGlobalAttributes();
     const globalDefaultAttributesDict = this.transformGlobalAttributesToGlobalAttributesDict(globalDefaultAttributes || []) as GlobalAttributeDict;
+    const incomingEdges = cell.cell.edges?.filter(x => x.target === cell.cell && x.source) || [];
 
     const childValues = this.getChildValues(cell);
-    const aggregationFunction = cell.resolveAggregationFunction(graph);
+    const aggregationFunction = cell.resolveAggregationFunction(root);
 
     const localAttributes = cell.getCellValues();
+    let aggregatedValues: KeyValuePairs = {};
+    let aggregate = true;
 
-    const aggregatedValues = await this.aggregateAttributes({
-      globalAttributes: globalDefaultAttributesDict,
-      childAttributes: childValues,
-      localAttributes: localAttributes,
-      id: cell.getCellId()
-    }, aggregationFunction, worker);
+    // Link to another page
+    if (new CellStyles(cell.cell).isLinkNode()) {
+      if (cell.isLeave()) { // source link node
+        const refCell = cell.getReferencedCell();        
+        if (refCell) {
+          aggregatedValues = refCell.getAggregatedCellValues();
+          aggregate = false;
+        } else {
+          aggregatedValues['_error'] = 'true';
+        }
+      }
+    }
+
+    if (aggregate) {
+      const values = await this.aggregateAttributes({
+        globalAttributes: globalDefaultAttributesDict,
+        childAttributes: childValues,
+        localAttributes: localAttributes,
+        id: cell.getCellId()
+      }, aggregationFunction, worker);
+      aggregatedValues = { ...values, ...aggregatedValues }; // Include possible link errors
+    }
     cell.setAggregatedCellValues(aggregatedValues);
 
-    const labelFunction = cell.resolveComputedAttributesFunction(graph);
+    const labelFunction = cell.resolveComputedAttributesFunction(root);
 
     const cellAttributes = cell.getCellValues();
-    const label = await this.recalculateCellLabel({ globalAttributes: globalDefaultAttributesDict, cellAttributes: { ...cellAttributes, ...aggregatedValues } }, labelFunction, worker);
-    cell.setComputedAttributesForCell(label, labelFunction?.name || null);
+    const computedAttributes = await this.recalculateCellLabel({ globalAttributes: globalDefaultAttributesDict, cellAttributes: { ...cellAttributes, ...aggregatedValues } }, labelFunction, worker);
+    cell.setComputedAttributesForCell(computedAttributes);
 
-    const incomingEdges = cell.cell.edges?.filter(x => x.target === cell.cell && x.source) || [];
-    await Promise.all(incomingEdges.map(x => this.updateCellValuesUpwards(this.nodeAttributes(x.source), graph, worker)));
+    await Promise.all(incomingEdges.map(x => this.updateCellValuesUpwards(this.nodeAttributes(x.source), root, worker, ui)));
   }
 
   public static transformGlobalAttributesToGlobalAttributesDict(attributes: GlobalAttribute[]): { [name: string]: KeyValuePairs } {
@@ -104,6 +126,7 @@ export class AttributeRenderer {
   }
 
   static async recalculateAllCells(ui: Draw.UI, worker: AsyncWorker): Promise<void> {
+    // TODO: Improve to avoid recalculating nodes already calculated
     await Promise.all(Object.entries(ui.editor.graph.getModel().cells as { [id: string]: import('mxgraph').mxCell }).map(([, cell]) =>
       this.refreshCellValuesUpwards(cell, ui, worker)
     ));
@@ -116,29 +139,20 @@ export class AttributeRenderer {
       const target = this.nodeAttributes(x.target);
       const cellValues = target.getCellValues();
       const aggregatedValues = target.getAggregatedCellValues();
-      const computedAttribute = Object.values(target.getComputedAttributesForCell() || {})[0];
+      const computedAttribute = (target.getComputedAttributesForCell() || {})['value'] || '';
       return { edgeWeight, attributes: { ...cellValues, ...aggregatedValues }, computedAttribute: computedAttribute, id: target.getCellId() };
     }) || [];
   }
 
-  static async recalculateCellLabel(cellAttributes: CellDataCollection, labelFunction: AttackgraphFunction | null, worker: AsyncWorker): Promise<string | null> {
-
-    if (labelFunction === null) {
-      return null;
-    }
-
-    try {
-      return this.runLabelFunctionWorker(labelFunction, cellAttributes, worker);
-    } catch (e) {
-      return null;
-    }
+  static async recalculateCellLabel(cellAttributes: CellDataCollection, labelFunction: AttackgraphFunction | null, worker: AsyncWorker): Promise<KeyValuePairs> {
+    return (labelFunction) ? this.runLabelFunctionWorker(labelFunction, cellAttributes, worker) : {};
   }
 
-  private static async runLabelFunctionWorker(labelFunction: AttackgraphFunction, attributes: CellDataCollection, worker: AsyncWorker): Promise<string> {
+  private static async runLabelFunctionWorker(labelFunction: AttackgraphFunction, attributes: CellDataCollection, worker: AsyncWorker): Promise<KeyValuePairs> {
     try {
-      return await worker.runWorkerFunction<CellDataCollection, string>(labelFunction.fn, attributes);
-    } catch (e) {
-      return '!';
+      return await worker.runWorkerFunction<CellDataCollection, KeyValuePairs>(labelFunction.fn, attributes);
+    } catch (e) {      
+      return {};
     }
   }
 }
