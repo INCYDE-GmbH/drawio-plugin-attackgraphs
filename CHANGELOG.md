@@ -1,6 +1,6 @@
 # Changelog
 
-## [Unreleased](https://github.com/INCYDE-GmbH/drawio-plugin-attackgraphs/compare/v1.1.0...HEAD)
+## [1.2.0](https://github.com/INCYDE-GmbH/drawio-plugin-attackgraphs/compare/v1.1.0...v1.2.0) - 2022-11-11
 
 ### Added
 
