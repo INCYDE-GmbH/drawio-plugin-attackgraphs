@@ -4,6 +4,7 @@ import { AsyncWorker } from './AsyncUtils';
 import { AttributeRenderer } from './AttributeRenderer';
 import { AttackGraphSettings } from './AttackGraphSettings';
 import { NodeAttributeProvider } from './Analysis/NodeAttributeProvider';
+import { CellStyles } from './Analysis/CellStyles';
 
 
 const IMAGE_WIDTH = 24;
