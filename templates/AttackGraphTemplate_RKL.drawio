@@ -1,6 +1,6 @@
-<mxfile host="localhost" modified="2022-11-11T09:15:57.413Z" agent="5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/107.0.0.0 Safari/537.36" etag="sl55bcK0vzhqt4LVG98P" compressed="false" version="20.2.8" type="device" pages="2">
+<mxfile host="Electron" modified="2023-01-02T17:08:02.698Z" agent="5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) draw.io/19.0.3 Chrome/102.0.5005.63 Electron/19.0.3 Safari/537.36" etag="bRVQZWIDO_xa3VzOqXDy" compressed="false" version="19.0.3" type="device" pages="2">
   <diagram id="zNMCXYOBYckHPa1j1fsk" name="Attack Graph">
-    <mxGraphModel dx="1422" dy="754" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
+    <mxGraphModel dx="1422" dy="857" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
       <root>
         <object tooltip="" id="0">
           <ag_global_attributes>
@@ -44,7 +44,7 @@
         <object label="Consequence" id="-ZSPk6_3D4UuBSjLZNT9-5">
           <ag_aggregation_function_reference ag_aggregation_function_reference="egf49jfgj408" />
           <ag_computed_attributes_function_reference ag_computed_attributes_function_reference="6c831697g9i0a" />
-          <ag_attributes _risk="S" />
+          <ag_attributes _risk="S" _marking="-ZSPk6_3D4UuBSjLZNT9-6" />
           <ag_computed_attributes fillColor="#ff4000" fontColor="#ffffff" value="S" />
           <mxCell style="shape=attackgraphs.node;rounded=1" parent="1" vertex="1">
             <mxGeometry x="180" y="170" width="150" height="75" as="geometry" />
@@ -67,7 +67,7 @@
         <object label="Attack Step" id="-ZSPk6_3D4UuBSjLZNT9-6">
           <ag_aggregation_function_reference ag_aggregation_function_reference="6b1d22791hih8" />
           <ag_computed_attributes_function_reference ag_computed_attributes_function_reference="dbg60ff69g9a" />
-          <ag_attributes label="Sub-Step 1" Resources="3" Knowledge="3" Location="1" />
+          <ag_attributes label="Sub-Step 1" Resources="3" Knowledge="3" Location="1" _marking="-ZSPk6_3D4UuBSjLZNT9-9" />
           <ag_computed_attributes fillColor="#ffdd00" fontColor="#000000" value="3" />
           <mxCell style="shape=attackgraphs.node;" parent="1" vertex="1">
             <mxGeometry x="315" y="330" width="150" height="75" as="geometry" />
@@ -92,7 +92,7 @@
         <object label="Sup-Step 2" id="-ZSPk6_3D4UuBSjLZNT9-10">
           <ag_aggregation_function_reference ag_aggregation_function_reference="6b1d22791hih8" />
           <ag_computed_attributes_function_reference ag_computed_attributes_function_reference="dbg60ff69g9a" />
-          <ag_attributes label="NaN" Resources="5" Knowledge="5" Location="1" link="NaN" />
+          <ag_attributes label="NaN" Resources="5" Knowledge="5" Location="1" link="NaN" _marking="-ZSPk6_3D4UuBSjLZNT9-16" />
           <ag_computed_attributes fillColor="#40ff00" fontColor="#000000" value="1" />
           <mxCell style="shape=attackgraphs.node;" parent="1" vertex="1">
             <mxGeometry x="450" y="510" width="150" height="75" as="geometry" />
@@ -162,7 +162,7 @@
         </object>
         <object id="-ZSPk6_3D4UuBSjLZNT9-16">
           <ag_aggregation_function_reference ag_aggregation_function_reference="gf0d4f199018" />
-          <ag_attributes label="NaN" Resources="5" Knowledge="5" Location="1" link="NaN" />
+          <ag_attributes label="NaN" Resources="5" Knowledge="5" Location="1" link="NaN" _marking="-ZSPk6_3D4UuBSjLZNT9-11;-ZSPk6_3D4UuBSjLZNT9-13;4WCP9U6U9G8ELGJs8Io0-1" />
           <ag_computed_attributes />
           <mxCell style="shape=or;whiteSpace=wrap;html=1;rotation=-90;" parent="1" vertex="1">
             <mxGeometry x="502.5" y="630" width="45" height="60" as="geometry" />
@@ -192,7 +192,7 @@
         <object label="Consequence" id="-ZSPk6_3D4UuBSjLZNT9-26">
           <ag_aggregation_function_reference ag_aggregation_function_reference="egf49jfgj408" />
           <ag_computed_attributes_function_reference ag_computed_attributes_function_reference="6c831697g9i0a" />
-          <ag_attributes _risk="M" />
+          <ag_attributes _risk="M" _marking="-ZSPk6_3D4UuBSjLZNT9-6" />
           <ag_computed_attributes fillColor="#ffdd00" fontColor="#000000" value="M" />
           <mxCell style="shape=attackgraphs.node;rounded=1" parent="1" vertex="1">
             <mxGeometry x="450" y="170" width="150" height="75" as="geometry" />
@@ -222,7 +222,7 @@
     </mxGraphModel>
   </diagram>
   <diagram id="r5QY2ARX7aWHe5jPy6K_" name="Sub-Step 23">
-    <mxGraphModel dx="1422" dy="754" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
+    <mxGraphModel dx="1422" dy="857" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
       <root>
         <object id="0">
           <ag_attributes />
