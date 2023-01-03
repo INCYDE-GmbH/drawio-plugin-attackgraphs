@@ -185,7 +185,7 @@
         <object label="2" id="-ZSPk6_3D4UuBSjLZNT9-27">
           <ag_attributes />
           <ag_computed_attributes />
-          <mxCell style="edgeStyle=none;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeWidth=2;fontSize=13;startArrow=none;startFill=0;endArrow=classic;endFill=0;fontStyle=1;" parent="1" source="-ZSPk6_3D4UuBSjLZNT9-26" target="-ZSPk6_3D4UuBSjLZNT9-6" edge="1">
+          <mxCell style="edgeStyle=none;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeWidth=2;fontSize=13;startArrow=none;startFill=0;endArrow=classic;endFill=1;fontStyle=1;" parent="1" source="-ZSPk6_3D4UuBSjLZNT9-26" target="-ZSPk6_3D4UuBSjLZNT9-6" edge="1">
             <mxGeometry relative="1" as="geometry" />
           </mxCell>
         </object>
