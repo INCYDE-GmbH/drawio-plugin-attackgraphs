@@ -226,11 +226,11 @@
           <ag_computed_attributes_function_reference ag_computed_attributes_function_reference="ag_none_function" />
           <ag_attributes _likelihood="2" _marking="746xIQmpy0CREaIetn3r-6" _impact="2" />
           <ag_computed_attributes />
-          <mxCell style="shape=attackgraphs.node;" parent="1" vertex="1">
+          <mxCell style="shape=attackgraphs.node;allowArrows=0;" parent="1" vertex="1">
             <mxGeometry x="460" y="275" width="10" height="10" as="geometry" />
           </mxCell>
         </object>
-        <object label="Security Control 1" Impact="2" id="W0IZxeYySRvhsjoWCsxC-8">
+        <object label="Security Control 3" Impact="2" id="W0IZxeYySRvhsjoWCsxC-8">
           <ag_attributes />
           <ag_computed_attributes />
           <mxCell style="shape=attackgraphs.node;fillColor=#DAE8FC" parent="1" vertex="1">
