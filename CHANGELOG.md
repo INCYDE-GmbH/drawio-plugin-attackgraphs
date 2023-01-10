@@ -2,6 +2,10 @@
 
 ## [Unreleased](https://github.com/INCYDE-GmbH/drawio-plugin-attackgraphs/compare/v1.2.0...HEAD)
 
+### Added
+
+- RKL template supports mitigating the impact by a security control.
+
 ### Fixes and Improvements
 
 - The width of attack graph node batches grows depending on the width of the text displayed in it
