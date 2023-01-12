@@ -245,17 +245,19 @@ export class Sidebar {
     }
 
     // Collapses default sidebar entry and inserts this before
-    const c = this.sidebar?.container;
+    /*const c = this.sidebar?.container;
     if (c && c.firstChild && c.lastChild) {
       (c.firstChild as HTMLElement).click();
       c.insertBefore(c.lastChild, c.firstChild);
       c.insertBefore(c.lastChild, c.firstChild);
-    }
+    }*/
 
   }
 
   updatePalette(): void {
-    this.sidebar?.removePalette('AttackGraphs');
-    this.addPalette();
+    if (this.ui) {
+      this.ui.removeLibrarySidebar('AttackGraphs');
+      this.addPalette();
+    }
   }
 }
