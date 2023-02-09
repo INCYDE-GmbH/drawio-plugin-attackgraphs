@@ -161,6 +161,7 @@ class mxValueChange {
 class mxTerminalChange {
   cell: import('mxgraph').mxCell;
   terminal: import('mxgraph').mxCell;
+  previous: import('mxgraph').mxCell;
 }
 class mxChildChange {
   parent: import('mxgraph').mxCell;
