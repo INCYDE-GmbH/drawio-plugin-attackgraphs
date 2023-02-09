@@ -1,6 +1,6 @@
 # Changelog
 
-## [Unreleased](https://github.com/INCYDE-GmbH/drawio-plugin-attackgraphs/compare/v1.2.0...HEAD)
+## [1.2.1](https://github.com/INCYDE-GmbH/drawio-plugin-attackgraphs/compare/v1.2.0...v1.2.1) - 2023-01-23
 
 ### Added
 
@@ -9,6 +9,7 @@
 ### Fixes and Improvements
 
 - The width of attack graph node batches grows depending on the width of the text displayed in it
+- Opening an attack graph caused an error when using draw.io with version >= 20.6.0
 
 ## [1.2.0](https://github.com/INCYDE-GmbH/drawio-plugin-attackgraphs/compare/v1.1.0...v1.2.0) - 2022-11-11
 
