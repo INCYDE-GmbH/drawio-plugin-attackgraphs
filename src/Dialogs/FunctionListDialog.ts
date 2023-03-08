@@ -13,6 +13,8 @@ type VertexType = {
 const BORDER_STYLE = '1px solid #D0D0D0';
 const VERTEX_TYPES: VertexType[] = [
   {type: 'consequence', name: 'attackGraphs.consequence', style: 'width:20px;height:12px;border:1px solid black;border-radius:5px;background:#FFFFFF;', html: '&nbsp;'},
+  {type: 'impact', name: 'attackGraphs.impact', style: 'width:20px;height:12px;border:1px solid black;border-radius:5px;background:#ffcccb;', html: '&nbsp;'},
+  {type: 'severity', name: 'attackGraphs.severity', style: 'rhombus;width:12px;height:12px;border:1px solid black;background:#FFFF8F;', html: '&nbsp;'},
   {type: 'activity_w', name: 'attackGraphs.activity', style: 'width:20px;height:12px;border:1px solid black;background:#FFFFFF;', html: '&nbsp;'},
   {type: 'activity_g', name: 'attackGraphs.activity', style: 'width:20px;height:12px;border:1px solid black;background:#D7E3BF;', html: '&nbsp;'},
   {type: 'activity_y', name: 'attackGraphs.activity', style: 'width:20px;height:12px;border:1px solid black;background:#FEE599;', html: '&nbsp;'},
