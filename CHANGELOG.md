@@ -4,7 +4,8 @@
 
 ### Fixes and Improvements
 
-- Reconnecting nodes now triggers a recalculation of values for all affected cells (#98)
+- Reconnecting nodes now triggers a recalculation of values for all affected cells ([#98](https://github.com/INCYDE-GmbH/drawio-plugin-attackgraphs/issues/98))
+- Duplicates are not shown anymore when resizing nodes ([#79](https://github.com/INCYDE-GmbH/drawio-plugin-attackgraphs/issues/79))
 
 ## [1.2.1](https://github.com/INCYDE-GmbH/drawio-plugin-attackgraphs/compare/v1.2.0...v1.2.1) - 2023-01-23
 

@@ -3,19 +3,19 @@ import { AttackGraphLinkShape } from '../AttackGraphLinkShape';
 import { AttackGraphNodeShape } from '../AttackGraphNodeShape';
 import { AttributeRenderer } from '../AttributeRenderer';
 
+type CellStyle = { [key: string]: string | null };
+
 export class CellStyles {
   cell: import('mxgraph').mxCell;
-  private selected = false;
-  private marked = false;
 
   constructor(cell: import('mxgraph').mxCell) {
     this.cell = cell;
   }
 
-  parseStyles(): { [key: string]: string | null } {
-    const result: { [key: string]: string | null } = {};
-    if (this.cell.style) {
-      const tokens = this.cell.style.split(';');
+  static parseStyles(cell: import('mxgraph').mxCell): CellStyle {
+    const result: CellStyle = {};
+    if (cell.style) {
+      const tokens = cell.style.split(';');
       for (const token of tokens) {
         if (token.length === 0) {
           continue;
@@ -36,8 +36,13 @@ export class CellStyles {
     return result;
   }
 
-  isAttackgraphCell(): boolean {
-    const styles = this.parseStyles();
+  // Backwards compatability
+  parseStyles(): CellStyle {
+    return CellStyles.parseStyles(this.cell);
+  }
+
+  static isAttackgraphCell(cell: import('mxgraph').mxCell): boolean {
+    const styles = CellStyles.parseStyles(cell);
     return 'shape' in styles
       && (styles['shape'] === AttackGraphNodeShape.ID
           || styles['shape'] === AttackGraphIconLegendShape.ID
@@ -46,20 +51,22 @@ export class CellStyles {
           || styles['shape'] === 'xor');
   }
 
-  isLinkNode(): boolean {
-    const styles = this.parseStyles();
+  // Backwards compatability
+  isAttackgraphCell(): boolean {
+    return CellStyles.isAttackgraphCell(this.cell);
+  }
+
+  static isLinkNode(cell: import('mxgraph').mxCell): boolean {
+    const styles = CellStyles.parseStyles(cell);
     return 'shape' in styles && styles['shape'] === AttackGraphLinkShape.ID;
   }
 
-  setSelected(selected: boolean): void {
-    this.selected = selected;
+  // Backwards compatability
+  isLinkNode(): boolean {
+    return CellStyles.isLinkNode(this.cell)
   }
 
-  setMarked(marked: boolean): void {
-    this.marked = marked;
-  }
-
-  private encodeStyles(styles: { [key: string]: string | null }) {
+  private static encodeStyles(styles: CellStyle) {
     let style = '';
     for (const [k, v] of Object.entries(styles)) {
       style += (v) ? `${k}=${v};` :  `${k};` ;
@@ -67,54 +74,46 @@ export class CellStyles {
     return style;
   }
 
-  renderMarkedEdge(): void {
-    const styles = this.parseStyles();
+  private renderMarkedEdge(): void {
+    const styles = CellStyles.parseStyles(this.cell);
     styles['strokeColor'] = '#EA6B66';
-    this.cell.style = this.encodeStyles(styles);
+    this.cell.style = CellStyles.encodeStyles(styles);
   }
 
-  resetMarkedEdge(): void {
-    const styles = this.parseStyles();
-    delete styles['strokeColor'];
-    this.cell.style = this.encodeStyles(styles);
+  private resetMarkedEdge(): void {
+    const styles = CellStyles.parseStyles(this.cell);
+    styles['strokeColor'] = '#000000';
+    this.cell.style = CellStyles.encodeStyles(styles);
   }
 
-  renderHighlightedEdge(): void {
-    const styles = this.parseStyles();
+  private renderHighlightedEdge(): void {
+    const styles = CellStyles.parseStyles(this.cell);
     styles['strokeWidth'] = '4';
-    this.cell.style = this.encodeStyles(styles);
+    this.cell.style = CellStyles.encodeStyles(styles);
   }
 
-  renderFatEdge(): void {
-    const styles = this.parseStyles();
+  private renderFatEdge(): void {
+    const styles = CellStyles.parseStyles(this.cell);
     styles['strokeWidth'] = '2';
-    this.cell.style = this.encodeStyles(styles);
+    this.cell.style = CellStyles.encodeStyles(styles);
   }
 
-  resetEdge(): void {
-    const styles = this.parseStyles();
+  private renderNormalEdge(): void {
+    const styles = CellStyles.parseStyles(this.cell);
     styles['strokeWidth'] = '1';
+    this.cell.style = CellStyles.encodeStyles(styles);
+  }
+
+  private resetEdge(): void {
+    this.renderNormalEdge();
     this.resetMarkedEdge();
-    this.cell.style = this.encodeStyles(styles);
   }
 
   updateEdgeStyle(): void {
-    const style = new CellStyles(this.cell);
-
+    this.resetEdge();
     if ((this.cell.target !== null && this.cell.source !== null) &&
-      (new CellStyles(this.cell.target).isAttackgraphCell() || new CellStyles(this.cell.source).isAttackgraphCell())) {
-        if (this.marked) {
-          style.renderHighlightedEdge();
-          style.renderMarkedEdge();
-        } else if (this.selected) {
-          style.renderHighlightedEdge();
-          style.resetMarkedEdge();
-        } else {
-          style.renderFatEdge();
-          style.resetMarkedEdge();
-        }
-    } else {
-      style.resetEdge();
+      (CellStyles.isAttackgraphCell(this.cell.target) || CellStyles.isAttackgraphCell(this.cell.source))) {
+      this.renderFatEdge();
     }
   }
 
@@ -126,28 +125,37 @@ export class CellStyles {
     }
   }
 
-  updateConnectedEdgesStyle(selected: boolean, shallMark: boolean) {
-    if (this.cell.edges) {
-      const values = AttributeRenderer.nodeAttributes(this.cell).getAggregatedCellValues();
-      const markings = ('_marking' in values) ? values['_marking'].split(';') : null;
+  static updateConnectedEdgesStyle(cell: import('mxgraph').mxCell, selected: boolean, shallMark: boolean) {
+    if (!cell.edges) {
+      return;
+    }
 
-      for (const edge of this.cell.edges) {
-        const style = new CellStyles(edge);
-        style.setSelected(selected);
+    const values = AttributeRenderer.nodeAttributes(cell).getAggregatedCellValues();
+    const markings = ('_marking' in values) ? values['_marking'].split(';') : null;
 
-        // Mark edge?
-        if (edge.target
-            && edge.source
-            && edge.target.id !== this.cell.id
-            && edge.source.id === this.cell.id) {
-          const mark = (markings && markings.includes(edge.target.id)) as boolean;
+    for (const edge of cell.edges) {
+      if (edge.target !== null && edge.source !== null &&
+          (CellStyles.isAttackgraphCell(edge.target) || CellStyles.isAttackgraphCell(edge.source))) {
+        const styles = new CellStyles(edge);
+        let mark = false;
+
+        if (edge.target.id !== cell.id && edge.source.id === cell.id) {
+          mark = (markings && markings.includes(edge.target.id)) as boolean;
           if (mark) {
-            style.setMarked(shallMark);
-            new CellStyles(edge.target).updateConnectedEdgesStyle(false, shallMark);
+            CellStyles.updateConnectedEdgesStyle(edge.target, false, shallMark);
           }
         }
 
-        style.updateEdgeStyle();
+        if (shallMark && mark) {
+          styles.renderHighlightedEdge();
+          styles.renderMarkedEdge();
+        } else if (selected) {
+          styles.renderHighlightedEdge();
+          styles.resetMarkedEdge();
+        } else {
+          styles.renderFatEdge();
+          styles.resetMarkedEdge();
+        }
       }
     }
   }
