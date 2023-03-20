@@ -3,17 +3,22 @@ import { AttackGraphLinkShape } from '../AttackGraphLinkShape';
 import { AttackGraphNodeShape } from '../AttackGraphNodeShape';
 import { AttributeRenderer } from '../AttributeRenderer';
 
-type CellStyle = { [key: string]: string | null };
+type StylesMap = { [key: string]: string | null };
 
 export class CellStyles {
+  static ui: Draw.UI
   cell: import('mxgraph').mxCell;
 
   constructor(cell: import('mxgraph').mxCell) {
     this.cell = cell;
   }
 
-  static parseStyles(cell: import('mxgraph').mxCell): CellStyle {
-    const result: CellStyle = {};
+  static register(ui: Draw.UI): void {
+    this.ui = ui;
+  }
+
+  static parseStyles(cell: import('mxgraph').mxCell): StylesMap {
+    const result: StylesMap = {};
     if (cell.style) {
       const tokens = cell.style.split(';');
       for (const token of tokens) {
@@ -37,7 +42,7 @@ export class CellStyles {
   }
 
   // Backwards compatability
-  parseStyles(): CellStyle {
+  parseStyles(): StylesMap {
     return CellStyles.parseStyles(this.cell);
   }
 
@@ -66,7 +71,7 @@ export class CellStyles {
     return CellStyles.isLinkNode(this.cell)
   }
 
-  private static encodeStyles(styles: CellStyle) {
+  private static encodeStyles(styles: StylesMap) {
     let style = '';
     for (const [k, v] of Object.entries(styles)) {
       style += (v) ? `${k}=${v};` :  `${k};` ;
@@ -156,7 +161,20 @@ export class CellStyles {
           styles.renderFatEdge();
           styles.resetMarkedEdge();
         }
+        
+        styles.redraw();
       }
     }
+  }
+
+  public redraw(): void {  
+    const view = CellStyles.ui.editor.graph.view;
+    const state = view.getState(this.cell);
+
+    state.style = view.graph.getCellStyle(this.cell); // hardcoded because state.invalidStyle is not a defined property in the imported mxgraph library
+    state.invalid = true; // force mxGraphView to redraw the cell
+    
+    // Redraw cell
+    view.validateCellState(this.cell, false);
   }
 }

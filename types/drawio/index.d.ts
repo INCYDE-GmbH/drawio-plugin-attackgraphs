@@ -99,6 +99,7 @@ declare namespace Draw {
     getExportVariables: any;
     getSelectionCell(): import('mxgraph').mxCell;
     getSelectionCells(): import('mxgraph').mxCell[];
+    view: import('mxgraph').mxGraphView;
   }
 
   class SettingsDialog {
