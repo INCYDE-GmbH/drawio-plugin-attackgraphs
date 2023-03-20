@@ -131,10 +131,16 @@ Draw.loadPlugin(ui => {
             await AttributeRenderer.refreshCellValuesUpwards(change.cell, ui, worker);
           }
           refresh = true;
-        } else if (change instanceof mxTerminalChange) { // is an edge and changed connection
+        } else if (change instanceof mxTerminalChange) {
+          // is an edge and changed connection
           new CellStyles(change.cell).updateEdgeStyle();
-          if (change.terminal !== null) {
-            await AttributeRenderer.refreshCellValuesUpwards(change.terminal, ui, worker);
+          if (change.terminal !== null || change.previous !== null) {
+            if (change.terminal !== null) {
+              await AttributeRenderer.refreshCellValuesUpwards(change.terminal, ui, worker); // New connection
+            }
+            if (change.previous !== null) {
+              await AttributeRenderer.refreshCellValuesUpwards(change.previous, ui, worker); // Old connection
+            }
             refresh = true;
           } else {
             void AttributeRenderer.recalculateAllCells(ui, worker); // Already refreshes graph

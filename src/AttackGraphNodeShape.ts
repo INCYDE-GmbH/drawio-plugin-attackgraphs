@@ -15,7 +15,7 @@ export class AttackGraphNodeShape extends mxRectangleShape {
     const opacity = mxUtils.getValue(this.state?.style, 'opacity', '100') as string;
     c.translate(x, y);
 
-    const iconWidthHeight = 20
+    const iconWidthHeight = 20;
     const textWidthPerChar = 8;
     const diffPadding = 2;
     const paddingBefore = 5;
@@ -134,19 +134,22 @@ export class AttackGraphNodeShape extends mxRectangleShape {
   private drawLabelShape(label: string, c: import('mxgraph').mxAbstractCanvas2D, w: number, fillColor: string, fontColor: string) {
     if (this.state) {
       const opacity = mxUtils.getValue(this.state.style, 'opacity', '100') as number;
-      const squareDiameter = 20;
+      const fontSize = 13;
+      const rectHeight = 20;
+      const rectWidth = Math.max(rectHeight, label.length * fontSize);
+
       c.setFillColor(fillColor);
       c.setStrokeColor('#000000');
-      c.rect(w - squareDiameter, 0, squareDiameter, squareDiameter);
+      c.rect(w - rectWidth, 0, rectWidth, rectHeight);
       c.fillAndStroke();
 
       c.setAlpha(opacity / 100);
       c.setFontStyle(mxConstants.DEFAULT_FONTSTYLE.toString());
       c.setFontColor(fontColor);
-      c.setFontSize(13);
+      c.setFontSize(fontSize);
       c.text(
-        w - squareDiameter * 0.5,
-        squareDiameter * 0.5,
+        w - rectWidth * 0.5,
+        rectHeight * 0.5,
         0, 0, label === 'NaN' ? '!' : label, mxConstants.ALIGN_CENTER, mxConstants.ALIGN_MIDDLE, 0, null, 0, 0, 0
       );
     }

@@ -245,17 +245,26 @@ export class Sidebar {
     }
 
     // Collapses default sidebar entry and inserts this before
-    const c = this.sidebar?.container;
-    if (c && c.firstChild && c.lastChild) {
-      (c.firstChild as HTMLElement).click();
-      c.insertBefore(c.lastChild, c.firstChild);
-      c.insertBefore(c.lastChild, c.firstChild);
-    }
+    if (this.sidebar) {
+      let c = this.sidebar.container;
 
+      // draw.io >= 20.6.0: Sidebar structure changed and now has a footer in it...
+      if (this.sidebar.container.getElementsByClassName('geSidebarFooter').length > 0 && c.firstChild) {
+        c = c.firstChild as HTMLElement;
+      }
+
+      if (c && c.firstChild && c.lastChild) {
+        (c.firstChild as HTMLElement).click();
+        c.insertBefore(c.lastChild, c.firstChild);
+        c.insertBefore(c.lastChild, c.firstChild);
+      }
+    }
   }
 
   updatePalette(): void {
-    this.sidebar?.removePalette('AttackGraphs');
-    this.addPalette();
+    if (this.ui) {
+      this.ui.removeLibrarySidebar('AttackGraphs');
+      this.addPalette();
+    }
   }
 }
