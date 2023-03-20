@@ -276,38 +276,47 @@ Draw.loadPlugin(ui => {
    * Highlight and mark edges connected to the selected node
    */
   let activeCell: import('mxgraph').mxCell | undefined = undefined;
-  let cellMoved = false;
+  let movedCell: import('mxgraph').mxCell | undefined = undefined;
 
   // Fired before mxEvent.CLICK by draw.io
-  ui.editor.graph.addListener(mxEvent.CELLS_MOVED, (_, evt: import('mxgraph').mxEventObject) => {
+  ui.editor.graph.addListener(mxEvent.CELLS_MOVED, (_, evt: import('mxgraph').mxEventObject) => {    
     const cells = evt.getProperty('cells') as import('mxgraph').mxCell[];
-
     if (cells.length === 1) {
-      CellStyles.updateConnectedEdgesStyle(cells[0], true, true);
-      cellMoved = true;
+      movedCell = cells[0];
     }
   });
   ui.editor.graph.addListener(mxEvent.CLICK, (_, evt: import('mxgraph').mxEventObject) => {
     const cell = evt.getProperty('cell') as import('mxgraph').mxCell | null;
     let refresh = false;
 
-    if (activeCell && !cellMoved) {
-      CellStyles.updateConnectedEdgesStyle(activeCell, false, false);
-      activeCell = undefined;
-      refresh = true;
+    if (movedCell) {
+      // Was the cell first clicked by the move? --> Mark! (and store the clicked cell)
+      if (!activeCell) {
+        CellStyles.updateConnectedEdgesStyle(movedCell, true, true);
+        activeCell = movedCell
+        refresh = true;
+      }
+
+      movedCell = undefined;
+    } else {
+      // Was a cell clicked beforehand? --> Unmark!
+      if (activeCell) {
+        CellStyles.updateConnectedEdgesStyle(activeCell, false, false);
+        activeCell = undefined;
+        refresh = true;
+      }
+
+      // Was a cell clicked? --> Mark!
+      if (cell) {
+        CellStyles.updateConnectedEdgesStyle(cell, true, true);
+        activeCell = cell;
+        refresh = true;
+      }
     }
 
-    if (cell && !cellMoved) {
-      CellStyles.updateConnectedEdgesStyle(cell, true, true);
-      activeCell = cell;
-      refresh = true;
-    }
-
-    if (refresh || cellMoved) {
+    if (refresh) {
       ui.editor.graph.refresh();
     }
-
-    cellMoved = false;
   });
 
 
