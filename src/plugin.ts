@@ -55,6 +55,7 @@ Draw.loadPlugin(ui => {
 
   // Register additional text resources (for the current language)
   Resources.register(mxSettings.settings.language || 'en');
+  CellStyles.register(ui);
 
   AttributeProvider.register(ui);
 
@@ -287,14 +288,12 @@ Draw.loadPlugin(ui => {
   });
   ui.editor.graph.addListener(mxEvent.CLICK, (_, evt: import('mxgraph').mxEventObject) => {
     const cell = evt.getProperty('cell') as import('mxgraph').mxCell | null;
-    let refresh = false;
 
     if (movedCell) {
       // Was the cell first clicked by the move? --> Mark! (and store the clicked cell)
       if (!activeCell) {
         CellStyles.updateConnectedEdgesStyle(movedCell, true, true);
         activeCell = movedCell
-        refresh = true;
       }
 
       movedCell = undefined;
@@ -303,19 +302,13 @@ Draw.loadPlugin(ui => {
       if (activeCell) {
         CellStyles.updateConnectedEdgesStyle(activeCell, false, false);
         activeCell = undefined;
-        refresh = true;
       }
 
       // Was a cell clicked? --> Mark!
       if (cell) {
         CellStyles.updateConnectedEdgesStyle(cell, true, true);
         activeCell = cell;
-        refresh = true;
       }
-    }
-
-    if (refresh) {
-      ui.editor.graph.refresh();
     }
   });
 
