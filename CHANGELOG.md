@@ -1,5 +1,13 @@
 # Changelog
 
+## [Unreleased](https://github.com/INCYDE-GmbH/drawio-plugin-attackgraphs/compare/v1.2.2...HEAD)
+
+### Fixes and Improvements
+
+- Enhance recalculation of cell values ([#108](https://github.com/INCYDE-GmbH/drawio-plugin-attackgraphs/issues/108))
+  - Avoid recaluclating the values of cells more than once
+  - Allow to specify several cells to simultaneously update within one function call
+
 ## [1.2.2](https://github.com/INCYDE-GmbH/drawio-plugin-attackgraphs/compare/v1.2.1...v1.2.2) - 2023-03-20
 
 ### Fixes and Improvements

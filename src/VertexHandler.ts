@@ -90,7 +90,7 @@ export const installVertexHandler = (ui: Draw.UI, worker: AsyncWorker): void => 
       dlg.init();
       void (async () => {
         if (await dlg.show()) {
-          await AttributeRenderer.refreshCellValuesUpwards(cell.cell, ui, worker);
+          await AttributeRenderer.refreshCellValuesUpwards([cell.cell], ui, worker);
           await ui.editor.graph.refresh();
         }
       })();
@@ -102,7 +102,7 @@ export const installVertexHandler = (ui: Draw.UI, worker: AsyncWorker): void => 
       dlg.init();
       void (async () => {
         if (await dlg.show()) {
-          await AttributeRenderer.refreshCellValuesUpwards(cell.cell, ui, worker);
+          await AttributeRenderer.refreshCellValuesUpwards([cell.cell], ui, worker);
           await ui.editor.graph.refresh();
         }
       })();

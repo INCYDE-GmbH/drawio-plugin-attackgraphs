@@ -48,22 +48,9 @@ export class AttributeRenderer {
     return worker.runWorkerFunction<ChildCellDataCollection, KeyValuePairs>(fn, childAttributes);
   }
 
-  static async refreshCellValuesUpwards(cell: import('mxgraph').mxCell, ui: Draw.UI, worker: AsyncWorker): Promise<void> {
-    if (AttackGraphSettings.isAttackGraph(ui.editor.graph)) {
-      if (GraphUtils.isTree(cell)) {
-        Menubar.increaseUnfinishedWorkers(ui);
-        await this.updateCellValuesUpwards(this.nodeAttributes(cell), AttributeRenderer.rootAttributes(), worker, ui);
-        Menubar.decreaseUnfinishedWorkers(ui);
-      } else {
-        mxUtils.alert('Cannot recalculate the graph as it contains loops!');
-      }
-    }
-  }
-
-  private static async updateCellValuesUpwards(cell: NodeAttributeProvider, root: RootAttributeProvider, worker: AsyncWorker, ui: Draw.UI): Promise<void> {
+  private static async updateCellValues(cell: NodeAttributeProvider, root: RootAttributeProvider, worker: AsyncWorker): Promise<void> {
     const globalDefaultAttributes = root.getGlobalAttributes();
     const globalDefaultAttributesDict = this.transformGlobalAttributesToGlobalAttributesDict(globalDefaultAttributes || []) as GlobalAttributeDict;
-    const incomingEdges = cell.cell.edges?.filter(x => x.target === cell.cell && x.source) || [];
 
     const childValues = this.getChildValues(cell);
     const aggregationFunction = cell.resolveAggregationFunction(root);
@@ -101,8 +88,144 @@ export class AttributeRenderer {
     const cellAttributes = cell.getCellValues();
     const computedAttributes = await this.recalculateCellLabel({ globalAttributes: globalDefaultAttributesDict, cellAttributes: { ...cellAttributes, ...aggregatedValues } }, labelFunction, worker);
     cell.setComputedAttributesForCell(computedAttributes);
+  }
 
-    await Promise.all(incomingEdges.map(x => this.updateCellValuesUpwards(this.nodeAttributes(x.source), root, worker, ui)));
+  static async refreshCellValuesUpwards(
+    cells: import('mxgraph').mxCell[],
+    ui: Draw.UI,
+    worker: AsyncWorker
+  ): Promise<void> {
+    if (AttackGraphSettings.isAttackGraph(ui.editor.graph)) {
+      Menubar.increaseUnfinishedWorkers(ui);
+      try {
+        await this.refreshCellValues(cells, worker);
+      } catch(e) {
+        mxUtils.alert(e as string);
+      }
+      Menubar.decreaseUnfinishedWorkers(ui);
+    }
+  }
+
+  /**
+   * Refreshes the values of edited {@link cells} in the graph.
+   * 
+   * The {@link cells} are the anchors from which the values of cells are updated.
+   * An update structure is created first to track for all cells affected by the update
+   * of {@link cells} for which child cells it has to wait. Afterward, the values
+   * of the affected cells are updated in the right order.
+   * 
+   * @param cells 
+   * @param worker 
+   */
+  private static async refreshCellValues(
+    cells: import('mxgraph').mxCell[],
+    worker: AsyncWorker
+  ): Promise<void> {
+    const structure: {[id: string]: string[]} = {};
+    const topLevelCells: import('mxgraph').mxCell[] = [];
+
+    // Checks
+    for (const cell of cells) {
+      if (!GraphUtils.isTree(cell)) {
+        throw new Error('Cannot recalculate the graph as it contains loops!');
+      }
+    }
+
+    // Create update structure
+    const ps: {[id: string]: Promise<void>} = {};
+    for (const cell of cells) {
+      if (!Object.prototype.hasOwnProperty.call(ps, cell.id)) {
+        ps[cell.id] = this.createUpdateStructure(cell, structure, topLevelCells, ps);
+      }
+    }
+    await Promise.all(Object.entries(ps).map(([, x]) => x));    
+
+    // Update cells
+    const ps2: {[id: string]: Promise<void>} = {};
+    const root = AttributeRenderer.rootAttributes();
+    for (const cell of topLevelCells) {
+      if (!Object.prototype.hasOwnProperty.call(ps2, cell.id)) {
+        ps2[cell.id] = this.updateCells(cell, root, worker, structure, ps2);
+      }
+    }
+    await Promise.all(Object.entries(ps2).map(([, x]) => x));
+  }
+
+  /**
+   * Recusrively finds the update structure when updating {@link cell}.
+   * 
+   * The update structure {@link structure} includes for every cell affected by the update
+   * of {@link cell} for which child cells it has to wait before it can recalculated its
+   * own values.
+   * 
+   * As a side effect, the method also returns the {@link topLevelCells} which includes all
+   * cells in the update structure that have no parents themselves.
+   * 
+   * @param cell 
+   * @param structure 
+   * @param topLevelCells 
+   * @param promises 
+   */
+  private static async createUpdateStructure(
+    cell: import('mxgraph').mxCell,
+    structure: {[id: string]: string[]},
+    topLevelCells: import('mxgraph').mxCell[],
+    promises: {[id: string]: Promise<void>}
+  ): Promise<void> {
+    // At first, we have no childs
+    structure[cell.id] = []; 
+
+    // Wait for all parents
+    const incomingEdges = cell.edges?.filter(x => x.target === cell && x.source) || [];
+    await Promise.all(incomingEdges.map(x => {
+      // Only act if the cell is not process by anybody yet
+      if (!Object.prototype.hasOwnProperty.call(promises, x.source.id)) {
+        promises[x.source.id] = this.createUpdateStructure(x.source, structure, topLevelCells, promises);
+      }
+      return promises[x.source.id];
+    }));
+
+    if (incomingEdges.length === 0) {
+      topLevelCells.push(cell);
+    }
+
+    // Add us as child of each parent
+    for (const edge of incomingEdges) {
+      structure[edge.source.id].push(cell.id)
+    }
+  }
+
+  /**
+   * Recursively updates the values of {@link cell} and all its parents.
+   * 
+   * This method uses the update structure {@link structure} to first wait for all
+   * childs of {@link cell} before recalculating its own values.
+   * 
+   * @param cell 
+   * @param root 
+   * @param worker 
+   * @param structure 
+   * @param promises 
+   */
+  private static async updateCells(
+    cell: import('mxgraph').mxCell,
+    root: RootAttributeProvider,
+    worker: AsyncWorker,
+    structure: {[id: string]: string[]},
+    promises: {[id: string]: Promise<void>}
+  ): Promise<void> {
+    // Wait for all childs
+    const outgoingEdges = cell.edges?.filter(x => x.source === cell && x.target) || [];
+    await Promise.all(outgoingEdges.map(x => {
+      // Only act if the cell is not process by anybody yet
+      if (!Object.prototype.hasOwnProperty.call(promises, x.target.id)) {
+        promises[x.target.id] = this.updateCells(x.target, root, worker, structure, promises);
+      }
+      return promises[x.target.id];
+    }));
+
+    // Update our value
+    await this.updateCellValues(this.nodeAttributes(cell), root, worker);
   }
 
   public static transformGlobalAttributesToGlobalAttributesDict(attributes: GlobalAttribute[]): { [name: string]: KeyValuePairs } {
@@ -126,10 +249,8 @@ export class AttributeRenderer {
   }
 
   static async recalculateAllCells(ui: Draw.UI, worker: AsyncWorker): Promise<void> {
-    // TODO: Improve to avoid recalculating nodes already calculated
-    await Promise.all(Object.entries(ui.editor.graph.getModel().cells as { [id: string]: import('mxgraph').mxCell }).map(([, cell]) =>
-      this.refreshCellValuesUpwards(cell, ui, worker)
-    ));
+    const cells = Object.entries(ui.editor.graph.getModel().cells as { [id: string]: import('mxgraph').mxCell }).map(([, cell]) => cell);
+    await this.refreshCellValuesUpwards(cells, ui, worker);
     ui.editor.graph.refresh();
   }
 

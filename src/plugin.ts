@@ -98,6 +98,13 @@ Draw.loadPlugin(ui => {
 
 
   ui.editor.graph.model.addListener(mxEvent.CHANGE, (sender, evt: import('mxgraph').mxEventObject) => {
+    const cells: {[id: string]: import('mxgraph').mxCell} = {};
+    const deferCellUpdate = (cell: import('mxgraph').mxCell) => {
+      if (!Object.prototype.hasOwnProperty.call(cells, cell.id)) {
+        cells[cell.id] = cell;
+      }
+    };
+    
     const edit = evt.getProperty('edit') as import('mxgraph').mxUndoableEdit;
     void (async () => {
       let refresh = false;
@@ -113,7 +120,7 @@ Draw.loadPlugin(ui => {
                 change.cell.setValue(change.previous);
               }
             }
-            await AttributeRenderer.refreshCellValuesUpwards(change.cell.source, ui, worker);
+            deferCellUpdate(change.cell.source);
           } else {
             if (AttributeRenderer.sensitivityAnalysisEnabled()) {
               const nodeAttributes = AttributeRenderer.nodeAttributes(change.cell).getCellValues();
@@ -129,26 +136,28 @@ Draw.loadPlugin(ui => {
                 change.cell.setValue(change.previous);
               }
             }
-            await AttributeRenderer.refreshCellValuesUpwards(change.cell, ui, worker);
+            deferCellUpdate(change.cell);
           }
-          refresh = true;
         } else if (change instanceof mxTerminalChange) {
           // is an edge and changed connection
           new CellStyles(change.cell).updateEdgeStyle();
           if (change.terminal !== null || change.previous !== null) {
             if (change.terminal !== null) {
-              await AttributeRenderer.refreshCellValuesUpwards(change.terminal, ui, worker); // New connection
+              deferCellUpdate(change.terminal); // New connection
             }
             if (change.previous !== null) {
-              await AttributeRenderer.refreshCellValuesUpwards(change.previous, ui, worker); // Old connection
+              deferCellUpdate(change.previous); // Old connection
             }
-            refresh = true;
           } else {
-            void AttributeRenderer.recalculateAllCells(ui, worker); // Already refreshes graph
+            refresh = true;
           }
         }
       }
+      
       if (refresh) {
+        await AttributeRenderer.recalculateAllCells(ui, worker); // Already refreshes graph
+      } else if (Object.entries(cells).length > 0) {
+        await AttributeRenderer.refreshCellValuesUpwards(Object.entries(cells).map(([, cell]) => cell), ui, worker);
         ui.editor.graph.refresh();
       }
     })();
@@ -160,32 +169,25 @@ Draw.loadPlugin(ui => {
     // if added cell was an edge, trigger source recalculation
     if (source) {
       new CellStyles(cells[0]).updateEdgeStyle();
-
-      void AttributeRenderer.refreshCellValuesUpwards(source, ui, worker);
+      void AttributeRenderer.refreshCellValuesUpwards([source], ui, worker);
     } else {
       void (async () => {
-        await Promise.all(cells.map(cell => AttributeRenderer.refreshCellValuesUpwards(cell, ui, worker)));
+        await AttributeRenderer.refreshCellValuesUpwards(cells, ui, worker);
         ui.editor.graph.refresh();
       })();
-
     }
   });
 
   ui.editor.graph.addListener(mxEvent.CELLS_REMOVED, (sender: Graph, evt: import('mxgraph').mxEventObject) => {
     const cells = evt.getProperty('cells') as import('mxgraph').mxCell[];
-    if (cells.some(x => new CellStyles(x).isAttackgraphCell())) {
+    if (cells.some(x => CellStyles.isAttackgraphCell(x))) {
       CellStyles.updateAllEdgeStyles(ui.editor.graph.model);
       void AttributeRenderer.recalculateAllCells(ui, worker);
     } else {
-      for (const cell of cells) {
-        // is edge
-        if (cell.source) {
-          void (async () => {
-            await AttributeRenderer.refreshCellValuesUpwards(cell.source, ui, worker);
-            ui.editor.graph.refresh();
-          })();
-        }
-      }
+      void (async () => {
+        await AttributeRenderer.refreshCellValuesUpwards(cells.filter(x => x.source).map(x => x.source), ui, worker);
+        ui.editor.graph.refresh();
+      })();
     }
   });
 
