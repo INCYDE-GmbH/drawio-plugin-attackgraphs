@@ -215,7 +215,8 @@ export class AttributeRenderer {
     promises: {[id: string]: Promise<void>}
   ): Promise<void> {
     // Wait for all childs
-    const outgoingEdges = cell.edges?.filter(x => x.source === cell && x.target) || [];
+    const childs = structure[cell.id];
+    const outgoingEdges = cell.edges?.filter(x => x.source === cell && x.target && childs.includes(x.target.id)) || [];
     await Promise.all(outgoingEdges.map(x => {
       // Only act if the cell is not process by anybody yet
       if (!Object.prototype.hasOwnProperty.call(promises, x.target.id)) {
