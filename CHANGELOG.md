@@ -4,6 +4,7 @@
 
 ### Fixes and Improvements
 
+- Undos sometimes did not trigger recalculations of cell values ([#109](https://github.com/INCYDE-GmbH/drawio-plugin-attackgraphs/issues/109))
 - Enhance recalculation of cell values ([#108](https://github.com/INCYDE-GmbH/drawio-plugin-attackgraphs/issues/108))
   - Avoid recaluclating the values of cells more than once
   - Allow to specify several cells to simultaneously update within one function call

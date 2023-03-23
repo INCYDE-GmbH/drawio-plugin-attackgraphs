@@ -165,6 +165,7 @@ class mxTerminalChange {
   previous: import('mxgraph').mxCell;
 }
 class mxChildChange {
+  child: import('mxgraph').mxCell;
   parent: import('mxgraph').mxCell;
   terminal: import('mxgraph').mxCell;
   previous: import('mxgraph').mxCell;
