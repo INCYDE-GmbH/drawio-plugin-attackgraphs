@@ -110,8 +110,7 @@ Draw.loadPlugin(ui => {
       let refresh = false;
       for (const change of edit.changes) {
         if (change instanceof mxValueChange) {
-          // value of an edge was changed (edge weight)
-          if (change.cell.source !== null) {
+          if (change.cell.source !== null) { // value of an edge was changed (edge weight)
             if (AttributeRenderer.sensitivityAnalysisEnabled()) {
               const label = AttributeRenderer.edgeAttributes(change.cell).getCellLabel() || '';
               const previousLabel = change.previous !== null ? typeof change.previous === 'string' ? change.previous as string : change.previous.getAttribute('label') : null;
@@ -138,8 +137,7 @@ Draw.loadPlugin(ui => {
             }
             deferCellUpdate(change.cell);
           }
-        } else if (change instanceof mxTerminalChange) {
-          // is an edge and changed connection
+        } else if (change instanceof mxTerminalChange) { // is an edge and changed connection
           new CellStyles(change.cell).updateEdgeStyle();
           if (change.terminal !== null || change.previous !== null) {
             if (change.terminal !== null) {
@@ -151,6 +149,34 @@ Draw.loadPlugin(ui => {
           } else {
             refresh = true;
           }
+        } else if (change instanceof mxChildChange) { // a cell was added or removed from the graph model
+          const cell = change.child;
+          if (change.previous === null && change.parent !== null) { // cell was added
+            if (cell.edge) {
+              new CellStyles(cell).updateEdgeStyle();
+              if (cell.source) {
+                deferCellUpdate(cell.source);
+              } else {
+                refresh = true;
+              }
+            } else {
+              // No edge style updates needed because mxTerminalChange is fired for every edge connected to the added node
+              deferCellUpdate(cell);
+            }
+          } else if (change.previous !== null && change.parent === null) { // cell was removed
+            // No edge style updates needed because mxTerminalChange is fired as well if a node is removed
+            if (cell.edge) {
+              if (cell.source) {
+                deferCellUpdate(cell.source);
+              } else {
+                refresh = true;
+              }
+            } else if (CellStyles.isAttackgraphCell(cell)) {
+              refresh = true;
+            } else {
+              deferCellUpdate(cell);
+            }
+          }
         }
       }
       
@@ -161,34 +187,6 @@ Draw.loadPlugin(ui => {
         ui.editor.graph.refresh();
       }
     })();
-  });
-
-  ui.editor.graph.addListener(mxEvent.CELLS_ADDED, (sender: Graph, evt: import('mxgraph').mxEventObject) => {
-    const source = evt.getProperty('source') as import('mxgraph').mxCell;
-    const cells = evt.getProperty('cells') as import('mxgraph').mxCell[];
-    // if added cell was an edge, trigger source recalculation
-    if (source) {
-      new CellStyles(cells[0]).updateEdgeStyle();
-      void AttributeRenderer.refreshCellValuesUpwards([source], ui, worker);
-    } else {
-      void (async () => {
-        await AttributeRenderer.refreshCellValuesUpwards(cells, ui, worker);
-        ui.editor.graph.refresh();
-      })();
-    }
-  });
-
-  ui.editor.graph.addListener(mxEvent.CELLS_REMOVED, (sender: Graph, evt: import('mxgraph').mxEventObject) => {
-    const cells = evt.getProperty('cells') as import('mxgraph').mxCell[];
-    if (cells.some(x => CellStyles.isAttackgraphCell(x))) {
-      CellStyles.updateAllEdgeStyles(ui.editor.graph.model);
-      void AttributeRenderer.recalculateAllCells(ui, worker);
-    } else {
-      void (async () => {
-        await AttributeRenderer.refreshCellValuesUpwards(cells.filter(x => x.source).map(x => x.source), ui, worker);
-        ui.editor.graph.refresh();
-      })();
-    }
   });
 
   let loadingComplete = false;
