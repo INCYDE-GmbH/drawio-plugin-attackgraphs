@@ -22,6 +22,7 @@ declare namespace Draw {
     showDialog(elt, w, h, modal, closable, onClose?, noScroll?, transparent?, onResize?, ignoreBgClick?);
     confirm(msg: string, okFn: () => void, cancelFn?: () => void, okLabel?: string, cancelLabel?: string, closable?: boolean): void;
     hideDialog();
+    removeLibrarySidebar(id: string);
   }
 
   class DiagramPage {
@@ -98,6 +99,7 @@ declare namespace Draw {
     getExportVariables: any;
     getSelectionCell(): import('mxgraph').mxCell;
     getSelectionCells(): import('mxgraph').mxCell[];
+    view: import('mxgraph').mxGraphView;
   }
 
   class SettingsDialog {
@@ -115,8 +117,8 @@ declare namespace Draw {
   class Sidebar {
     container: HTMLElement;
     createVertexTemplate(style: string, width: number, height: number, value?: any, title?: string, showLabel?: boolean, showTitle?: boolean, allowCellsInserted?: boolean, showTooltip?: boolean): HTMLAnchorElement;
-    addPalette(arg0: string, arg1: string, arg2: boolean, arg3: (content: HTMLDivElement, title: HTMLAnchorElement) => void);
-    removePalette(id: string);
+    addPalette(id: string, title: string, expanded: boolean, onInit: (content: HTMLDivElement, title?: HTMLAnchorElement) => void);
+    //removePalette(id: string); // Buggy
     updatePalette();
   }
 
@@ -160,8 +162,10 @@ class mxValueChange {
 class mxTerminalChange {
   cell: import('mxgraph').mxCell;
   terminal: import('mxgraph').mxCell;
+  previous: import('mxgraph').mxCell;
 }
 class mxChildChange {
+  child: import('mxgraph').mxCell;
   parent: import('mxgraph').mxCell;
   terminal: import('mxgraph').mxCell;
   previous: import('mxgraph').mxCell;
