@@ -273,6 +273,31 @@ Draw.loadPlugin(ui => {
     }
   }
 
+  // Visually disable edges connected to disabled nodes
+  const paintEdgeShape = mxConnector.prototype.paintEdgeShape;
+  mxConnector.prototype.paintEdgeShape = function(c: import('mxgraph').mxAbstractCanvas2D, pts: import('mxgraph').mxPoint[]) {
+    if (this.state && this.state.cell.source && this.state.cell.target) {
+      const source = AttributeRenderer.nodeAttributes(this.state.cell.source);
+      const target = AttributeRenderer.nodeAttributes(this.state.cell.target);
+
+      if (!source.getEnabledStatus() || !target.getEnabledStatus()) {
+        c.setAlpha(20 / 100); // Deliberately set to 20% for a better result
+      }
+    }
+    paintEdgeShape.apply(this, [c, pts]);
+  }
+
+  // Visually disable OR and AND nodes when disabled
+  const paintVertexShape = mxActor.prototype.paintVertexShape;
+  mxActor.prototype.paintVertexShape = function(c: import('mxgraph').mxAbstractCanvas2D, x: number, y: number, w: number, h: number) {
+    if (this.state
+        && CellStyles.isAttackgraphCell(this.state.cell)
+        && !AttributeRenderer.nodeAttributes(this.state.cell).getEnabledStatus()) {
+      c.setAlpha(30 / 100);
+    }
+    paintVertexShape.apply(this, [c, x, y, w, h]);
+  }
+
   /*
    * Highlight and mark edges connected to the selected node
    */

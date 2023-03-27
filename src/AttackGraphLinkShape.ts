@@ -27,6 +27,10 @@ export class AttackGraphLinkShape extends mxEllipse {
           this.writeText('«' + page.getName() + '»', x + w * 0.5, y + circDiameter + fontSize, fontSize, AttackGraphLinkShape.defaultFontColor, c);
         }
       }
+
+      if (!cell.getEnabledStatus()) {
+        c.setAlpha(30 / 100);
+      }
     }
 
     super.paintVertexShape(c, x + (w - circDiameter) * 0.5, y, circDiameter, circDiameter);
