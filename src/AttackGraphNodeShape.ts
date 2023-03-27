@@ -3,6 +3,7 @@ import { NodeValues } from './Model';
 import { AttributeRenderer as AttributeRenderer } from './AttributeRenderer';
 import { AttributeProvider } from './Analysis/AttributeProvider';
 import { RootAttributeProvider } from './Analysis/RootAttributeProvider';
+import { CellStyles } from './Analysis/CellStyles';
 
 export class AttackGraphNodeShape extends mxRectangleShape {
   public static readonly ID = 'attackgraphs.node';
@@ -119,7 +120,7 @@ export class AttackGraphNodeShape extends mxRectangleShape {
 
     const cell = AttributeRenderer.nodeAttributes(this.state.cell);
     if (!cell.getEnabledStatus()) {
-      c.setAlpha(30 / 100);
+      c.setAlpha(CellStyles.DISABLED_CELL_ALPHA);
     }
 
     const allValues = cell.getAllValues();

@@ -282,7 +282,7 @@ Draw.loadPlugin(ui => {
       const target = AttributeRenderer.nodeAttributes(this.state.cell.target);
 
       if (!source.getEnabledStatus() || !target.getEnabledStatus()) {
-        c.setAlpha(20 / 100); // Deliberately set to 20% for a better result
+        c.setAlpha(CellStyles.DISABLED_EDGE_ALPHA);
       }
     }
     paintEdgeShape.apply(this, [c, pts]);
@@ -295,7 +295,7 @@ Draw.loadPlugin(ui => {
     if (this.state
         && CellStyles.isAttackgraphCell(this.state.cell)
         && !AttributeRenderer.nodeAttributes(this.state.cell).getEnabledStatus()) {
-      c.setAlpha(30 / 100);
+      c.setAlpha(CellStyles.DISABLED_CELL_ALPHA);
     }
     paintVertexShape.apply(this, [c, x, y, w, h]);
   }

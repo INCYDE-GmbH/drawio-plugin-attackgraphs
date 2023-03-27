@@ -1,3 +1,4 @@
+import { CellStyles } from './Analysis/CellStyles';
 import { AttributeRenderer } from './AttributeRenderer';
 
 export class AttackGraphLinkShape extends mxEllipse {
@@ -29,7 +30,7 @@ export class AttackGraphLinkShape extends mxEllipse {
       }
 
       if (!cell.getEnabledStatus()) {
-        c.setAlpha(30 / 100);
+        c.setAlpha(CellStyles.DISABLED_CELL_ALPHA);
       }
     }
 

@@ -9,6 +9,9 @@ export class CellStyles {
   static ui: Draw.UI
   cell: import('mxgraph').mxCell;
 
+  static readonly DISABLED_CELL_ALPHA = 0.3;
+  static readonly DISABLED_EDGE_ALPHA = 0.2; // Deliberately set to 20% for a better result
+
   constructor(cell: import('mxgraph').mxCell) {
     this.cell = cell;
   }
