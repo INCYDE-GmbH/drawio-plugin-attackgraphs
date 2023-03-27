@@ -2,12 +2,17 @@
 
 ## [Unreleased](https://github.com/INCYDE-GmbH/drawio-plugin-attackgraphs/compare/v1.2.2...HEAD)
 
+### Added
+
+- Allow to mark attack graph nodes to not be considered for the aggregation and combuted attributes functions ([#81](https://github.com/INCYDE-GmbH/drawio-plugin-attackgraphs/issues/81))
+
 ### Fixes and Improvements
 
 - Undos sometimes did not trigger recalculations of cell values ([#109](https://github.com/INCYDE-GmbH/drawio-plugin-attackgraphs/issues/109))
 - Enhance recalculation of cell values ([#108](https://github.com/INCYDE-GmbH/drawio-plugin-attackgraphs/issues/108))
   - Avoid recaluclating the values of cells more than once
   - Allow to specify several cells to simultaneously update within one function call
+- Function handles are shown only for attack graph nodes. They are also not shown for the `AttackGraphIconLegendShape`.
 
 ## [1.2.2](https://github.com/INCYDE-GmbH/drawio-plugin-attackgraphs/compare/v1.2.1...v1.2.2) - 2023-03-20
 

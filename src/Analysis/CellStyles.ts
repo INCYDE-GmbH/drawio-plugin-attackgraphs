@@ -71,6 +71,11 @@ export class CellStyles {
     return CellStyles.isLinkNode(this.cell)
   }
 
+  static isIconLegend(cell: import('mxgraph').mxCell): boolean {
+    const styles = CellStyles.parseStyles(cell);
+    return 'shape' in styles && styles['shape'] === AttackGraphIconLegendShape.ID;
+  }
+
   private static encodeStyles(styles: StylesMap) {
     let style = '';
     for (const [k, v] of Object.entries(styles)) {

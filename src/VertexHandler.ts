@@ -9,37 +9,77 @@ import { CellStyles } from './Analysis/CellStyles';
 
 const IMAGE_WIDTH = 24;
 const IMAGE_HEIGHT = 24;
+
 class VertexHandler extends mxVertexHandler {
   functionHandles: HTMLImageElement[] | null = null;
   tooltipHandle: TooltipHandle | null = null;
+  toggleHandle: ToggleHandle | null = null;
 }
-class TooltipHandle {
-  private width: number;
-  private handle: HTMLElement;
 
-  constructor(width: number) {
-    this.width = width;
-    this.handle = this.createHandle();
+abstract class Handle {
+  protected handle: HTMLElement | null = null;
+
+  register(): void {
+    mxEvent.addListener(this.getHandle(), mxEvent.CLICK, () => this.clicked(this));
   }
 
   getHandle(): HTMLElement {
+    if (!this.handle) {
+      this.handle = this.createHandle();
+    }
     return this.handle;
   }
 
   reset(): void {
-    this.handle.innerHTML = '';
+    this.setContent('');
   }
 
   setContent(content: string): void {
-    this.handle.innerHTML = content;
+    this.getHandle().innerHTML = content;
+  }
+
+  insertInto(element: HTMLElement): void {
+    element.appendChild(this.getHandle());
+  }
+
+  destroy() {
+    const handle = this.getHandle();
+    if (handle.parentNode) {
+      handle.parentNode.removeChild(handle);
+    }
+  }
+
+  display(display: boolean): void {
+    this.getHandle().style.display = (display) ? '' : 'none';
+  }
+
+  visibility(visible: boolean): void {
+    this.getHandle().style.visibility = (visible) ? '' : 'hidden';
+  }
+
+  abstract redraw(state: import('mxgraph').mxCellState): void;
+  protected abstract createHandle(): HTMLElement;
+  protected abstract clicked(handle: Handle): void;
+}
+
+class TooltipHandle extends Handle {
+  private width: number;
+
+  constructor(width: number) {
+    super();
+    this.width = width;
   }
 
   redraw(state: import('mxgraph').mxCellState): void {
-    this.handle.style.left = `${Math.round(state.x - this.width - 10)}px`;
-    this.handle.style.top = `${state.y}px`;
+    this.getHandle().style.left = `${Math.round(state.x - this.width - 10)}px`;
+    this.getHandle().style.top = `${state.y}px`;
   }
 
-  private createHandle(): HTMLElement {
+  protected clicked(): void {
+    return;
+  }
+
+  protected createHandle(): HTMLElement {
     const elem = document.createElement('div');
     elem.innerHTML = '';
     elem.style.position = 'absolute';
@@ -54,6 +94,51 @@ class TooltipHandle {
     return elem;
   }
 }
+
+class ToggleHandle extends Handle {
+  private enabled: boolean;
+  private cell: NodeAttributeProvider;
+  private ui: Draw.UI;
+  private worker: AsyncWorker;
+
+  constructor(cell: NodeAttributeProvider, ui: Draw.UI, worker: AsyncWorker) {
+    super();
+    this.enabled = cell.getEnabledStatus();
+    this.cell = cell;
+    this.ui = ui;
+    this.worker = worker;
+  }
+
+  redraw(state: import('mxgraph').mxCellState): void {
+    this.getHandle().style.left = `${Math.round(state.x + state.width + 5)}px`;
+    this.getHandle().style.top = `${state.y + state.height - IMAGE_HEIGHT}px`;
+  }
+
+  protected async clicked(handle: ToggleHandle): Promise<void> {
+    handle.enabled = !handle.enabled;
+    (handle.getHandle() as HTMLImageElement).src = handle.getIcon();
+    handle.cell.setEnabledStatus(handle.enabled);
+    await AttributeRenderer.refreshCellValuesUpwards([handle.cell.cell], this.ui, this.worker);
+    await this.ui.editor.graph.refresh();
+  }
+
+  private getIcon(): string {
+    const enable = this.enabled || (this.enabled === undefined) ? true : false;
+    const icon = (enable) ? Framework7Icons.Icons.eye : Framework7Icons.Icons.eye_slash;
+    return `data:image/svg+xml;utf8,${icon}`;
+  }
+
+  protected createHandle(): HTMLImageElement {
+    const elem = mxUtils.createImage(this.getIcon());
+    elem.className = 'ag_toggle_handle';
+    elem.style.position = 'absolute';
+    elem.style.cursor = 'pointer';
+    elem.style.width = `${IMAGE_WIDTH}px`;
+    elem.style.height = `${IMAGE_HEIGHT}px`;
+    return elem;
+  }
+}
+
 
 export const installVertexHandler = (ui: Draw.UI, worker: AsyncWorker): void => {
 
@@ -116,25 +201,45 @@ export const installVertexHandler = (ui: Draw.UI, worker: AsyncWorker): void => 
   }
 
   const drawTooltipHandle = (vertexHandler: VertexHandler) => {
-    if (new CellStyles(vertexHandler.state.cell).isLinkNode()) {
+    // Destroys existing handles
+    if (vertexHandler.tooltipHandle) {
+      vertexHandler.tooltipHandle.destroy();
+    }
+    vertexHandler.tooltipHandle = null;
+
+    if (CellStyles.isLinkNode(vertexHandler.state.cell)) {
       const cell = new NodeAttributeProvider(vertexHandler.state.cell);
       const pages = cell.getLinkNodesReferencingThisCell().map(x => x.getPage()?.getName()).filter((v, i, a) => a.indexOf(v) === i);
 
       if (pages.length > 0) {
         vertexHandler.tooltipHandle = new TooltipHandle(125);
         vertexHandler.tooltipHandle.setContent(`<strong>${mxResources.get('attackGraphs.pageReferenceTooltip')}:</strong><br/>` + pages.join('<br/>'));
-        vertexHandler.graph.container.appendChild(vertexHandler.tooltipHandle.getHandle());
+        vertexHandler.tooltipHandle.insertInto(vertexHandler.graph.container);
       }
     }
+  };
+
+  const drawToogleHandle = (vertexHandler: VertexHandler) =>{
+    // Destroys existing handles
+    if (vertexHandler.toggleHandle) {
+      vertexHandler.toggleHandle.destroy();
+    }
+    vertexHandler.toggleHandle = new ToggleHandle(new NodeAttributeProvider(vertexHandler.state.cell), ui, worker);
+    vertexHandler.toggleHandle.insertInto(vertexHandler.graph.container);
+    vertexHandler.toggleHandle.register();
   };
 
   // eslint-disable-next-line @typescript-eslint/unbound-method
   const vertexHandlerInit = mxVertexHandler.prototype.init;
   mxVertexHandler.prototype.init = function (this: VertexHandler, ...rest) {
     vertexHandlerInit.apply(this, rest);
-    if (AttackGraphSettings.isAttackGraph(ui.editor.graph) && this.graph.getSelectionCount() === 1) {
+    if (AttackGraphSettings.isAttackGraph(ui.editor.graph)
+        && this.graph.getSelectionCount() === 1
+        && CellStyles.isAttackgraphCell(this.state.cell)
+        && !CellStyles.isIconLegend(this.state.cell)) {
       drawFunctionHandle(this);
       drawTooltipHandle(this);
+      drawToogleHandle(this);
       this.redrawHandles();
     }
   }
@@ -145,7 +250,11 @@ export const installVertexHandler = (ui: Draw.UI, worker: AsyncWorker): void => 
     vertexHandlerSetHandlesVisible.apply(this, [visible, ...rest]);
 
     if (this.tooltipHandle) {
-      this.tooltipHandle.getHandle().style.visibility = (visible) ? '' : 'hidden';
+      this.tooltipHandle.visibility(visible);
+    }
+
+    if (this.toggleHandle) {
+      this.toggleHandle.visibility(visible);
     }
 
     if (this.functionHandles) {
@@ -162,11 +271,16 @@ export const installVertexHandler = (ui: Draw.UI, worker: AsyncWorker): void => 
 
     if (this.tooltipHandle) {
       this.tooltipHandle.redraw(b);
-      this.tooltipHandle.getHandle().style.display = this.graph.getSelectionCount() === 1 ? '' : 'none';
+      this.tooltipHandle.display(this.graph.getSelectionCount() === 1);
+    }
+
+    if (this.toggleHandle) {
+      this.toggleHandle.redraw(b);
+      this.toggleHandle.display(this.graph.getSelectionCount() === 1);
     }
 
     if (this.functionHandles) {
-      if (new CellStyles(this.state.cell).isLinkNode()) {
+      if (CellStyles.isLinkNode(this.state.cell)) {
         this.functionHandles[0].style.display = 'none'; // Hide computed attributes
         if (!(new NodeAttributeProvider(this.state.cell)).isLeave()) { // destination link node
           this.functionHandles[1].style.top = `${b.y}px`;
@@ -197,10 +311,12 @@ export const installVertexHandler = (ui: Draw.UI, worker: AsyncWorker): void => 
     vertexHandlerDestroy.apply(this, rest);
 
     if (this.tooltipHandle) {
-      const tooltipHandle = this.tooltipHandle.getHandle();
-      if (tooltipHandle.parentNode) {
-        tooltipHandle.parentNode.removeChild(tooltipHandle);
-      }
+      this.tooltipHandle.destroy();
+      this.tooltipHandle = null;
+    }
+
+    if (this.toggleHandle) {
+      this.toggleHandle.destroy();
       this.tooltipHandle = null;
     }
 
@@ -210,7 +326,6 @@ export const installVertexHandler = (ui: Draw.UI, worker: AsyncWorker): void => 
           functionHandle.parentNode.removeChild(functionHandle);
         }
       }
-
       this.functionHandles = null;
     }
   };
@@ -221,7 +336,11 @@ export const installVertexHandler = (ui: Draw.UI, worker: AsyncWorker): void => 
     vertexHandlerMouseUp.apply(this, rest);
 
     if (this.tooltipHandle) {
-      this.tooltipHandle.getHandle().style.display = (this.graph.getSelectionCount() === 1) ? '' : 'none';
+      this.tooltipHandle.display(this.graph.getSelectionCount() === 1);
+    }
+
+    if (this.toggleHandle) {
+      this.toggleHandle.display(this.graph.getSelectionCount() === 1);
     }
 
     // Shows function handles only if one vertex is selected
