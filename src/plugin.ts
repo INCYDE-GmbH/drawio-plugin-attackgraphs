@@ -274,6 +274,7 @@ Draw.loadPlugin(ui => {
   }
 
   // Visually disable edges connected to disabled nodes
+  // eslint-disable-next-line @typescript-eslint/unbound-method
   const paintEdgeShape = mxConnector.prototype.paintEdgeShape;
   mxConnector.prototype.paintEdgeShape = function(c: import('mxgraph').mxAbstractCanvas2D, pts: import('mxgraph').mxPoint[]) {
     if (this.state && this.state.cell.source && this.state.cell.target) {
@@ -288,6 +289,7 @@ Draw.loadPlugin(ui => {
   }
 
   // Visually disable OR and AND nodes when disabled
+  // eslint-disable-next-line @typescript-eslint/unbound-method
   const paintVertexShape = mxActor.prototype.paintVertexShape;
   mxActor.prototype.paintVertexShape = function(c: import('mxgraph').mxAbstractCanvas2D, x: number, y: number, w: number, h: number) {
     if (this.state
