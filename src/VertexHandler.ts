@@ -12,6 +12,7 @@ const IMAGE_HEIGHT = 24;
 class VertexHandler extends mxVertexHandler {
   functionHandles: HTMLImageElement[] | null = null;
   tooltipHandle: TooltipHandle | null = null;
+  handlesVisible = true;
 }
 class TooltipHandle {
   private width: number;
@@ -163,6 +164,7 @@ export const installVertexHandler = (ui: Draw.UI, worker: AsyncWorker): void => 
     if (this.tooltipHandle) {
       this.tooltipHandle.redraw(b);
       this.tooltipHandle.getHandle().style.display = this.graph.getSelectionCount() === 1 ? '' : 'none';
+      this.tooltipHandle.getHandle().style.visibility = (this.handlesVisible) ? '' : 'hidden';
     }
 
     if (this.functionHandles) {
@@ -184,6 +186,7 @@ export const installVertexHandler = (ui: Draw.UI, worker: AsyncWorker): void => 
         for (const functionHandle of this.functionHandles) {
           // Shows function handles only if one vertex is selected
           functionHandle.style.display = this.graph.getSelectionCount() === 1 ? '' : 'none';
+          functionHandle.style.visibility = (this.handlesVisible) ? '' : 'hidden';
         }
       }
     }
