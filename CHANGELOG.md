@@ -10,6 +10,10 @@
   - Allow to specify several cells to simultaneously update within one function call
 - Function handles (aggregation and computed attributes functions) are shown after resizing nodes ([#115](https://github.com/INCYDE-GmbH/drawio-plugin-attackgraphs/issues/115))
 
+### Internals
+
+- Fix: Sensitivity analysis test cases occasionally fail ([#111](https://github.com/INCYDE-GmbH/drawio-plugin-attackgraphs/issues/111))
+
 ## [1.2.2](https://github.com/INCYDE-GmbH/drawio-plugin-attackgraphs/compare/v1.2.1...v1.2.2) - 2023-03-20
 
 ### Fixes and Improvements
