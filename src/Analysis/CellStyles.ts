@@ -135,33 +135,53 @@ export class CellStyles {
       return;
     }
 
+    for (const edge of cell.edges) {
+      if (edge.target !== null
+          && edge.source !== null
+          && CellStyles.isAttackgraphCell(edge.target)
+          && CellStyles.isAttackgraphCell(edge.source)) {
+        const styles = new CellStyles(edge);
+        if (selected) {
+          styles.renderHighlightedEdge();
+        } else {
+          styles.renderFatEdge();
+        }
+        styles.redraw();
+      }
+    }
+
+    CellStyles.markEdges(cell, shallMark);
+  }
+
+  private static markEdges(cell: import('mxgraph').mxCell, shallMark: boolean): void {
+    if (!cell.edges) {
+      return;
+    }
+
     const values = AttributeRenderer.nodeAttributes(cell).getAggregatedCellValues();
     const markings = ('_marking' in values) ? values['_marking'].split(';') : null;
 
     for (const edge of cell.edges) {
-      if (edge.target !== null && edge.source !== null &&
-          (CellStyles.isAttackgraphCell(edge.target) || CellStyles.isAttackgraphCell(edge.source))) {
-        const styles = new CellStyles(edge);
-        let mark = false;
+      if (edge.target !== null
+          && edge.source !== null
+          && CellStyles.isAttackgraphCell(edge.target)
+          && CellStyles.isAttackgraphCell(edge.source)
+          && edge.source.id === cell.id) {
+        const target = edge.target;
+        const mark = (markings && markings.includes(target.id)) as boolean;
 
-        if (edge.target.id !== cell.id && edge.source.id === cell.id) {
-          mark = (markings && markings.includes(edge.target.id)) as boolean;
-          if (mark) {
-            CellStyles.updateConnectedEdgesStyle(edge.target, false, shallMark);
-          }
+        if (mark && target.id !== cell.id) {
+          CellStyles.markEdges(target, shallMark);
         }
 
+        const styles = new CellStyles(edge);
         if (shallMark && mark) {
           styles.renderHighlightedEdge();
           styles.renderMarkedEdge();
-        } else if (selected) {
-          styles.renderHighlightedEdge();
-          styles.resetMarkedEdge();
         } else {
           styles.renderFatEdge();
           styles.resetMarkedEdge();
         }
-        
         styles.redraw();
       }
     }
