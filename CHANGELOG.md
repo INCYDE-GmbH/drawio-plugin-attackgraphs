@@ -2,6 +2,10 @@
 
 ## [Unreleased](https://github.com/INCYDE-GmbH/drawio-plugin-attackgraphs/compare/v1.2.2...HEAD)
 
+### Added
+
+- Enable definition and visualization of edge weight reductions by aggregation functions ([#104](https://github.com/INCYDE-GmbH/drawio-plugin-attackgraphs/issues/104))
+
 ### Fixes and Improvements
 
 - Undos sometimes did not trigger recalculations of cell values ([#109](https://github.com/INCYDE-GmbH/drawio-plugin-attackgraphs/issues/109))
@@ -14,6 +18,7 @@
 ### Internals
 
 - Fix: Sensitivity analysis test cases occasionally fail ([#111](https://github.com/INCYDE-GmbH/drawio-plugin-attackgraphs/issues/111))
+- Add: Specify predefined keywords that are used for aggregation functions in the documentation
 
 ## [1.2.2](https://github.com/INCYDE-GmbH/drawio-plugin-attackgraphs/compare/v1.2.1...v1.2.2) - 2023-03-20
 

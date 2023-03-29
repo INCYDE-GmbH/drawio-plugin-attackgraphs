@@ -17,6 +17,27 @@ The aggregation function dialog allows to specify a custom aggregation function 
 
 - An aggregation function must conform to the ES5 syntax as the aggregation functions are executed in a [sandboxed environment](https://github.com/NeilFraser/JS-Interpreter) with it's own js interpreter.
 
+### Predefined Properties
+
+The following properties have a predefined meaning if they are included in the returnd object:
+
+#### `_marking`
+Indicates which outgoing edges shall be marked.
+
+Expected value (RegEx): `^{CHILD_ID}(;{CHILD_ID})*$`.<br/>
+- `{CHILD_ID}`: ID of the child cell. All outgoing edges to this cell will be marked.
+
+For instance, `123;456` and `123` are allowed values but not `;123` and `;`.
+
+#### `_weight`
+Indicates new edge weights for outgoing edges.
+
+Expected value (RegEx): `^{CHILD_ID}:{WEIGHT}(;{CHILD_ID}:{WEIGHT})*$`.<br/>
+- `{CHILD_ID}`: ID of the child cell.<br/>
+- `{WEIGHT}`: new weight for the edge flowing to `{CHILD_ID}`. It replaces the original edge weight.
+
+For instance, `123:A;456:B` and `123:C` are allowed values but not `;123:A`, `;`, and `123;456:A`.
+
 ### Relevant data types
 ```ts
 type KeyValuePairs = { [k: string]: string }

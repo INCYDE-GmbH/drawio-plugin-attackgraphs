@@ -273,6 +273,30 @@ Draw.loadPlugin(ui => {
     }
   }
 
+  // Show edge weight reduction in cell label
+  // eslint-disable-next-line @typescript-eslint/unbound-method
+  const paint = mxText.prototype.paint;
+  mxText.prototype.paint = function(c: import('mxgraph').mxAbstractCanvas2D, update?: boolean) {
+    if (this.state && this.state.cell.edge && this.state.cell.source && this.state.cell.target) {
+      const source = AttributeRenderer.nodeAttributes(this.state.cell.source);
+      const attributes = source.getAggregatedCellValues();
+
+      // Are edge weight reductions defined?
+      if (Object.prototype.hasOwnProperty.call(attributes, '_weight')) {
+        const edge = AttributeRenderer.edgeAttributes(this.state.cell);
+        const target = this.state.cell.target;
+        const oldWeight = edge.getEdgeWeight();
+        const newWeight = (attributes['_weight'].split(';').filter(x => x.split(':')[0] === target.id)[0] || '').split(':')[1] || null;
+
+        if (oldWeight && newWeight && newWeight !== oldWeight) {
+          this.state.text.value = `${newWeight} <span style="text-decoration:line-through;color:#00f">${oldWeight}</span>`;
+          update = false;
+        }
+      }
+    }
+    paint.apply(this, [c, update]);
+  }
+
   /*
    * Highlight and mark edges connected to the selected node
    */
