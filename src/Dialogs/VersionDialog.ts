@@ -3,7 +3,6 @@ declare const __VERSION__: string;
 type Release = {[id: string]: string};
 
 export class VersionDialog {
-
   static readonly DISMISS_VERSION = 'ag.dismiss-version';
 
   private static release: Release | null = null;
@@ -176,5 +175,4 @@ export class VersionDialog {
   private dismissRelease(version: string): void {
     localStorage.setItem(VersionDialog.DISMISS_VERSION, version);
   }
-
 }
