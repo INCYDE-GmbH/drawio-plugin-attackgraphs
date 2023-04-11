@@ -13,6 +13,7 @@ import { Sidebar } from './Sidebar';
 import { installVertexHandler } from './VertexHandler';
 import { KeyValuePairs } from './Model';
 import { RootAttributeProvider } from './Analysis/RootAttributeProvider';
+import { VersionDialog } from './Dialogs/VersionDialog';
 
 Draw.loadPlugin(ui => {
 
@@ -310,6 +311,39 @@ Draw.loadPlugin(ui => {
         activeCell = cell;
       }
     }
+  });
+
+  // Check for latest plugin release after draw.io finished loading
+  // TODO: Maybe find a better event trigger...
+  let versionDlgShowed = false;
+  ui.editor.graph.addListener(mxEvent.ROOT, () => {
+    if (!versionDlgShowed) {
+      void (async () => {
+        try {
+          if (await VersionDialog.isLatestVersion()) {
+            return;
+          }
+        } catch (e) {
+          // Check failed --> Do not show dialog
+          mxUtils.alert(e as string);
+          return;
+        }
+        
+        try {
+          const dismiss = VersionDialog.getDismissedRelease();
+          if (dismiss && await VersionDialog.isLatestVersion(dismiss)) {
+            return;
+          }
+        } catch {
+          // Do nothing
+        }
+        
+        const dlg = new VersionDialog(ui);
+        await dlg.init();
+        await dlg.show();
+      })();
+    }
+    versionDlgShowed = true;
   });
 
 

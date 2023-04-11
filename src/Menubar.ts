@@ -6,6 +6,7 @@ import { AttributeRenderer } from './AttributeRenderer';
 import { Sidebar } from './Sidebar';
 import { SensitivityAnalysisCache } from './Analysis/SensitivityAnalysisProvider';
 import { BinaryPopupDialog } from './Dialogs/BinaryPopupDialog';
+import { VersionDialog } from './Dialogs/VersionDialog';
 
 declare const __COMMIT_HASH__: string;
 
@@ -124,7 +125,15 @@ export class Menubar {
     });
 
     ui.actions.addAction('attackGraphs.showVersion', () => {
-      void navigator.clipboard.writeText(__COMMIT_HASH__);
+      void (async () => {
+        void navigator.clipboard.writeText(__COMMIT_HASH__);
+
+        if (!await VersionDialog.isLatestVersion()) {
+          const dlg = new VersionDialog(ui);
+          await dlg.init();
+          void dlg.show();
+        }
+      })();
     });
   }
 
