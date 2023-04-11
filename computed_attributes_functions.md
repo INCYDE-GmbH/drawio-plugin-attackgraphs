@@ -1,10 +1,12 @@
 # Computed Attributes Functions
 
-This plugin allows to specify a computed attributes function for any shape in the diagram. The user can access the computed attributes function of a cell by clicking the [handle](technical/plugin.md#ui) displayed on the left-hand side of the cell.
+This plugin allows to specify a computed attributes function for any shape in the diagram. The user can access the computed attributes function of a cell by clicking the [handle](technical/plugin.md#ui) displayed on the right-hand side of the cell.
 
 ![image of cell handles](images/CellHandles.png)
 
 Computed attributes functions take attributes of the current cell and return the resulting computed attribute to the cell. There can be a `default computed attribute function`, which will be used by default by new cells. A default computed attribute function can be defined by naming a function `default` in the global **computed attribute function dialog**. If no default function was specified, cells will use the `None` function and will not calculate computed attributes.
+
+When clicking on the *eye*-icon displayed on the lower right-hand side of the cell, the cell can be disabled and re-enabled. If the cell is disabled (slashed eye), its values are not considered by parent cells, effectively disconnecting it from its parents.
 
 The computed attributes function dialog allows to specify a custom computed attributes function or to select a global computed attributes function by reference.
 
