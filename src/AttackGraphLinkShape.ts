@@ -1,3 +1,4 @@
+import { CellStyles } from './Analysis/CellStyles';
 import { AttributeRenderer } from './AttributeRenderer';
 
 export class AttackGraphLinkShape extends mxEllipse {
@@ -26,6 +27,10 @@ export class AttackGraphLinkShape extends mxEllipse {
           circDiameter = (h - 2 * fontSize > w) ? w : h - 2 * fontSize;
           this.writeText('«' + page.getName() + '»', x + w * 0.5, y + circDiameter + fontSize, fontSize, AttackGraphLinkShape.defaultFontColor, c);
         }
+      }
+
+      if (!cell.getEnabledStatus()) {
+        c.setAlpha(CellStyles.DISABLED_CELL_ALPHA);
       }
     }
 

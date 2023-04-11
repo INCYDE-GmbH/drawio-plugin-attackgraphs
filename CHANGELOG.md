@@ -5,6 +5,11 @@
 ### Added
 
 - Show an update dialog if a newer version of the plugin exists ([#122](https://github.com/INCYDE-GmbH/drawio-plugin-attackgraphs/issues/122))
+- Allow to mark attack graph nodes to not be considered for the aggregation and combuted attributes functions ([#81](https://github.com/INCYDE-GmbH/drawio-plugin-attackgraphs/issues/81))
+
+### Fixes and Improvements
+
+- Function handles are shown only for attack graph nodes. They are also not shown for the `AttackGraphIconLegendShape`.
 
 ## [1.2.3](https://github.com/INCYDE-GmbH/drawio-plugin-attackgraphs/compare/v1.2.2...v1.2.3) - 2023-03-30
 

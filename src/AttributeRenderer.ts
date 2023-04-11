@@ -256,14 +256,16 @@ export class AttributeRenderer {
   }
 
   static getChildValues(cell: NodeAttributeProvider): ChildCellData[] {
-    return cell.cell.edges?.filter(x => x.source === cell.cell && x.target).map(x => {
-      const edgeWeight = this.edgeAttributes(x).getEdgeWeight();
-      const target = this.nodeAttributes(x.target);
-      const cellValues = target.getCellValues();
-      const aggregatedValues = target.getAggregatedCellValues();
-      const computedAttribute = (target.getComputedAttributesForCell() || {})['value'] || '';
-      return { edgeWeight, attributes: { ...cellValues, ...aggregatedValues }, computedAttribute: computedAttribute, id: target.getCellId() };
-    }) || [];
+    return cell.cell.edges
+      ?.filter(x => x.source === cell.cell && x.target && this.nodeAttributes(x.target).getEnabledStatus())
+      .map(x => {
+        const edgeWeight = this.edgeAttributes(x).getEdgeWeight();
+        const target = this.nodeAttributes(x.target);
+        const cellValues = target.getCellValues();
+        const aggregatedValues = target.getAggregatedCellValues();
+        const computedAttribute = (target.getComputedAttributesForCell() || {})['value'] || '';
+        return { edgeWeight, attributes: { ...cellValues, ...aggregatedValues }, computedAttribute: computedAttribute, id: target.getCellId() };
+      }) || [];
   }
 
   static async recalculateCellLabel(cellAttributes: CellDataCollection, labelFunction: AttackgraphFunction | null, worker: AsyncWorker): Promise<KeyValuePairs> {

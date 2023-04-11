@@ -9,6 +9,9 @@ export class CellStyles {
   static ui: Draw.UI
   cell: import('mxgraph').mxCell;
 
+  static readonly DISABLED_CELL_ALPHA = 0.3;
+  static readonly DISABLED_EDGE_ALPHA = 0.2; // Deliberately set to 20% for a better result
+
   constructor(cell: import('mxgraph').mxCell) {
     this.cell = cell;
   }
@@ -69,6 +72,11 @@ export class CellStyles {
   // Backwards compatability
   isLinkNode(): boolean {
     return CellStyles.isLinkNode(this.cell)
+  }
+
+  static isIconLegend(cell: import('mxgraph').mxCell): boolean {
+    const styles = CellStyles.parseStyles(cell);
+    return 'shape' in styles && styles['shape'] === AttackGraphIconLegendShape.ID;
   }
 
   private static encodeStyles(styles: StylesMap) {
