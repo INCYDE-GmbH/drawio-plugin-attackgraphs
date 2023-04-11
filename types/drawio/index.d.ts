@@ -3,6 +3,8 @@
 declare namespace Draw {
   function loadPlugin(plugin: ((ui: UI) => any)): void;
 
+  type DatabaseItem = {key: any, data: any};
+
   class UI {
     actions: Actions;
     currentPage: DiagramPage;
@@ -19,10 +21,27 @@ declare namespace Draw {
     fileNode: FileNode;
     editor: Editor;
     toolbar: Toolbar;
-    showDialog(elt, w, h, modal, closable, onClose?, noScroll?, transparent?, onResize?, ignoreBgClick?);
+    showDialog(
+      element: HTMLElement,
+      width: number,
+      height: number,
+      modal: boolean, // Add background?
+      closable: boolean, // Show close icon?
+      onClose: () => void,
+      noScroll?: boolean, // Dialog not scrollable?
+      transparent?: boolean, // Dialog transparent?
+      onResize?: () => void,
+      ignoreBgClick?: boolean
+    ): void;
     confirm(msg: string, okFn: () => void, cancelFn?: () => void, okLabel?: string, cancelLabel?: string, closable?: boolean): void;
-    hideDialog();
+    hideDialog(): void;
     removeLibrarySidebar(id: string);
+
+    // IndexDB operations
+    setDatabaseItem(key: any, data: any, success: (() => void) | null, error: (() => void) | null, storeName?: string): void;
+    removeDatabaseItem(key: any, success: (() => void) | null, error: (() => void) | null, storeName?: string): void;
+    getDatabaseItem(key: any, success: ((result?: DatabaseItem) => void) | null, error: (() => void) | null, storeName?: string): void;
+    getDatabaseItems(success: ((result?: DatabaseItem[]) => void) | null, error: (() => void) | null, storeName?: string): void;
   }
 
   class DiagramPage {
