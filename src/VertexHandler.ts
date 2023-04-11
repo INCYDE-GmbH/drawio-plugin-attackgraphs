@@ -14,6 +14,7 @@ class VertexHandler extends mxVertexHandler {
   functionHandles: HTMLImageElement[] | null = null;
   tooltipHandle: TooltipHandle | null = null;
   toggleHandle: ToggleHandle | null = null;
+  handlesVisible = true;
 }
 
 abstract class Handle {
@@ -272,11 +273,13 @@ export const installVertexHandler = (ui: Draw.UI, worker: AsyncWorker): void => 
     if (this.tooltipHandle) {
       this.tooltipHandle.redraw(b);
       this.tooltipHandle.display(this.graph.getSelectionCount() === 1);
+      this.tooltipHandle.visibility(this.handlesVisible);
     }
 
     if (this.toggleHandle) {
       this.toggleHandle.redraw(b);
       this.toggleHandle.display(this.graph.getSelectionCount() === 1);
+      this.toggleHandle.visibility(this.handlesVisible);
     }
 
     if (this.functionHandles) {
@@ -298,6 +301,7 @@ export const installVertexHandler = (ui: Draw.UI, worker: AsyncWorker): void => 
         for (const functionHandle of this.functionHandles) {
           // Shows function handles only if one vertex is selected
           functionHandle.style.display = this.graph.getSelectionCount() === 1 ? '' : 'none';
+          functionHandle.style.visibility = (this.handlesVisible) ? '' : 'hidden';
         }
       }
     }

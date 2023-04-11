@@ -153,18 +153,18 @@ test.describe('attributes and default attributes', () => {
 
     await page.locator('table.properties').locator('tr').locator('td').locator('span').click();
     const icon = page.locator('tbody').locator('tr').last().locator('td').last();
-    icon.click();
-    const path = await icon.locator('path').getAttribute('d');
+    await icon.click();
+    const path = await icon.locator('path').getAttribute('d') || '';
 
     await page.locator('.geDialog').last().locator('text=Apply').click();
     await page.locator('.geDialog').last().locator('text=Apply').click();
     // First activity vertex (white node) shall not have default attributes
     await page.locator('.geSidebarContainer').locator('text=Attack Step').nth(2).click();
     const href = await page.locator('.geDiagramContainer').locator('text=Attack Step')
-      .locator('xpath=..').locator('xpath=..').locator('xpath=..').locator('image').getAttribute('xlink:href');
+      .locator('xpath=..').locator('xpath=..').locator('xpath=..').locator('image').getAttribute('xlink:href') || '';
 
     const regex = RegExp(path, 'gm');
-    const result = regex.exec(href);
+    const result = regex.exec(href) || '';
     expect(result.length).toBeGreaterThan(0);
   });
 
@@ -177,7 +177,7 @@ test.describe('attributes and default attributes', () => {
 
     await page.locator('table.properties').locator('tr').locator('td').locator('span').click();
     const icon2 = await page.locator('tbody').locator('tr').last().locator('td').last();
-    icon2.click();
+    await icon2.click();
     const path = await icon2.locator('path').getAttribute('d');
     await drawio.applyDialog();
     expect(path).toEqual(await page.locator('td[name="icon_picker"]').locator('path').getAttribute('d'));
@@ -198,18 +198,18 @@ test.describe('attributes and default attributes', () => {
 
     await page.locator('table.properties').locator('tr').locator('td').locator('span').click();
     const icon = page.locator('tbody').locator('tr').last().locator('td').last();
-    icon.click();
-    const path = await icon.locator('path').getAttribute('d');
+    await icon.click();
+    const path = await icon.locator('path').getAttribute('d') || '';
 
     await drawio.applyDialog();
     await drawio.applyDialog();
 
     await drawio.addActivityNode();
     const href = await page.locator('.geDiagramContainer').locator('text=Attack Step')
-      .locator('xpath=..').locator('xpath=..').locator('xpath=..').locator('image').first().getAttribute('xlink:href');
+      .locator('xpath=..').locator('xpath=..').locator('xpath=..').locator('image').first().getAttribute('xlink:href') || '';
 
     const regex = RegExp(path, 'gm');
-    const result = regex.exec(href);
+    const result = regex.exec(href) || '';
     expect(result.length).toBeGreaterThan(0);
   });
 
