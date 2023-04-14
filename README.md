@@ -37,6 +37,7 @@ Use `npm install` to download all build dependencies.
 Afterward, use `npm run build` to build a production-ready version of the plugin.
 
 If you want that [webpack](https://webpack.js.org/) builds a new artifact of the plugin every time a source file changes, use the command `npm run watch`.
+This will also set the `__DEVELOPMENT__` constant to `true` which allows to dis-/enable code depending on production and development environment.
 The artifacts are saved at the same location as when building the plugin using `npm run build`.
 
 ### Starting a development webserver

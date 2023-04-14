@@ -1,6 +1,7 @@
 import { AsyncWorker } from '../AsyncUtils';
 
 declare const __VERSION__: string;
+declare const __DEVELOPMENT__: boolean;
 
 type Release = {[id: string]: string};
 
@@ -81,6 +82,10 @@ export class VersionDialog {
   static fetchRelease(overwrite?: boolean): Promise<Release> {
     overwrite = overwrite || false;
     return new Promise((resolve, reject) => {
+      if (__DEVELOPMENT__) {
+        return resolve({'tag_name': 'v1000000.0.0', 'html_url': 'https://github.com'});
+      }
+
       if (!overwrite && this.release) {
         resolve(this.release);
       }
