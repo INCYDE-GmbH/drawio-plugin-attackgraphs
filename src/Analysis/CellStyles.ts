@@ -195,14 +195,16 @@ export class CellStyles {
     }
   }
 
-  public redraw(): void {  
+  public redraw(): void {
     const view = CellStyles.ui.editor.graph.view;
     const state = view.getState(this.cell);
 
-    state.style = view.graph.getCellStyle(this.cell); // hardcoded because state.invalidStyle is not a defined property in the imported mxgraph library
-    state.invalid = true; // force mxGraphView to redraw the cell
-    
-    // Redraw cell
-    view.validateCellState(this.cell, false);
+    if (state) {
+      state.style = view.graph.getCellStyle(this.cell); // hardcoded because state.invalidStyle is not a defined property in the imported mxgraph library
+      state.invalid = true; // force mxGraphView to redraw the cell
+      
+      // Redraw cell
+      view.validateCellState(this.cell, false);
+    }
   }
 }
