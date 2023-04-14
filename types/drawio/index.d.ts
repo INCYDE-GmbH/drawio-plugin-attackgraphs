@@ -27,14 +27,14 @@ declare namespace Draw {
       height: number,
       modal: boolean, // Add background?
       closable: boolean, // Show close icon?
-      onClose: () => void,
+      onClose: (cancel?: boolean, isEsc?: boolean) => boolean | void, // Return value specifies whether dialog shall be closed
       noScroll?: boolean, // Dialog not scrollable?
       transparent?: boolean, // Dialog transparent?
       onResize?: () => void,
       ignoreBgClick?: boolean
     ): void;
     confirm(msg: string, okFn: () => void, cancelFn?: () => void, okLabel?: string, cancelLabel?: string, closable?: boolean): void;
-    hideDialog(): void;
+    hideDialog(cancel?: boolean, isEsc?: boolean, matchContainer?: HTMLElement): void;
     removeLibrarySidebar(id: string);
 
     // IndexDB operations
@@ -191,6 +191,21 @@ class mxChildChange {
 }
 
 class mxEventObject { }
+
+type WorkerRequestTypes = 'Function' | 'Release';
+
+interface WorkerRequest {
+  readonly type: WorkerRequestTypes,
+}
+interface WorkerFunctionRequest extends WorkerRequest {
+  readonly fn: string,
+  readonly data: unknown,
+}
+
+interface WorkerResponse {
+  result?: unknown,
+  error?: string,
+}
 
 // Globally available mxgraph exports
 const mxChildChange: typeof import('mxgraph').mxChildChange;

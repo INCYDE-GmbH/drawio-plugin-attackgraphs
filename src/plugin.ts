@@ -341,37 +341,39 @@ Draw.loadPlugin(ui => {
   });
 
   // Check for latest plugin release after draw.io finished loading
-  // TODO: Maybe find a better event trigger...
-  let versionDlgShowed = false;
-  ui.editor.graph.addListener(mxEvent.ROOT, () => {
-    if (!versionDlgShowed) {
-      void (async () => {
-        try {
-          if (await VersionDialog.isLatestVersion()) {
-            return;
-          }
-        } catch (e) {
-          // Check failed --> Do not show dialog
-          mxUtils.alert(e as string);
-          return;
-        }
-        
-        try {
-          const dismiss = VersionDialog.getDismissedRelease();
-          if (dismiss && await VersionDialog.isLatestVersion(dismiss)) {
-            return;
-          }
-        } catch {
-          // Do nothing
-        }
-        
+  void (async () => {
+    try {
+      if (await VersionDialog.isLatestVersion()) {
+        return;
+      }
+    } catch (e) {
+      // Check failed --> Do not show dialog
+      mxUtils.alert(e as string);
+      return;
+    }
+    
+    try {
+      const dismiss = VersionDialog.getDismissedRelease();
+      if (dismiss && await VersionDialog.isLatestVersion(dismiss)) {
+        return;
+      }
+    } catch {
+      // Do nothing
+    }
+    
+    // Brute force showing the dialog.
+    // Unfortunately, it is sometimes closed without the user intentionally closing it...
+    for (let retry = true; retry; ) {
+      try {
         const dlg = new VersionDialog(ui);
         await dlg.init();
-        await dlg.show();
-      })();
+        await dlg.show(); // Fails if the dialog wasn't closed by the user
+        retry = false;
+      } catch {
+        // Do nothing
+      }
     }
-    versionDlgShowed = true;
-  });
+  })();
 
 
   installVertexHandler(ui, worker);
