@@ -1,4 +1,7 @@
+import { AsyncWorker } from '../AsyncUtils';
+
 declare const __VERSION__: string;
+declare const __DEVELOPMENT__: boolean;
 
 type Release = {[id: string]: string};
 
@@ -11,6 +14,8 @@ export class VersionDialog {
   private readonly container: HTMLElement;
   private readonly width = 450;
   private readonly height = 250;
+  private closed = false;
+
 
   constructor(ui: Draw.UI) {
     this.ui = ui;
@@ -28,19 +33,17 @@ export class VersionDialog {
   }
 
   show(): Promise<void> {
-    return new Promise((resolve) =>
+    return new Promise((resolve, reject) =>
       this.ui.showDialog(
         this.container,
         this.width,
         this.height,
         true,
         false,
-        resolve,
+        () => (this.closed) ? resolve() : reject(),
         true,
         false,
-        () => {
-          // do nothing
-        },
+        undefined,
         false
       )
     )
@@ -76,17 +79,37 @@ export class VersionDialog {
     return 0;
   }
 
-  static async fetchRelease(overwrite?: boolean): Promise<Release> {
-    if ((overwrite || false) || this.release === null) {
-      const req = await new Promise<import('mxgraph').mxXmlRequest>((resolve, reject) => {
-        mxUtils.get('https://api.github.com/repos/INCYDE-GmbH/drawio-plugin-attackgraphs/releases/latest', resolve, reject, false, 1000, reject);
-      });
-      if (req.getStatus() !== 200) {
-        throw new Error(mxResources.get('attackGraphs.updateError'));
+  static fetchRelease(overwrite?: boolean): Promise<Release> {
+    overwrite = overwrite || false;
+    return new Promise((resolve, reject) => {
+      if (__DEVELOPMENT__) {
+        return resolve({'tag_name': 'v1000000.0.0', 'html_url': 'https://github.com'});
       }
-      this.release = JSON.parse(req.getText()) as Release;
-    }
-    return this.release;
+
+      if (!overwrite && this.release) {
+        resolve(this.release);
+      }
+
+      const worker = new Worker(AsyncWorker.determineScriptPath());
+      worker.onmessage = (e: MessageEvent<WorkerResponse>) => {
+        if (e.data.result) {
+          this.release = e.data.result as Release;
+          resolve(this.release);
+        } else if (e.data.error) {
+          reject(e.data.error);
+        } else {
+          reject(mxResources.get('attackGraphs.updateError'));
+        }
+        worker.terminate();
+      };
+      worker.onerror = (e: ErrorEvent) => {        
+        reject(e.message);
+        worker.terminate();
+      };
+
+      const request: WorkerRequest = { type: 'Release' };
+      worker.postMessage(request);
+    });
   }
 
   static async fetchVersion(overwrite?: boolean): Promise<string> {
@@ -101,6 +124,7 @@ export class VersionDialog {
   }
 
   private closeDialog(): void {
+    this.closed = true;
     this.ui.hideDialog();
   }
 
@@ -133,7 +157,7 @@ export class VersionDialog {
 
   private addButtons(url: string, version: string): void {
     const openBtn = mxUtils.button(mxResources.get('attackGraphs.openRelease'), () => {
-      window.open(url, '_blank', 'noreferrer')?.focus();
+      window.open(url, '_blank', 'noreferrer');
     });
     openBtn.className = 'geBtn gePrimaryBtn';
 

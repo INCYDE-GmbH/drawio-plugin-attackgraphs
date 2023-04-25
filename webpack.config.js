@@ -8,13 +8,16 @@ const commitHash = require('child_process')
   .toString()
   .trim();
 
+const LAUNCH_COMMAND = process.env.npm_lifecycle_event;
+
 module.exports = {
   entry: './src/index.ts',
   devtool: 'source-map',
   plugins: [
     new webpack.DefinePlugin({
       __COMMIT_HASH__: JSON.stringify(commitHash),
-      __VERSION__: JSON.stringify(version)
+      __VERSION__: JSON.stringify(version),
+      __DEVELOPMENT__: LAUNCH_COMMAND === 'watch',
     }),
     new CopyPlugin({
       patterns: [
