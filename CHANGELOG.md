@@ -4,6 +4,7 @@
 
 ### Added
 
+- Enable definition and visualization of edge weight reductions by aggregation functions ([#104](https://github.com/INCYDE-GmbH/drawio-plugin-attackgraphs/issues/104))
 - Show an update dialog if a newer version of the plugin exists ([#122](https://github.com/INCYDE-GmbH/drawio-plugin-attackgraphs/issues/122))
 - Allow to mark attack graph nodes to not be considered for the aggregation and combuted attributes functions ([#81](https://github.com/INCYDE-GmbH/drawio-plugin-attackgraphs/issues/81))
 
@@ -11,11 +12,11 @@
 
 - Function handles are shown only for attack graph nodes. They are also not shown for the `AttackGraphIconLegendShape`.
 
+### Internals
+
+- Add: Specify predefined keywords that are used for aggregation functions in the documentation
+
 ## [1.2.3](https://github.com/INCYDE-GmbH/drawio-plugin-attackgraphs/compare/v1.2.2...v1.2.3) - 2023-03-30
-
-### Added
-
-- Enable definition and visualization of edge weight reductions by aggregation functions ([#104](https://github.com/INCYDE-GmbH/drawio-plugin-attackgraphs/issues/104))
 
 ### Fixes and Improvements
 
@@ -29,7 +30,6 @@
 ### Internals
 
 - Fix: Sensitivity analysis test cases occasionally fail ([#111](https://github.com/INCYDE-GmbH/drawio-plugin-attackgraphs/issues/111))
-- Add: Specify predefined keywords that are used for aggregation functions in the documentation
 
 ## [1.2.2](https://github.com/INCYDE-GmbH/drawio-plugin-attackgraphs/compare/v1.2.1...v1.2.2) - 2023-03-20
 
