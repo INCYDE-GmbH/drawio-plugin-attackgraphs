@@ -3,6 +3,7 @@ import { NodeValues } from './Model';
 import { AttributeRenderer as AttributeRenderer } from './AttributeRenderer';
 import { AttributeProvider } from './Analysis/AttributeProvider';
 import { RootAttributeProvider } from './Analysis/RootAttributeProvider';
+import { CellStyles } from './Analysis/CellStyles';
 
 export class AttackGraphNodeShape extends mxRectangleShape {
   public static readonly ID = 'attackgraphs.node';
@@ -112,22 +113,27 @@ export class AttackGraphNodeShape extends mxRectangleShape {
   }
 
   paintVertexShape(c: import('mxgraph').mxAbstractCanvas2D, x: number, y: number, w: number, h: number): void {
+    if (!this.state) {
+      super.paintVertexShape(c, x, y, w, h);
+      return;
+    }
+
+    const cell = AttributeRenderer.nodeAttributes(this.state.cell);
+    if (!cell.getEnabledStatus()) {
+      c.setAlpha(CellStyles.DISABLED_CELL_ALPHA);
+    }
+
+    const allValues = cell.getAllValues();
     super.paintVertexShape(c, x, y, w, h);
+    this.drawAttributeShapes(c, x, y, w, h, allValues);
 
-    if (this.state) {
-      const cell = AttributeRenderer.nodeAttributes(this.state.cell);
-      const allValues = cell.getAllValues();
-
-      this.drawAttributeShapes(c, x, y, w, h, allValues);
-
-      const computedAttributes = cell.getComputedAttributesForCell();
-      if (computedAttributes && 'value' in computedAttributes) {
-        // Force the following to be strings
-        const value = `${computedAttributes['value']}`;
-        const fillColor = `${computedAttributes['fillColor'] || '#f00'}`;
-        const fontColor = `${computedAttributes['fontColor'] || '#fff'}`;
-        this.drawLabelShape(value, c, w, fillColor, fontColor);
-      }
+    const computedAttributes = cell.getComputedAttributesForCell();
+    if (computedAttributes && 'value' in computedAttributes) {
+      // Force the following to be strings
+      const value = `${computedAttributes['value']}`;
+      const fillColor = `${computedAttributes['fillColor'] || '#f00'}`;
+      const fontColor = `${computedAttributes['fontColor'] || '#fff'}`;
+      this.drawLabelShape(value, c, w, fillColor, fontColor);
     }
   }
 

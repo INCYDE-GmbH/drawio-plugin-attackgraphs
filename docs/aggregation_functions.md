@@ -1,10 +1,12 @@
 # Aggregation Functions
 
-This plugin allows to specify an aggregation function for any shape in the diagram. The user can access the aggregation function of a cell by clicking the [handle](technical/plugin.md#ui) displayed on the right-hand side of the cell.
+This plugin allows to specify an aggregation function for any shape in the diagram. The user can access the aggregation function of a cell by clicking the [handle](technical/plugin.md#ui) displayed on the left-hand side of the cell.
 
 ![image of cell handles](images/CellHandles.png)
 
 Aggregation functions take attributes of connected child cells and return the resulting attributes to the cell. There can be a `default aggregation function`, which will be used by default by new cells. A default aggregation function can be defined by naming a function `default` in the global **aggregation function dialog**. If no default function was specified, cells will use the `None` function and will not calculate aggregated attributes.
+
+When clicking on the *eye*-icon displayed on the lower right-hand side of the cell, the cell can be disabled and re-enabled. If the cell is disabled (slashed eye), its values are not considered by parent cells, effectively disconnecting it from its parents.
 
 The aggregation function dialog allows to specify a custom aggregation function or to select a global aggregation function by reference.
 

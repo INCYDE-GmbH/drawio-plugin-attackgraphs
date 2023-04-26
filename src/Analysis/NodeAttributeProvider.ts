@@ -221,6 +221,15 @@ export class NodeAttributeProvider extends AttributeProvider {
     return Object.fromEntries(Object.entries(this.getAllValues().current).filter(([k,]) => k !== 'label' && k !== 'placeholder' && k !== 'link' && k !== 'name'));
   }
 
+  getEnabledStatus(): boolean {
+    const result = this.getStringStoredInCell('ag_enabled');
+    return (result) ? (result === '1') : true;
+  }
+
+  setEnabledStatus(enabled: boolean): void {
+    this.storeStringInCell('ag_enabled', (enabled) ? '1' : '0');
+  }
+
   getTooltip(): string {
     return super.keyValuePairsToString(this.getCurrentCellValuesNotLabel());
   }

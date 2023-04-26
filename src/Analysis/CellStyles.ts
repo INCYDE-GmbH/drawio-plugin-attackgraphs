@@ -9,6 +9,9 @@ export class CellStyles {
   static ui: Draw.UI
   cell: import('mxgraph').mxCell;
 
+  static readonly DISABLED_CELL_ALPHA = 0.3;
+  static readonly DISABLED_EDGE_ALPHA = 0.2; // Deliberately set to 20% for a better result
+
   constructor(cell: import('mxgraph').mxCell) {
     this.cell = cell;
   }
@@ -69,6 +72,11 @@ export class CellStyles {
   // Backwards compatability
   isLinkNode(): boolean {
     return CellStyles.isLinkNode(this.cell)
+  }
+
+  static isIconLegend(cell: import('mxgraph').mxCell): boolean {
+    const styles = CellStyles.parseStyles(cell);
+    return 'shape' in styles && styles['shape'] === AttackGraphIconLegendShape.ID;
   }
 
   private static encodeStyles(styles: StylesMap) {
@@ -187,14 +195,16 @@ export class CellStyles {
     }
   }
 
-  public redraw(): void {  
+  public redraw(): void {
     const view = CellStyles.ui.editor.graph.view;
     const state = view.getState(this.cell);
 
-    state.style = view.graph.getCellStyle(this.cell); // hardcoded because state.invalidStyle is not a defined property in the imported mxgraph library
-    state.invalid = true; // force mxGraphView to redraw the cell
-    
-    // Redraw cell
-    view.validateCellState(this.cell, false);
+    if (state) {
+      state.style = view.graph.getCellStyle(this.cell); // hardcoded because state.invalidStyle is not a defined property in the imported mxgraph library
+      state.invalid = true; // force mxGraphView to redraw the cell
+      
+      // Redraw cell
+      view.validateCellState(this.cell, false);
+    }
   }
 }
