@@ -1,4 +1,4 @@
-FROM jgraph/drawio:20.2.8
+FROM jgraph/drawio:21.2.1
 
 RUN sed -i '/<template url/d' $CATALINA_HOME/webapps/draw/templates/index.xml
 RUN sed -i 's|</templates>|<template url="basic/attackgraph_RKL.xml" title="attackGraphs.attackGraph_RKL" libs="general;attackGraphs.attackGraphs" tags="attackGraphs.attackGraphs"/>\n<template url="basic/attackgraph_TS50701.xml" title="attackGraphs.attackGraph_TS50701" libs="general;attackGraphs.attackGraphs" tags="attackGraphs.attackGraphs"/>\n</templates>|g' $CATALINA_HOME/webapps/draw/templates/index.xml
@@ -8,11 +8,17 @@ RUN cp $CATALINA_HOME/webapps/draw/templates/other/decision_tree.png $CATALINA_H
 RUN cp $CATALINA_HOME/webapps/draw/templates/other/decision_tree.png $CATALINA_HOME/webapps/draw/templates/basic/attackgraph_TS50701.png
 
 ENV DRAWIO_BASE_URL=https://incyde-gmbh.github.io/drawio-plugin-attackgraphs/app
-ENV DRAWIO_CONFIG="{\"plugins\": [\"plugins/attackgraphs.js\"]}"
+ENV DRAWIO_SELF_CONTAINED=1
 
-# Activate custom plugins (TODO: Replace if base image has an option to activate custom plugins)
-# Uncomment when custom plugins are again automatically loaded via DRAWIO_CONFIG
-# RUN sed -i '38a\echo "window.ALLOW_CUSTOM_PLUGINS = true;" >> \$CATALINA_HOME/webapps/draw/js/PreConfig.js' /docker-entrypoint.sh
+# Activate attack graphs plugin (DRAWIO_CONFIG cannot be used to specify activated plugins)
+USER root
+RUN sed -i '38a\echo "window.ALLOW_CUSTOM_PLUGINS = true;" >> \$CATALINA_HOME/webapps/draw/js/PreConfig.js' /docker-entrypoint.sh && \
+    sed -i '112a\echo "var plugins = mxSettings.getPlugins();" >> \$CATALINA_HOME/webapps/draw/js/PostConfig.js' /docker-entrypoint.sh && \
+    sed -i '113a\echo "if (!plugins.includes(\\"plugins/attackgraphs.js\\")) {" >> \$CATALINA_HOME/webapps/draw/js/PostConfig.js' /docker-entrypoint.sh && \
+    sed -i '114a\echo "  plugins.push(\\"plugins/attackgraphs.js\\");" >> \$CATALINA_HOME/webapps/draw/js/PostConfig.js' /docker-entrypoint.sh && \
+    sed -i '115a\echo "  mxSettings.setPlugins(plugins);" >> \$CATALINA_HOME/webapps/draw/js/PostConfig.js' /docker-entrypoint.sh && \
+    sed -i '116a\echo "}" >> \$CATALINA_HOME/webapps/draw/js/PostConfig.js' /docker-entrypoint.sh
+USER ${RUN_USER}
 
 # Configure draw.io
 RUN /docker-entrypoint.sh
