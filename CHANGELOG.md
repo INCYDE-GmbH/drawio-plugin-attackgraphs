@@ -1,5 +1,11 @@
 # Changelog
 
+## [Unreleased](https://github.com/INCYDE-GmbH/drawio-plugin-attackgraphs/compare/v1.3.0...HEAD)
+
+### Internals
+
+- Fix: Use the latest draw.io version for the web version ([#123](https://github.com/INCYDE-GmbH/drawio-plugin-attackgraphs/issues/123))
+
 ## [1.3.0](https://github.com/INCYDE-GmbH/drawio-plugin-attackgraphs/compare/v1.2.3...v1.3.0) - 2023-04-26
 
 ### Added
