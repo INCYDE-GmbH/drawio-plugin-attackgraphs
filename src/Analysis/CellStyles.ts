@@ -9,6 +9,9 @@ export class CellStyles {
   static ui: Draw.UI
   cell: import('mxgraph').mxCell;
 
+  static readonly DISABLED_CELL_ALPHA = 0.3;
+  static readonly DISABLED_EDGE_ALPHA = 0.2; // Deliberately set to 20% for a better result
+
   constructor(cell: import('mxgraph').mxCell) {
     this.cell = cell;
   }
@@ -69,6 +72,11 @@ export class CellStyles {
   // Backwards compatability
   isLinkNode(): boolean {
     return CellStyles.isLinkNode(this.cell)
+  }
+
+  static isIconLegend(cell: import('mxgraph').mxCell): boolean {
+    const styles = CellStyles.parseStyles(cell);
+    return 'shape' in styles && styles['shape'] === AttackGraphIconLegendShape.ID;
   }
 
   private static encodeStyles(styles: StylesMap) {
@@ -135,46 +143,68 @@ export class CellStyles {
       return;
     }
 
+    for (const edge of cell.edges) {
+      if (edge.target !== null
+          && edge.source !== null
+          && CellStyles.isAttackgraphCell(edge.target)
+          && CellStyles.isAttackgraphCell(edge.source)) {
+        const styles = new CellStyles(edge);
+        if (selected) {
+          styles.renderHighlightedEdge();
+        } else {
+          styles.renderFatEdge();
+        }
+        styles.redraw();
+      }
+    }
+
+    CellStyles.markEdges(cell, shallMark);
+  }
+
+  private static markEdges(cell: import('mxgraph').mxCell, shallMark: boolean): void {
+    if (!cell.edges) {
+      return;
+    }
+
     const values = AttributeRenderer.nodeAttributes(cell).getAggregatedCellValues();
     const markings = ('_marking' in values) ? values['_marking'].split(';') : null;
 
     for (const edge of cell.edges) {
-      if (edge.target !== null && edge.source !== null &&
-          (CellStyles.isAttackgraphCell(edge.target) || CellStyles.isAttackgraphCell(edge.source))) {
-        const styles = new CellStyles(edge);
-        let mark = false;
+      if (edge.target !== null
+          && edge.source !== null
+          && CellStyles.isAttackgraphCell(edge.target)
+          && CellStyles.isAttackgraphCell(edge.source)
+          && edge.source.id === cell.id) {
+        const target = edge.target;
+        const mark = (markings && markings.includes(target.id)) as boolean;
 
-        if (edge.target.id !== cell.id && edge.source.id === cell.id) {
-          mark = (markings && markings.includes(edge.target.id)) as boolean;
-          if (mark) {
-            CellStyles.updateConnectedEdgesStyle(edge.target, false, shallMark);
-          }
+        if (mark && target.id !== cell.id) {
+          CellStyles.markEdges(target, shallMark);
         }
 
+        const styles = new CellStyles(edge);
         if (shallMark && mark) {
           styles.renderHighlightedEdge();
           styles.renderMarkedEdge();
-        } else if (selected) {
-          styles.renderHighlightedEdge();
-          styles.resetMarkedEdge();
         } else {
           styles.renderFatEdge();
           styles.resetMarkedEdge();
         }
-        
         styles.redraw();
       }
     }
   }
 
-  public redraw(): void {  
+  public redraw(): void {
     const view = CellStyles.ui.editor.graph.view;
     const state = view.getState(this.cell);
 
-    state.style = view.graph.getCellStyle(this.cell); // hardcoded because state.invalidStyle is not a defined property in the imported mxgraph library
-    state.invalid = true; // force mxGraphView to redraw the cell
-    
-    // Redraw cell
-    view.validateCellState(this.cell, false);
+    if (state) {
+      state.style = view.graph.getCellStyle(this.cell); // hardcoded because state.invalidStyle is not a defined property in the imported mxgraph library
+      state.invalid = true; // force mxGraphView to redraw the cell
+      
+      // Redraw cell
+      view.validateCellState(this.cell, false);
+    }
   }
 }

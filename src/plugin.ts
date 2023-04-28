@@ -13,6 +13,7 @@ import { Sidebar } from './Sidebar';
 import { installVertexHandler } from './VertexHandler';
 import { KeyValuePairs } from './Model';
 import { RootAttributeProvider } from './Analysis/RootAttributeProvider';
+import { VersionDialog } from './Dialogs/VersionDialog';
 
 Draw.loadPlugin(ui => {
 
@@ -273,6 +274,57 @@ Draw.loadPlugin(ui => {
     }
   }
 
+  // Visually disable edges connected to disabled nodes
+  // eslint-disable-next-line @typescript-eslint/unbound-method
+  const paintEdgeShape = mxConnector.prototype.paintEdgeShape;
+  mxConnector.prototype.paintEdgeShape = function(c: import('mxgraph').mxAbstractCanvas2D, pts: import('mxgraph').mxPoint[]) {
+    if (this.state && this.state.cell.source && this.state.cell.target) {
+      const source = AttributeRenderer.nodeAttributes(this.state.cell.source);
+      const target = AttributeRenderer.nodeAttributes(this.state.cell.target);
+
+      if (!source.getEnabledStatus() || !target.getEnabledStatus()) {
+        c.setAlpha(CellStyles.DISABLED_EDGE_ALPHA);
+      }
+    }
+    paintEdgeShape.apply(this, [c, pts]);
+  }
+
+  // Visually disable OR and AND nodes when disabled
+  // eslint-disable-next-line @typescript-eslint/unbound-method
+  const paintVertexShape = mxActor.prototype.paintVertexShape;
+  mxActor.prototype.paintVertexShape = function(c: import('mxgraph').mxAbstractCanvas2D, x: number, y: number, w: number, h: number) {
+    if (this.state
+        && CellStyles.isAttackgraphCell(this.state.cell)
+        && !AttributeRenderer.nodeAttributes(this.state.cell).getEnabledStatus()) {
+      c.setAlpha(CellStyles.DISABLED_CELL_ALPHA);
+    }
+    paintVertexShape.apply(this, [c, x, y, w, h]);
+  }
+
+  // Show edge weight reduction in cell label
+  // eslint-disable-next-line @typescript-eslint/unbound-method
+  const paint = mxText.prototype.paint;
+  mxText.prototype.paint = function(c: import('mxgraph').mxAbstractCanvas2D, update?: boolean) {
+    if (this.state && this.state.cell.edge && this.state.cell.source && this.state.cell.target) {
+      const source = AttributeRenderer.nodeAttributes(this.state.cell.source);
+      const attributes = source.getAggregatedCellValues();
+
+      // Are edge weight reductions defined?
+      if (Object.prototype.hasOwnProperty.call(attributes, '_weight')) {
+        const edge = AttributeRenderer.edgeAttributes(this.state.cell);
+        const target = this.state.cell.target;
+        const oldWeight = edge.getEdgeWeight();
+        const newWeight = (attributes['_weight'].split(';').filter(x => x.split(':')[0] === target.id)[0] || '').split(':')[1] || null;
+
+        if (oldWeight && newWeight && newWeight !== oldWeight) {
+          this.state.text.value = `${newWeight} <span style="text-decoration:line-through;color:#00f">${oldWeight}</span>`;
+          update = false;
+        }
+      }
+    }
+    paint.apply(this, [c, update]);
+  }
+
   /*
    * Highlight and mark edges connected to the selected node
    */
@@ -311,6 +363,41 @@ Draw.loadPlugin(ui => {
       }
     }
   });
+
+  // Check for latest plugin release after draw.io finished loading
+  void (async () => {
+    try {
+      if (await VersionDialog.isLatestVersion()) {
+        return;
+      }
+    } catch (e) {
+      // Check failed --> Do not show dialog
+      mxUtils.alert(e as string);
+      return;
+    }
+    
+    try {
+      const dismiss = VersionDialog.getDismissedRelease();
+      if (dismiss && await VersionDialog.isLatestVersion(dismiss)) {
+        return;
+      }
+    } catch {
+      // Do nothing
+    }
+    
+    // Brute force showing the dialog.
+    // Unfortunately, it is sometimes closed without the user intentionally closing it...
+    for (let retry = true; retry; ) {
+      try {
+        const dlg = new VersionDialog(ui);
+        await dlg.init();
+        await dlg.show(); // Fails if the dialog wasn't closed by the user
+        retry = false;
+      } catch {
+        // Do nothing
+      }
+    }
+  })();
 
 
   installVertexHandler(ui, worker);

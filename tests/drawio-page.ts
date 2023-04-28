@@ -144,7 +144,7 @@ export class DrawioPage {
   }
 
   async expectSensitivityAnalysisDisabled() {
-    this.page.waitForSelector('#ag_enableSensitivityAnalysis', { state: 'attached' });
+    await this.page.locator('#ag_enableSensitivityAnalysis').waitFor({state: 'visible'});
   }
 
   async loadGraph(graph: string) {

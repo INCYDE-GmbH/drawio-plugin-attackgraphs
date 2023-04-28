@@ -43,6 +43,9 @@ export const test = base.extend<{drawio: DrawioPage}>({
         "ui": ""
       };
       localStorage.setItem('.drawio-config', JSON.stringify(appConfig));
+
+      // Dismiss a release in the very far future to disable the new version dialog
+      localStorage.setItem('ag.dismiss-version', '1000000.0.0');
     });
 
     // Reload

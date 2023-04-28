@@ -1,10 +1,12 @@
 # Aggregation Functions
 
-This plugin allows to specify an aggregation function for any shape in the diagram. The user can access the aggregation function of a cell by clicking the [handle](technical/plugin.md#ui) displayed on the right-hand side of the cell.
+This plugin allows to specify an aggregation function for any shape in the diagram. The user can access the aggregation function of a cell by clicking the [handle](technical/plugin.md#ui) displayed on the left-hand side of the cell.
 
 ![image of cell handles](images/CellHandles.png)
 
 Aggregation functions take attributes of connected child cells and return the resulting attributes to the cell. There can be a `default aggregation function`, which will be used by default by new cells. A default aggregation function can be defined by naming a function `default` in the global **aggregation function dialog**. If no default function was specified, cells will use the `None` function and will not calculate aggregated attributes.
+
+When clicking on the *eye*-icon displayed on the lower right-hand side of the cell, the cell can be disabled and re-enabled. If the cell is disabled (slashed eye), its values are not considered by parent cells, effectively disconnecting it from its parents.
 
 The aggregation function dialog allows to specify a custom aggregation function or to select a global aggregation function by reference.
 
@@ -16,6 +18,27 @@ The aggregation function dialog allows to specify a custom aggregation function 
 - An aggregation function must return an object with properties storing keys and values, which will be dispayed in the shape of the cell. (***Aggregated attributes are only rendered for attackgraph shapes, yet all shapes store them.***)
 
 - An aggregation function must conform to the ES5 syntax as the aggregation functions are executed in a [sandboxed environment](https://github.com/NeilFraser/JS-Interpreter) with it's own js interpreter.
+
+### Predefined Properties
+
+The following properties have a predefined meaning if they are included in the returnd object:
+
+#### `_marking`
+Indicates which outgoing edges shall be marked.
+
+Expected value (RegEx): `^{CHILD_ID}(;{CHILD_ID})*$`.<br/>
+- `{CHILD_ID}`: ID of the child cell. All outgoing edges to this cell will be marked.
+
+For instance, `123;456` and `123` are allowed values but not `;123` and `;`.
+
+#### `_weight`
+Indicates new edge weights for outgoing edges.
+
+Expected value (RegEx): `^{CHILD_ID}:{WEIGHT}(;{CHILD_ID}:{WEIGHT})*$`.<br/>
+- `{CHILD_ID}`: ID of the child cell.<br/>
+- `{WEIGHT}`: new weight for the edge flowing to `{CHILD_ID}`. It replaces the original edge weight.
+
+For instance, `123:A;456:B` and `123:C` are allowed values but not `;123:A`, `;`, and `123;456:A`.
 
 ### Relevant data types
 ```ts

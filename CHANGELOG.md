@@ -1,6 +1,22 @@
 # Changelog
 
-## [Unreleased](https://github.com/INCYDE-GmbH/drawio-plugin-attackgraphs/compare/v1.2.2...HEAD)
+## [1.3.0](https://github.com/INCYDE-GmbH/drawio-plugin-attackgraphs/compare/v1.2.3...v1.3.0) - 2023-04-26
+
+### Added
+
+- Enable definition and visualization of edge weight reductions by aggregation functions ([#104](https://github.com/INCYDE-GmbH/drawio-plugin-attackgraphs/issues/104))
+- Show an update dialog if a newer version of the plugin exists ([#122](https://github.com/INCYDE-GmbH/drawio-plugin-attackgraphs/issues/122))
+- Allow to mark attack graph nodes to not be considered for the aggregation and combuted attributes functions ([#81](https://github.com/INCYDE-GmbH/drawio-plugin-attackgraphs/issues/81))
+
+### Fixes and Improvements
+
+- Function handles are shown only for attack graph nodes. They are also not shown for the `AttackGraphIconLegendShape`.
+
+### Internals
+
+- Add: Specify predefined keywords that are used for aggregation functions in the documentation
+
+## [1.2.3](https://github.com/INCYDE-GmbH/drawio-plugin-attackgraphs/compare/v1.2.2...v1.2.3) - 2023-03-30
 
 ### Fixes and Improvements
 
@@ -8,6 +24,12 @@
 - Enhance recalculation of cell values ([#108](https://github.com/INCYDE-GmbH/drawio-plugin-attackgraphs/issues/108))
   - Avoid recaluclating the values of cells more than once
   - Allow to specify several cells to simultaneously update within one function call
+- Function handles (aggregation and computed attributes functions) are shown after resizing nodes ([#115](https://github.com/INCYDE-GmbH/drawio-plugin-attackgraphs/issues/115))
+- Edges were sometimes inconsistently rendered as unmarked ([#119](https://github.com/INCYDE-GmbH/drawio-plugin-attackgraphs/issues/119))
+
+### Internals
+
+- Fix: Sensitivity analysis test cases occasionally fail ([#111](https://github.com/INCYDE-GmbH/drawio-plugin-attackgraphs/issues/111))
 
 ## [1.2.2](https://github.com/INCYDE-GmbH/drawio-plugin-attackgraphs/compare/v1.2.1...v1.2.2) - 2023-03-20
 

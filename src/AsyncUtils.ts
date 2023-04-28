@@ -11,7 +11,7 @@ export class AsyncWorker {
   private currentTask: Task | null = null;
   private pendingTasks: Task[] = [];
 
-  private determineScriptPath() {
+  static determineScriptPath() {
     try {
       // Throw an error to generate a stack trace
       throw new Error();
@@ -52,9 +52,9 @@ export class AsyncWorker {
 
   private createWorker(fn: string, parameters: unknown) {
     if (this.worker === null) {
-      const worker = new Worker(this.determineScriptPath());
+      const worker = new Worker(AsyncWorker.determineScriptPath());
 
-      worker.onmessage = (evnt: MessageEvent<{ id: number, error?: string, result?: unknown }>) => {
+      worker.onmessage = (evnt: MessageEvent<WorkerResponse>) => {
         const task = this.reset();
 
         if (task) {
@@ -88,7 +88,8 @@ export class AsyncWorker {
       this.worker = worker;
     }
 
-    this.worker.postMessage({ fn, data: parameters });
+    const request: WorkerFunctionRequest = { type: 'Function', fn: fn, data: parameters };
+    this.worker.postMessage(request);
   }
 
   private runNextTaskSupervised() {
