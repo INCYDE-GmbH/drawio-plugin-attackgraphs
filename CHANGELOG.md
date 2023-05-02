@@ -5,6 +5,7 @@
 ### Internals
 
 - Fix: Use the latest draw.io version for the web version ([#123](https://github.com/INCYDE-GmbH/drawio-plugin-attackgraphs/issues/123))
+- Fix: Use the [NPM provided module](https://www.npmjs.com/package/js-interpreter) of the JS interpreter
 
 ## [1.3.0](https://github.com/INCYDE-GmbH/drawio-plugin-attackgraphs/compare/v1.2.3...v1.3.0) - 2023-04-26
 

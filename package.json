@@ -32,6 +32,7 @@
   },
   "dependencies": {
     "ace-builds": "^1.4.13",
-    "acorn": "^8.5.0"
+    "acorn": "^8.5.0",
+    "js-interpreter": "^4.0.0"
   }
 }
