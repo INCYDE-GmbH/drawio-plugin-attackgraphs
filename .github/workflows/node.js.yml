@@ -5,38 +5,62 @@ on:
   pull_request:
 
 jobs:
-  build:
-
+  # https://github.com/orgs/community/discussions/27031#discussioncomment-3254376
+  pre_job:
+    name: Check duplicate
     runs-on: ubuntu-latest
-
+    outputs:
+      should_skip: ${{ steps.skip_check.outputs.should_skip }}
     steps:
-    - uses: actions/checkout@v2
-    - name: Use Node.js 16.x
-      uses: actions/setup-node@v2
-      with:
-        node-version: 16.x
-        cache: 'npm'
-    - run: npm ci
-    - run: npm run build --if-present
-    - run: npm run lint
-    - name: Install Playwright
-      run: npx playwright install --with-deps
-    - name: Create Docker image for Playwright tests
-      run: npm run docker
-    - name: Start draw.io webserver
-      run: npm run start
-    - name: Run Playwright tests
-      run: npm run test
-    - uses: actions/upload-artifact@v2
-      if: always()
-      with:
-        name: playwright-test-results
-        path: test-results/
-    - name: Stop webserver
-      if: always()
-      run: npm run stop
-    - name: Archive compiled plugin
-      uses: actions/upload-artifact@v2
-      with:
-        name: plugin
-        path: dist/attackgraphs.js
+      - id: skip_check
+        uses: fkirc/skip-duplicate-actions@12aca0a884f6137d619d6a8a09fcc3406ced5281
+        with:
+          skip_after_successful_duplicate: 'true'
+          concurrent_skipping: 'same_content_newer'
+
+  build:
+    name: Build Draw.io Plugin
+    runs-on: ubuntu-latest
+    needs: pre_job
+    if: ${{ needs.pre_job.outputs.should_skip != 'true' }}
+    steps:
+      - name: Check out the repository
+        uses: actions/checkout@8e5e7e5ab8b370d6c329ec480221332ada57f0ab
+
+      - name: Use Node.js 16.x
+        uses: actions/setup-node@64ed1c7eab4cce3362f8c340dee64e5eaeef8f7c
+        with:
+          node-version: 16.x
+          cache: 'npm'
+
+      - run: npm ci
+      - run: npm run build --if-present
+      - run: npm run lint
+
+      - name: Install Playwright
+        run: npx playwright install --with-deps
+
+      - name: Create Docker image for Draw.io webserver
+        run: npm run docker
+
+      - name: Start draw.io webserver
+        run: npm run start
+
+      - name: Run Playwright tests
+        run: npm run test
+
+      - uses: actions/upload-artifact@0b7f8abb1508181956e8e162db84b466c27e18ce
+        if: always()
+        with:
+          name: playwright-test-results
+          path: test-results/
+        
+      - name: Stop webserver
+        if: always()
+        run: npm run stop
+
+      - name: Archive compiled plugin
+        uses: actions/upload-artifact@0b7f8abb1508181956e8e162db84b466c27e18ce
+        with:
+          name: plugin
+          path: dist/attackgraphs.js
