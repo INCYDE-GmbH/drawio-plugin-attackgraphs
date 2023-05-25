@@ -61,6 +61,8 @@ attackGraphs.dismissRelease=Do not show again
 attackGraphs.dismissReleaseError=Dismiss of new version was not successful.
 attackGraphs.yes=Yes
 attackGraphs.no=No
+attackGraphs.all=All
+attackGraphs.noAttributes=No attributes defined.
 attackGraphs.updateError=Attack Graphs: Automatic check for a newer plugin version failed.
 attackGraphs.openRelease=Show new version
 attackGraphs.newVersionTitle=New Attack Graphs plugin version available!
@@ -74,6 +76,10 @@ attackGraphs.acceptAnalysisDialog=Do you want to apply the current analysis to t
 attackGraphs.documentation=Documentation...
 attackGraphs.pageReferenceTooltip=Referenced from
 attackGraphs.workerStatus=Background workers in progress to update the attack graph! Please wait...
+attackgraphs.selectImportItems=Select the items you want to import
+attackgraphs.importFromFile=Import from File
+attackgraphs.alertSelectSingleFile=Please select only a single file!
+attackgraphs.alertFileInvalidFormat=This file has an invalid format! Please select another...
 `);
   }
 
@@ -122,6 +128,8 @@ attackGraphs.dismissRelease=Nicht erneut fragen
 attackGraphs.dismissReleaseError=Ignorieren der Version war nicht erfolgreich.
 attackGraphs.yes=Ja
 attackGraphs.no=Nein
+attackGraphs.all=Alle
+attackGraphs.noAttributes=Keine Attribute definiert.
 attackGraphs.updateError=Attack Graphs: Automatische Prüfung auf eine neuere Plugin-Version fehlgeschlagen.
 attackGraphs.openRelease=Neueste Version zeigen
 attackGraphs.newVersionTitle=Neue Attack Graphs Version verfügbar!
@@ -135,6 +143,10 @@ attackGraphs.acceptAnalysisDialog=Wollen sie die aktuelle Sensitivitätsanalyse 
 attackGraphs.documentation=Dokumentation...
 attackGraphs.pageReferenceTooltip=Referenziert von
 attackGraphs.workerStatus=Hintergrundprozesse in Arbeit, um den Attack-Graph zu aktualisieren! Bitte warten Sie...
+attackgraphs.selectImportItems=Wählen Sie die Elemente aus, die Sie importieren möchten
+attackgraphs.importFromFile=Aus Datei importieren
+attackgraphs.alertSelectSingleFile=Bitte nur eine einzelne Datei auswählen!
+attackgraphs.alertFileInvalidFormat=Diese Datei hat ein ungültiges Format! Bitte wählen Sie eine andere aus...
   `);
   }
 }

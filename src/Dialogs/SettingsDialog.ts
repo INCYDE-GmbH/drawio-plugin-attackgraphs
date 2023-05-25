@@ -1,8 +1,9 @@
 import { Sidebar } from '../Sidebar';
 import { KeyValuePairs } from '../Model';
+import { ImportFileDialog } from './ImportFileDialog';
 
 export abstract class SettingsDialog<TValue> {
-  protected ui: Draw.UI | null;
+  protected ui: Draw.UI;
   protected container: HTMLElement;
   protected values: KeyValuePairs[] = [];
   protected textAreas: HTMLInputElement[] = [];
@@ -22,15 +23,12 @@ export abstract class SettingsDialog<TValue> {
 
   show(): Promise<boolean> {
     return new Promise((resolve,) => {
-      this.ui?.showDialog(this.container, this.width, this.height, true, false, () => resolve(this.result !== undefined), false);
+      this.ui.showDialog(this.container, this.width, this.height, true, false, () => resolve(this.result !== undefined), false);
     });
   }
 
   init(): SettingsDialog<TValue> {
-    if (this.ui !== null) {
-      this.createUIElements(this.ui);
-      this.initAlertMessage();
-    }
+    this.createUIElements(this.ui);
     return this;
   }
 
@@ -70,13 +68,22 @@ export abstract class SettingsDialog<TValue> {
     }
   }
 
-  private initAlertMessage(): void {
-    this.alertMessage.style.color = 'red';
-    this.alertMessage.style.padding = '10px';
-  }
+  protected setAlertMessage(message?: string): void {
+    this.alertMessage.innerHTML = '';
 
-  protected setAlertMessage(message: string): void {
-    this.alertMessage.innerHTML = message;
+    if (message) {
+      const span = document.createElement('span');
+      span.style.display = 'inline-block';
+      span.style.borderLeftStyle = 'solid';
+      span.style.borderWidth = '5px';
+      span.style.borderColor = '#f00';
+      span.style.backgroundColor = '#f99';
+      span.style.padding = '10px';
+      span.style.color = '#000';
+      span.innerText = message;
+
+      this.alertMessage.appendChild(span);
+    }
   }
 
   protected addRowToForm(form: import('mxgraph').mxForm, entryName: string, entryValue: string): void {
@@ -166,26 +173,6 @@ export abstract class SettingsDialog<TValue> {
     return nameInput;
   }
 
-  protected getAddButton(
-    callback: (event: MouseEvent) => void
-  ): HTMLElement {
-    const addBtn: HTMLElement = mxUtils.button(mxResources.get('addProperty'), callback) as HTMLElement;
-
-    addBtn.setAttribute('title', mxResources.get('addProperty'));
-    addBtn.setAttribute('disabled', 'disabled');
-    addBtn.style.textOverflow = 'ellipsis';
-    addBtn.style.position = 'static';
-    addBtn.style.overflow = 'hidden';
-    addBtn.style.display = 'block';
-    addBtn.style.right = '0px';
-    addBtn.style.marginTop = '5px';
-    addBtn.style.marginLeft = '0px';
-    addBtn.style.padding = '0px';
-    addBtn.className = 'geBtn';
-
-    return addBtn;
-  }
-
   protected getApplyButton(callback: (event: MouseEvent) => void): HTMLElement {
     const applyBtn = mxUtils.button(mxResources.get('apply'), callback) as HTMLElement;
     applyBtn.className = 'geBtn gePrimaryBtn';
@@ -198,6 +185,37 @@ export abstract class SettingsDialog<TValue> {
     cancelBtn.className = 'geBtn';
 
     return cancelBtn;
+  }
+
+  protected getImportFileDiv(): HTMLDivElement {
+    const div = document.createElement('div');
+    
+    const title = document.createElement('p');
+    title.innerText = mxResources.get('attackgraphs.importFromFile');
+    div.appendChild(title);
+
+    // https://stackoverflow.com/a/40971885
+    const fileBtn = document.createElement('input');
+    fileBtn.type = 'file';
+    fileBtn.onchange = e => {
+      void (async () => {
+        try {
+          const result = await ImportFileDialog.handleFileInput(e);
+          const dlg = new ImportFileDialog(this.ui, result);
+          if (await dlg.init().show() && dlg.result) {
+            console.log(dlg.result);
+          } else {
+            // Dialog cancelled
+          }
+          this.setAlertMessage();
+        } catch(e) {
+          this.setAlertMessage(e as string);
+        }
+      })();
+    };
+    div.appendChild(fileBtn);
+
+    return div;
   }
 
   protected cancelDialog(ui: Draw.UI): void {
