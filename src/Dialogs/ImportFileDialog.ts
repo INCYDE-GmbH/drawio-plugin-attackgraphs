@@ -1,4 +1,4 @@
-import { AttackgraphFunction, GlobalAttribute } from "../Model";
+import { AttackgraphFunction, GlobalAttribute } from '../Model';
 
 export type AGImportFile = {
     ag_type: string;
@@ -21,7 +21,7 @@ export class ImportFileDialog {
   private width: number;
   private height: number;
 
-  valid: boolean = false;
+  valid = false;
   result: AGImportFile | null = null;
 
   constructor(ui: Draw.UI, content: string, width?: number, height?: number) {
@@ -40,11 +40,11 @@ export class ImportFileDialog {
 
     if (this.valid) {
       this.result = {
-        "ag_type": this.file.ag_type,
-        "ag_version": this.file.ag_version,
-        "default_attributes": [],
-        "computed_attributes": [],
-        "aggregation_functions": []
+        'ag_type': this.file.ag_type,
+        'ag_version': this.file.ag_version,
+        'default_attributes': [],
+        'computed_attributes': [],
+        'aggregation_functions': []
       };
     }
   }
@@ -75,7 +75,7 @@ export class ImportFileDialog {
   }
 
   private collectResult() {
-    var search = (source: AGImportFileContent[], target: AGImportFileContent[], prefix: string) => {
+    const search = (source: AGImportFileContent[], target: AGImportFileContent[], prefix: string) => {
       for (let i = 0; i < source.length; i++) {
         const elem = document.getElementById(this.getId(`${prefix}_${i.toString()}`));
         if (elem && elem.tagName === 'INPUT' && (elem as HTMLInputElement).checked) {
@@ -196,7 +196,7 @@ export class ImportFileDialog {
     chkBox.checked = true;
     chkBox.name = id;
     chkBox.id = id;
-    chkBox.onchange = ImportFileDialog.chkBoxOnChange;
+    chkBox.onchange = e => ImportFileDialog.chkBoxOnChange(e);
 
     const label = document.createElement('label');
     label.htmlFor = id;
@@ -236,11 +236,10 @@ export class ImportFileDialog {
         for (const input of Array.from(item.getElementsByTagName('input')).slice(1)) {
           input.checked = state;
         }
-        var checkParents = (el: HTMLElement | null, state: boolean) => {
+        const checkParents = (el: HTMLElement | null, state: boolean) => {
           if (el && el.tagName === 'LI'
               && el.parentElement && el.parentElement.tagName === 'UL'
-              && el.parentElement.parentElement && el.parentElement.parentElement.tagName === 'LI')
-          {
+              && el.parentElement.parentElement && el.parentElement.parentElement.tagName === 'LI') {
             const parent = el.parentElement.parentElement;
             const inputs = Array.from(parent.getElementsByTagName('input'));
             state = state && inputs.slice(1).reduce((acc, curr) => acc && curr.checked, true);
@@ -258,7 +257,7 @@ export class ImportFileDialog {
       if (e.currentTarget) {
         const elem = e.currentTarget as HTMLInputElement;
         const files = elem.files;
-        if (files && files.length == 1) {
+        if (files && files.length === 1) {
           const reader = new FileReader();
           reader.readAsText(files[0], 'UTF-8');
           reader.onload = readerEvt => {
