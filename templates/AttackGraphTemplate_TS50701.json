@@ -4,48 +4,52 @@
     "default_attributes": [
         {
             "name": "Exposure",
-            "icon": "airplane",
             "value": null,
             "min": 1,
-            "max": 3
+            "max": 3,
+            "iconName": "airplane"
         },
         {
             "name": "Vulnerability",
-            "icon": "airplane",
             "value": null,
             "min": 1,
-            "max": 3
+            "max": 3,
+            "iconName": "airplane"
         },
         {
             "name": "Impact",
-            "icon": "airplane",
             "value": null,
             "min": 1,
-            "max": 4
+            "max": 4,
+            "iconName": "airplane"
         }
     ],
     "computed_attributes": [
         {
             "name": "Default",
-            "default": null,
-            "code": "function(collection){\n   return {};\n}"
+            "id": "default",
+            "default": [],
+            "fn": "function(collection){\n   return {};\n}"
         }
     ],
     "aggregation_functions": [
         {
             "name": "Default",
-            "default": null,
-            "code": "function(collection){\n   return {};\n}"
+            "id": "default",
+            "default": [],
+            "fn": "function(collection){\n   return {};\n}"
         },
         {
             "name": "AND",
-            "default": null,
-            "code": "function(collection){\n   return {};\n}"
+            "id": "default",
+            "default": [],
+            "fn": "function(collection){\n   return {};\n}"
         },
         {
             "name": "Leaf Node",
-            "default": null,
-            "code": "function(collection){\n   return {};\n}"
+            "id": "default",
+            "default": [],
+            "fn": "function(collection){\n   return {};\n}"
         }
     ]
 }

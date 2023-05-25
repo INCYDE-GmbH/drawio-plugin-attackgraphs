@@ -1,26 +1,14 @@
-export type AGAttribute = {
-    name: string;
-    icon: string;
-    value: number;
-    min: number;
-    max: number;
-}
-
-export type AGFunction = {
-    name: string;
-    default: string | null;
-    code: string;
-}
+import { AttackgraphFunction, GlobalAttribute } from "../Model";
 
 export type AGImportFile = {
     ag_type: string;
     ag_version: number; // TODO
-    default_attributes: AGAttribute[];
-    computed_attributes: AGFunction[];
-    aggregation_functions: AGFunction[];
+    default_attributes: GlobalAttribute[];
+    computed_attributes: AttackgraphFunction[];
+    aggregation_functions: AttackgraphFunction[];
 }
 
-interface AGContent {
+interface AGImportFileContent {
   name: string;
 }
 
@@ -87,7 +75,7 @@ export class ImportFileDialog {
   }
 
   private collectResult() {
-    var search = (source: AGContent[], target: AGContent[], prefix: string) => {
+    var search = (source: AGImportFileContent[], target: AGImportFileContent[], prefix: string) => {
       for (let i = 0; i < source.length; i++) {
         const elem = document.getElementById(this.getId(`${prefix}_${i.toString()}`));
         if (elem && elem.tagName === 'INPUT' && (elem as HTMLInputElement).checked) {
@@ -173,7 +161,7 @@ export class ImportFileDialog {
     return cancelBtn;
   }
 
-  private createAttributesList(attributes: AGAttribute[], prefix: string): HTMLElement {
+  private createAttributesList(attributes: GlobalAttribute[], prefix: string): HTMLElement {
     const list = this.createChkBoxList();
     for (let i = 0; i < attributes.length; i++) {
       const item = this.createChkBoxItem(attributes[i].name, `${prefix}_${i.toString()}`);
@@ -182,7 +170,7 @@ export class ImportFileDialog {
     return list
   }
 
-  private createFunctionsList(fns: AGFunction[], prefix: string): HTMLElement {
+  private createFunctionsList(fns: AttackgraphFunction[], prefix: string): HTMLElement {
     const list = this.createChkBoxList();
     for (let i = 0; i < fns.length; i++) {
       const item = this.createChkBoxItem(fns[i].name, `${prefix}_${i.toString()}`);

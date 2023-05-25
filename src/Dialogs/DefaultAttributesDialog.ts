@@ -4,6 +4,7 @@ import { Framework7Icons } from '../Framework7Icons';
 import { IconLegend } from '../IconLegend';
 import { GlobalAttribute } from '../Model';
 import { IconPickerDialog } from './IconPickerDialog';
+import { AGImportFile } from './ImportFileDialog';
 import { SettingsDialog } from './SettingsDialog';
 
 
@@ -135,7 +136,9 @@ export class DefaultAttributesDialog extends SettingsDialog<true> {
     top.appendChild(addMoreGlobalAttributesTitle);
     top.appendChild(newProp);
 
-    top.appendChild(this.getImportFileDiv());
+    top.appendChild(this.getImportFileDiv((file: AGImportFile) => {
+      console.log(file);
+    }));
 
     this.container.append(top);
     this.container.appendChild(buttons);
