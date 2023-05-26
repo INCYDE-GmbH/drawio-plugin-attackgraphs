@@ -1,6 +1,7 @@
 import { AttributeRenderer } from '../AttributeRenderer';
 import { AttackgraphFunction } from '../Model';
 import { FunctionListDialog } from './FunctionListDialog';
+import { AGImportFile } from './ImportFileDialog';
 
 export class ComputedAttributesDialog extends FunctionListDialog {
   protected title = mxResources.get('attackGraphs.computedAttributes');
@@ -20,5 +21,10 @@ export class ComputedAttributesDialog extends FunctionListDialog {
     } else {
       return [];
     }
+  }
+
+  protected override importFileCallback(file: AGImportFile, refresh: () => void): void {
+    this.updateItems(file.computed_attributes);
+    super.importFileCallback(file, refresh);
   }
 }

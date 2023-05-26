@@ -2,6 +2,7 @@ import { AttackgraphFunction, getUUID } from '../Model';
 import { EditFunctionDialog } from './EditFunctionDialog';
 import { SettingsDialog } from './SettingsDialog';
 import { STORAGE_ID_NONE_FUNCTION } from '../CellUtils';
+import { AGImportFile } from './ImportFileDialog';
 
 type VertexType = {
   type: string,
@@ -24,7 +25,7 @@ const VERTEX_TYPES: VertexType[] = [
 
 export abstract class FunctionListDialog extends SettingsDialog<AttackgraphFunction[]> {
   protected width = 500;
-  protected height = 360;
+  protected height = 500;
   protected title: string | null = null;
   protected editDialogTitle: string | null = null;
 
@@ -40,7 +41,7 @@ export abstract class FunctionListDialog extends SettingsDialog<AttackgraphFunct
     top.appendChild(title);
 
     const inner = document.createElement('div');
-    inner.style.height = '270px';
+    inner.style.maxHeight = '300px';
     inner.style.overflow = 'auto';
     top.appendChild(inner);
 
@@ -141,6 +142,7 @@ export abstract class FunctionListDialog extends SettingsDialog<AttackgraphFunct
 
     refresh();
 
+    // Add buttons
     const addBtn = mxUtils.button(mxResources.get('add') + '...', async () => {
       const newAggregationFunction = { name: '', fn: '', id: '', default: [] };
       const dialog = new EditFunctionDialog(ui, undefined, undefined, newAggregationFunction, this.editDialogTitle || '').init();
@@ -164,14 +166,30 @@ export abstract class FunctionListDialog extends SettingsDialog<AttackgraphFunct
     });
 
     const buttons = document.createElement('div');
-    buttons.style.marginTop = '14px';
-    buttons.style.textAlign = 'right';
+    buttons.style.cssText = 'position:absolute;left:30px;right:30px;text-align:right;bottom:30px;height:40px;';
     buttons.appendChild(addBtn);
     buttons.appendChild(applyBtn);
     buttons.appendChild(cancelBtn);
 
+    // Construct dialog
     this.container.append(top);
+    this.container.append(this.getImportFileDiv((file: AGImportFile) => this.importFileCallback(file, refresh)));
     this.container.appendChild(buttons);
+  }
+
+  protected importFileCallback(file: AGImportFile, refresh: () => void): void {
+    refresh();
+  }
+
+  protected updateItems(items: AttackgraphFunction[]): void {
+    for (const item of items) {
+      const idx = this.items.findIndex(x => x.name === item.name);
+      if (idx >= 0) {
+        this.items[idx] = item;
+      } else {
+        this.items.push(item);
+      }
+    }
   }
 
   private createDefaultFunctionSelectFormHeader(thead: HTMLTableSectionElement) : void {

@@ -78,6 +78,7 @@ attackGraphs.pageReferenceTooltip=Referenced from
 attackGraphs.workerStatus=Background workers in progress to update the attack graph! Please wait...
 attackgraphs.selectImportItems=Select the items you want to import
 attackgraphs.importFromFile=Import from File
+attackgraphs.importFile=Import file
 attackgraphs.alertSelectSingleFile=Please select only a single file!
 attackgraphs.alertFileInvalidFormat=This file has an invalid format! Please select another...
 `);
@@ -145,6 +146,7 @@ attackGraphs.pageReferenceTooltip=Referenziert von
 attackGraphs.workerStatus=Hintergrundprozesse in Arbeit, um den Attack-Graph zu aktualisieren! Bitte warten Sie...
 attackgraphs.selectImportItems=Wählen Sie die Elemente aus, die Sie importieren möchten
 attackgraphs.importFromFile=Aus Datei importieren
+attackgraphs.importFile=Datei importieren
 attackgraphs.alertSelectSingleFile=Bitte nur eine einzelne Datei auswählen!
 attackgraphs.alertFileInvalidFormat=Diese Datei hat ein ungültiges Format! Bitte wählen Sie eine andere aus...
   `);

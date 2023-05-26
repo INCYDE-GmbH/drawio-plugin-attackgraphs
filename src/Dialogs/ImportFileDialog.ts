@@ -93,7 +93,7 @@ export class ImportFileDialog {
 
   private createUIElements() {
     const title = document.createElement('h2');
-    title.innerText = 'Import File';
+    title.innerText = mxResources.get('attackgraphs.importFile');
 
     // Body
     const body = document.createElement('div');

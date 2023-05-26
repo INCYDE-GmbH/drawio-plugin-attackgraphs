@@ -4,24 +4,24 @@
     "default_attributes": [
         {
             "name": "Exposure",
-            "value": null,
+            "value": "",
             "min": 1,
             "max": 3,
-            "iconName": "airplane"
+            "iconName": "lock_circle"
         },
         {
             "name": "Vulnerability",
-            "value": null,
+            "value": "",
             "min": 1,
             "max": 3,
-            "iconName": "airplane"
+            "iconName": "shield"
         },
         {
             "name": "Impact",
-            "value": null,
+            "value": "",
             "min": 1,
             "max": 4,
-            "iconName": "airplane"
+            "iconName": "flame"
         }
     ],
     "computed_attributes": [
@@ -41,13 +41,13 @@
         },
         {
             "name": "AND",
-            "id": "default",
+            "id": "and",
             "default": [],
             "fn": "function(collection){\n   return {};\n}"
         },
         {
             "name": "Leaf Node",
-            "id": "default",
+            "id": "leaf_node",
             "default": [],
             "fn": "function(collection){\n   return {};\n}"
         }

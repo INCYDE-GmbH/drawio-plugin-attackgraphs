@@ -4,6 +4,7 @@ import { Framework7Icons } from '../Framework7Icons';
 import { IconLegend } from '../IconLegend';
 import { GlobalAttribute } from '../Model';
 import { IconPickerDialog } from './IconPickerDialog';
+import { AGImportFile } from './ImportFileDialog';
 import { SettingsDialog } from './SettingsDialog';
 
 
@@ -135,8 +136,19 @@ export class DefaultAttributesDialog extends SettingsDialog<true> {
     top.appendChild(addMoreGlobalAttributesTitle);
     top.appendChild(newProp);
 
-    top.appendChild(this.getImportFileDiv(() => {
-      // Do nothing...
+    top.appendChild(this.getImportFileDiv((file: AGImportFile) => {
+      for (const attribute of file.default_attributes) {
+        const idx = this.values.findIndex(x => x.name === attribute.name)
+        if (idx >= 0) {
+          this.values[idx] = attribute;
+          this.textAreas[idx].value = attribute.value;
+          this.minTextAreas[idx].value = attribute.min;
+          this.maxTextAreas[idx].value = attribute.max;
+        } else {
+          this.values.push(attribute);
+          this.addCustomRowToForm(form, attribute);
+        }
+      }
     }));
 
     this.container.append(top);
