@@ -1,6 +1,6 @@
 import { Sidebar } from '../Sidebar';
 import { KeyValuePairs } from '../Model';
-import { AGImportFile, ImportFileDialog } from './ImportFileDialog';
+import { AGImportFile, ImportFileDialog, ImportType } from './ImportFileDialog';
 
 export abstract class SettingsDialog<TValue> {
   protected ui: Draw.UI;
@@ -187,7 +187,7 @@ export abstract class SettingsDialog<TValue> {
     return cancelBtn;
   }
 
-  protected getImportFileDiv(callback: (file: AGImportFile) => void): HTMLDivElement {
+  protected getImportFileDiv(type: ImportType, callback: (file: AGImportFile) => void): HTMLDivElement {
     const div = document.createElement('div');
     
     const title = document.createElement('p');
@@ -201,7 +201,7 @@ export abstract class SettingsDialog<TValue> {
       void (async () => {
         try {
           const result = await ImportFileDialog.handleFileInput(e);
-          const dlg = new ImportFileDialog(this.ui, result);
+          const dlg = new ImportFileDialog(this.ui, result, type);
           if (await dlg.init().show() && dlg.result) {
             callback(dlg.result)
           } else {

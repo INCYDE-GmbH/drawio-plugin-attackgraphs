@@ -2,7 +2,7 @@ import { AttackgraphFunction, getUUID } from '../Model';
 import { EditFunctionDialog } from './EditFunctionDialog';
 import { SettingsDialog } from './SettingsDialog';
 import { STORAGE_ID_NONE_FUNCTION } from '../CellUtils';
-import { AGImportFile } from './ImportFileDialog';
+import { AGImportFile, ImportType } from './ImportFileDialog';
 
 type VertexType = {
   type: string,
@@ -173,12 +173,21 @@ export abstract class FunctionListDialog extends SettingsDialog<AttackgraphFunct
 
     // Construct dialog
     this.container.append(top);
-    this.container.append(this.getImportFileDiv((file: AGImportFile) => this.importFileCallback(file, refresh)));
+    this.container.append(
+      this.getImportFileDiv(
+        this.getImportType(),
+        (file: AGImportFile) => this.importFileCallback(file, refresh)
+      )
+    );
     this.container.appendChild(buttons);
   }
 
   protected importFileCallback(file: AGImportFile, refresh: () => void): void {
     refresh();
+  }
+
+  protected getImportType(): ImportType {
+    throw new Error('Method not implemented.');
   }
 
   protected updateItems(items: AttackgraphFunction[]): void {

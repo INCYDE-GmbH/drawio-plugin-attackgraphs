@@ -12,9 +12,17 @@ interface AGImportFileContent {
   name: string;
 }
 
+export enum ImportType {
+  All = '',
+  DefaulttAttributes = 'attr',
+  ComputedAttributes = 'comp',
+  AggregationFunctions = 'agg'
+}
+
 export class ImportFileDialog {
-  private ui: Draw.UI
-  private file: AGImportFile
+  private ui: Draw.UI;
+  private file: AGImportFile;
+  private type: ImportType;
 
   private container: HTMLDivElement;
   private alertCtn: HTMLDivElement;
@@ -24,8 +32,9 @@ export class ImportFileDialog {
   valid = false;
   result: AGImportFile | null = null;
 
-  constructor(ui: Draw.UI, content: string, width?: number, height?: number) {
+  constructor(ui: Draw.UI, content: string, type: ImportType, width?: number, height?: number) {
     this.ui = ui;
+    this.type = type;
     try {
       this.file = JSON.parse(content) as AGImportFile;
       this.valid = Object.prototype.hasOwnProperty.call(this.file, 'ag_type') && this.file.ag_type === 'template';
@@ -75,7 +84,7 @@ export class ImportFileDialog {
   }
 
   private collectResult() {
-    const search = (source: AGImportFileContent[], target: AGImportFileContent[], prefix: string) => {
+    const search = (source: AGImportFileContent[], target: AGImportFileContent[], prefix: ImportType) => {
       for (let i = 0; i < source.length; i++) {
         const elem = document.getElementById(this.getId(`${prefix}_${i.toString()}`));
         if (elem && elem.tagName === 'INPUT' && (elem as HTMLInputElement).checked) {
@@ -85,9 +94,15 @@ export class ImportFileDialog {
     }
 
     if (this.result) {
-      search(this.file.default_attributes, this.result.default_attributes, 'attr');
-      search(this.file.computed_attributes, this.result.computed_attributes, 'comp');
-      search(this.file.aggregation_functions, this.result.aggregation_functions, 'agg');
+      if (this.type === ImportType.All || this.type === ImportType.DefaulttAttributes) {
+        search(this.file.default_attributes, this.result.default_attributes, ImportType.DefaulttAttributes);
+      }
+      if (this.type === ImportType.All || this.type === ImportType.ComputedAttributes) {
+        search(this.file.computed_attributes, this.result.computed_attributes, ImportType.ComputedAttributes);
+      }
+      if (this.type === ImportType.All || this.type === ImportType.AggregationFunctions) {
+        search(this.file.aggregation_functions, this.result.aggregation_functions, ImportType.AggregationFunctions);
+      }
     }
   }
 
@@ -103,27 +118,31 @@ export class ImportFileDialog {
       body.appendChild(header);
 
       const ul = this.createChkBoxList();
-      if (this.file.default_attributes.length > 0) {
+      if ((this.type === ImportType.All || this.type === ImportType.DefaulttAttributes) && this.file.default_attributes.length > 0) {
         const item = this.createChkBoxItem(mxResources.get('attackGraphs.defaultAttributes'), 'attr')
         item.appendChild(this.createAttributesList(this.file.default_attributes, 'attr'));
         ul.appendChild(item);
       }
-      if (this.file.computed_attributes.length > 0) {
+      if ((this.type === ImportType.All || this.type === ImportType.ComputedAttributes) && this.file.computed_attributes.length > 0) {
         const item = this.createChkBoxItem(mxResources.get('attackGraphs.computedAttributes'), 'comp')
         item.appendChild(this.createFunctionsList(this.file.computed_attributes, 'comp'));
         ul.appendChild(item);
       }
-      if (this.file.aggregation_functions.length > 0) {
+      if ((this.type === ImportType.All || this.type === ImportType.AggregationFunctions) && this.file.aggregation_functions.length > 0) {
         const item = this.createChkBoxItem(mxResources.get('attackGraphs.aggregationFunctions'), 'agg')
         item.appendChild(this.createFunctionsList(this.file.aggregation_functions, 'agg'));
         ul.appendChild(item);
       }
 
-      const top = this.createChkBoxList();
-      const allItem = this.createChkBoxItem(mxResources.get('attackGraphs.all'), '');
-      allItem.appendChild(ul);
-      top.appendChild(allItem);
-      body.appendChild(top);
+      if (this.type === ImportType.All) {
+        const top = this.createChkBoxList();
+        const allItem = this.createChkBoxItem(mxResources.get('attackGraphs.all'), '');
+        allItem.appendChild(ul);
+        top.appendChild(allItem);
+        body.appendChild(top);
+      } else {
+        body.appendChild(ul)
+      }
     } else {
       this.setAlertMessage(mxResources.get('attackgraphs.alertFileInvalidFormat'));
     }

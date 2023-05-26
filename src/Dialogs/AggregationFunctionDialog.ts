@@ -1,7 +1,7 @@
 import { FunctionListDialog } from './FunctionListDialog';
 import { AttackgraphFunction } from '../Model';
 import { AttributeRenderer } from '../AttributeRenderer';
-import { AGImportFile } from './ImportFileDialog';
+import { AGImportFile, ImportType } from './ImportFileDialog';
 
 export class AggregationFunctionListDialog extends FunctionListDialog {
   protected title = mxResources.get('attackGraphs.aggregationFunctions');
@@ -26,5 +26,9 @@ export class AggregationFunctionListDialog extends FunctionListDialog {
   protected override importFileCallback(file: AGImportFile, refresh: () => void): void {
     this.updateItems(file.aggregation_functions);
     super.importFileCallback(file, refresh);
+  }
+
+  protected override getImportType(): ImportType {
+    return ImportType.AggregationFunctions;
   }
 }
