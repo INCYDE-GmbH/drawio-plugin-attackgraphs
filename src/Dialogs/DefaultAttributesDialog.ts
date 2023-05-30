@@ -4,7 +4,7 @@ import { Framework7Icons } from '../Framework7Icons';
 import { IconLegend } from '../IconLegend';
 import { GlobalAttribute } from '../Model';
 import { IconPickerDialog } from './IconPickerDialog';
-import { AGImportFile, ImportType } from './ImportFileDialog';
+import { ImportType } from './ImportFileDialog';
 import { SettingsDialog } from './SettingsDialog';
 
 
@@ -47,9 +47,9 @@ export class DefaultAttributesDialog extends SettingsDialog<true> {
     return values;
   }
 
-  saveAttributes(): void {
+  saveAttributes(values?: GlobalAttribute[]): void {
     if (this.ui !== null) {
-      AttributeRenderer.rootAttributes().setGlobalAttributes(this.collectValues());
+      AttributeRenderer.rootAttributes().setGlobalAttributes(values ? values : this.collectValues());
     }
   }
 
@@ -136,20 +136,12 @@ export class DefaultAttributesDialog extends SettingsDialog<true> {
     top.appendChild(addMoreGlobalAttributesTitle);
     top.appendChild(newProp);
 
-    top.appendChild(this.getImportFileDiv(ImportType.DefaulttAttributes, (file: AGImportFile) => {
-      for (const attribute of file.default_attributes) {
-        const idx = this.values.findIndex(x => x.name === attribute.name)
-        if (idx >= 0) {
-          this.values[idx] = attribute;
-          this.textAreas[idx].value = attribute.value;
-          this.minTextAreas[idx].value = attribute.min;
-          this.maxTextAreas[idx].value = attribute.max;
-        } else {
-          this.values.push(attribute);
-          this.addCustomRowToForm(form, attribute);
-        }
-      }
-    }));
+    top.appendChild(
+      this.getImportFileDiv(
+        ImportType.DefaulttAttributes,
+        file => this.updateAttributes(file.default_attributes, form)
+      )
+    );
 
     this.container.append(top);
     this.container.appendChild(buttons);
@@ -369,5 +361,33 @@ export class DefaultAttributesDialog extends SettingsDialog<true> {
 
   getRenderableAttributes(): GlobalAttribute[] {
     return RootAttributeProvider.getRenderableAttributes(this.values);
+  }
+
+  private updateAttributes(attributes: GlobalAttribute[], form?: import('mxgraph').mxForm): void {
+    for (const attribute of attributes) {
+      const idx = this.values.findIndex(x => x.name === attribute.name)
+      if (idx >= 0) {
+        this.values[idx] = attribute;
+        this.textAreas[idx].value = attribute.value;
+        this.minTextAreas[idx].value = attribute.min;
+        this.maxTextAreas[idx].value = attribute.max;
+      } else {
+        this.values.push(attribute);
+        if (form) {
+          this.addCustomRowToForm(form, attribute);
+        }
+      }
+    }
+  }
+
+  /**
+   * Allows to import a list of attributes.
+   * Intended to be used by the template import.
+   */
+  static importAttributes(ui: Draw.UI, attributes: GlobalAttribute[]): void {
+    const dlg = new DefaultAttributesDialog(ui, 0, 0);
+    dlg.values = dlg.getGlobalAttributes();
+    dlg.updateAttributes(attributes);
+    dlg.saveAttributes(dlg.values);
   }
 }

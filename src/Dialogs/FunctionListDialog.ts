@@ -278,4 +278,13 @@ export abstract class FunctionListDialog extends SettingsDialog<AttackgraphFunct
       }
     }
   }
+
+  /**
+   * Intended to be used by the template import.
+   */
+  protected importFunctionItems(items: AttackgraphFunction[]): void {
+    this.items = this.getFunctionItems();
+    this.updateItems(items);
+    this.setFunctionItems(this.items);
+  }
 }

@@ -31,4 +31,13 @@ export class AggregationFunctionListDialog extends FunctionListDialog {
   protected override getImportType(): ImportType {
     return ImportType.AggregationFunctions;
   }
+
+  /**
+   * Allows to import a list of function items.
+   * Intended to be used by the template import.
+   */
+  static importFunctionItems(ui: Draw.UI, items: AttackgraphFunction[]): void {
+    const dlg = new AggregationFunctionListDialog(ui, 0, 0);
+    dlg.importFunctionItems(items);
+  }
 }

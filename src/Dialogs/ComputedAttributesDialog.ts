@@ -31,4 +31,13 @@ export class ComputedAttributesDialog extends FunctionListDialog {
   protected override getImportType(): ImportType {
     return ImportType.ComputedAttributes;
   }
+
+  /**
+   * Allows to import a list of function items.
+   * Intended to be used by the template import.
+   */
+  static importFunctionItems(ui: Draw.UI, items: AttackgraphFunction[]): void {
+    const dlg = new ComputedAttributesDialog(ui, 0, 0);
+    dlg.importFunctionItems(items);
+  }
 }
