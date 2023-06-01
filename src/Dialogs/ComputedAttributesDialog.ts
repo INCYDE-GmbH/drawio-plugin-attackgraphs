@@ -1,7 +1,7 @@
 import { AttributeRenderer } from '../AttributeRenderer';
 import { AttackgraphFunction } from '../Model';
 import { FunctionListDialog } from './FunctionListDialog';
-import { AGImportFile, ImportType } from './ImportFileDialog';
+import { TemplateFile, TemplateType } from './FileDialog';
 
 export class ComputedAttributesDialog extends FunctionListDialog {
   protected title = mxResources.get('attackGraphs.computedAttributes');
@@ -23,21 +23,30 @@ export class ComputedAttributesDialog extends FunctionListDialog {
     }
   }
 
-  protected override importFileCallback(file: AGImportFile, refresh: () => void): void {
+  protected override importFileCallback(file: TemplateFile, callback: () => void): void {
     this.updateItems(file.computed_attributes);
-    super.importFileCallback(file, refresh);
+    callback();
   }
 
-  protected override getImportType(): ImportType {
-    return ImportType.ComputedAttributes;
+  protected override getImportType(): TemplateType {
+    return TemplateType.ComputedAttributes;
   }
 
   /**
    * Allows to import a list of function items.
-   * Intended to be used by the template import.
+   * Intended to be used by the template import dialog.
    */
-  static importFunctionItems(ui: Draw.UI, items: AttackgraphFunction[]): void {
+  static override importFunctionItems(ui: Draw.UI, items: AttackgraphFunction[]): void {
     const dlg = new ComputedAttributesDialog(ui, 0, 0);
     dlg.importFunctionItems(items);
+  }
+
+  /**
+   * Allows to export a list of function items.
+   * Intended to be used by the template export dialog.
+   */
+  static override exportFunctionItems(ui: Draw.UI): AttackgraphFunction[] {
+    const dlg = new ComputedAttributesDialog(ui, 0, 0);
+    return dlg.getFunctionItems();
   }
 }

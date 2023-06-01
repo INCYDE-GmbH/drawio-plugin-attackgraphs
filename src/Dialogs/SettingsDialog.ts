@@ -1,6 +1,7 @@
 import { Sidebar } from '../Sidebar';
 import { KeyValuePairs } from '../Model';
-import { AGImportFile, ImportFileDialog, ImportType } from './ImportFileDialog';
+import { ImportFileDialog } from './ImportFileDialog';
+import { TemplateFile, TemplateType } from './FileDialog';
 
 export abstract class SettingsDialog<TValue> {
   protected ui: Draw.UI;
@@ -187,7 +188,7 @@ export abstract class SettingsDialog<TValue> {
     return cancelBtn;
   }
 
-  protected getImportFileDiv(type: ImportType, callback: (file: AGImportFile) => void): HTMLDivElement {
+  protected getImportFileDiv(type: TemplateType, callback: (file: TemplateFile) => void): HTMLDivElement {
     const div = document.createElement('div');
     
     const title = document.createElement('p');

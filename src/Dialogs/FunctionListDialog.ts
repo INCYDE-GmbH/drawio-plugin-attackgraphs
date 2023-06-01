@@ -2,7 +2,7 @@ import { AttackgraphFunction, getUUID } from '../Model';
 import { EditFunctionDialog } from './EditFunctionDialog';
 import { SettingsDialog } from './SettingsDialog';
 import { STORAGE_ID_NONE_FUNCTION } from '../CellUtils';
-import { AGImportFile, ImportType } from './ImportFileDialog';
+import { TemplateFile, TemplateType } from './FileDialog';
 
 type VertexType = {
   type: string,
@@ -176,17 +176,15 @@ export abstract class FunctionListDialog extends SettingsDialog<AttackgraphFunct
     this.container.append(
       this.getImportFileDiv(
         this.getImportType(),
-        (file: AGImportFile) => this.importFileCallback(file, refresh)
+        file => this.importFileCallback(file, refresh)
       )
     );
     this.container.appendChild(buttons);
   }
 
-  protected importFileCallback(file: AGImportFile, refresh: () => void): void {
-    refresh();
-  }
+  protected abstract importFileCallback(file: TemplateFile, callback: () => void): void;
 
-  protected getImportType(): ImportType {
+  protected getImportType(): TemplateType {
     throw new Error('Method not implemented.');
   }
 
@@ -282,9 +280,19 @@ export abstract class FunctionListDialog extends SettingsDialog<AttackgraphFunct
   /**
    * Intended to be used by the template import.
    */
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  static importFunctionItems(ui: Draw.UI, items: AttackgraphFunction[]): void {
+    throw new Error('Method not implemented.');
+  }
+
   protected importFunctionItems(items: AttackgraphFunction[]): void {
     this.items = this.getFunctionItems();
     this.updateItems(items);
     this.setFunctionItems(this.items);
+  }
+
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  static exportFunctionItems(ui: Draw.UI): AttackgraphFunction[] {
+    throw new Error('Method not implemented.');
   }
 }

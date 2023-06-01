@@ -4,7 +4,7 @@ import { Framework7Icons } from '../Framework7Icons';
 import { IconLegend } from '../IconLegend';
 import { GlobalAttribute } from '../Model';
 import { IconPickerDialog } from './IconPickerDialog';
-import { ImportType } from './ImportFileDialog';
+import { TemplateType } from './FileDialog';
 import { SettingsDialog } from './SettingsDialog';
 
 
@@ -138,7 +138,7 @@ export class DefaultAttributesDialog extends SettingsDialog<true> {
 
     top.appendChild(
       this.getImportFileDiv(
-        ImportType.DefaulttAttributes,
+        TemplateType.DefaulttAttributes,
         file => this.updateAttributes(file.default_attributes, form)
       )
     );
@@ -382,12 +382,21 @@ export class DefaultAttributesDialog extends SettingsDialog<true> {
 
   /**
    * Allows to import a list of attributes.
-   * Intended to be used by the template import.
+   * Intended to be used by the template import dialog.
    */
   static importAttributes(ui: Draw.UI, attributes: GlobalAttribute[]): void {
     const dlg = new DefaultAttributesDialog(ui, 0, 0);
     dlg.values = dlg.getGlobalAttributes();
     dlg.updateAttributes(attributes);
     dlg.saveAttributes(dlg.values);
+  }
+
+  /**
+   * Allows to export a list of attributes.
+   * Intended to be used by the template export dialog.
+   */
+  static exportAttributes(ui: Draw.UI): GlobalAttribute[] {
+    const dlg = new DefaultAttributesDialog(ui, 0, 0);
+    return dlg.getGlobalAttributes();
   }
 }
