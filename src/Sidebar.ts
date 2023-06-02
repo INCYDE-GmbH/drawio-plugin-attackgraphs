@@ -36,147 +36,135 @@ export class Sidebar {
     return sidebar.createVertexTemplate(`shape=${AttackGraphIconLegendShape.ID};`, 150, height, value);
   }
 
-  private createConsequenceVertexTemplate(
-    sidebar: Draw.Sidebar,
-    aggregationFunction: AttackgraphFunction | null,
-    computedAttributeFunction: AttackgraphFunction | null
-    ) {
-    const doc = mxUtils.createXmlDocument();
-    const value = doc.createElement('object');
-    value.setAttribute('label', mxResources.get('attackGraphs.consequence'));
-
-    if (aggregationFunction) {
-      const newElement = doc.createElement(STORAGE_NAME_AGGREGATION_FUNCTION_REFERENCE);
-      newElement.setAttribute(STORAGE_NAME_AGGREGATION_FUNCTION_REFERENCE, aggregationFunction.id);
-      value.appendChild(newElement);
-    }
-
-    if (computedAttributeFunction) {
-      const newElement = doc.createElement(STORAGE_NAME_COMPUTED_ATTRIBUTES_FUNCTION_REFERENCE);
-      newElement.setAttribute(STORAGE_NAME_COMPUTED_ATTRIBUTES_FUNCTION_REFERENCE, computedAttributeFunction.id);
-      value.appendChild(newElement);
-    }
-
-    return sidebar.createVertexTemplate(`shape=${AttackGraphNodeShape.ID};rounded=1`, 150, 75, value);
+  private createConsequenceVertexTemplate(sidebar: Draw.Sidebar): HTMLAnchorElement {
+    return this.createVertexTemplate(
+      sidebar,
+      `shape=${AttackGraphNodeShape.ID};rounded=1;`,
+      150, 75, mxResources.get('attackGraphs.consequence'),
+      this.getDefaultGlobalAggregationFunction('consequence'),
+      this.getDefaultGlobalComputedAttributesFunction('consequence'),
+      null
+    );
   }
 
-  private createActivityVertexTemplateOfShape(
+  private createActivityVertexTemplate(
     sidebar: Draw.Sidebar,
     style: string,
     defaultValues: boolean,
     aggregationFunction: AttackgraphFunction | null,
     computedAttributeFunction: AttackgraphFunction | null
-    ): HTMLAnchorElement {
-    const doc = mxUtils.createXmlDocument();
-    const value = doc.createElement('object');
-    value.setAttribute('label', mxResources.get('attackGraphs.activity'));
-
-    const attributes = this.getGlobalAttributes();
-
-    if (defaultValues && attributes !== null) {
-      for (const attribute of attributes) {
-        value.setAttribute(attribute['name'], attribute['value']);
-      }
-    }
-
-    if (aggregationFunction) {
-      const newElement = doc.createElement(STORAGE_NAME_AGGREGATION_FUNCTION_REFERENCE);
-      newElement.setAttribute(STORAGE_NAME_AGGREGATION_FUNCTION_REFERENCE, aggregationFunction.id);
-      value.appendChild(newElement);
-    }
-
-    if (computedAttributeFunction) {
-      const newElement = doc.createElement(STORAGE_NAME_COMPUTED_ATTRIBUTES_FUNCTION_REFERENCE);
-      newElement.setAttribute(STORAGE_NAME_COMPUTED_ATTRIBUTES_FUNCTION_REFERENCE, computedAttributeFunction.id);
-      value.appendChild(newElement);
-    }
-
-    return sidebar.createVertexTemplate(`shape=${AttackGraphNodeShape.ID};` + style, 150, 75, value);
-  }
-
-  private createImpactVertexTemplateOfShape(
-    sidebar: Draw.Sidebar,
-    style: string,
-    defaultValues: boolean,
-    aggregationFunction: AttackgraphFunction | null,
-    computedAttributeFunction: AttackgraphFunction | null
-    ): HTMLAnchorElement {
-    const doc = mxUtils.createXmlDocument();
-    const value = doc.createElement('object');
-    value.setAttribute('label', mxResources.get('attackGraphs.impact'));
-
-    const attributes = this.getGlobalAttributes();
-
-    if (defaultValues && attributes !== null) {
-      for (const attribute of attributes) {
-        value.setAttribute(attribute['name'], attribute['value']);
-      }
-    }
-
-    if (aggregationFunction) {
-      const newElement = doc.createElement(STORAGE_NAME_AGGREGATION_FUNCTION_REFERENCE);
-      newElement.setAttribute(STORAGE_NAME_AGGREGATION_FUNCTION_REFERENCE, aggregationFunction.id);
-      value.appendChild(newElement);
-    }
-
-    if (computedAttributeFunction) {
-      const newElement = doc.createElement(STORAGE_NAME_COMPUTED_ATTRIBUTES_FUNCTION_REFERENCE);
-      newElement.setAttribute(STORAGE_NAME_COMPUTED_ATTRIBUTES_FUNCTION_REFERENCE, computedAttributeFunction.id);
-      value.appendChild(newElement);
-    }
-
-    return sidebar.createVertexTemplate(`shape=${AttackGraphNodeShape.ID};ellipse; aspect=fixed;` + style, 75, 75, value);
-  }
-
-  private createSeverityVertexTemplateOfShape(
-    sidebar: Draw.Sidebar,
-    style: string,
-    defaultValues: boolean,
-    aggregationFunction: AttackgraphFunction | null,
-    computedAttributeFunction: AttackgraphFunction | null
-    ): HTMLAnchorElement {
-    const doc = mxUtils.createXmlDocument();
-    const value = doc.createElement('object');
-    value.setAttribute('label', mxResources.get('attackGraphs.severity'));
-
-    const attributes = this.getGlobalAttributes();
-
-    if (defaultValues && attributes !== null) {
-      for (const attribute of attributes) {
-        value.setAttribute(attribute['name'], attribute['value']);
-      }
-    }
-
-    if (aggregationFunction) {
-      const newElement = doc.createElement(STORAGE_NAME_AGGREGATION_FUNCTION_REFERENCE);
-      newElement.setAttribute(STORAGE_NAME_AGGREGATION_FUNCTION_REFERENCE, aggregationFunction.id);
-      value.appendChild(newElement);
-    }
-
-    if (computedAttributeFunction) {
-      const newElement = doc.createElement(STORAGE_NAME_COMPUTED_ATTRIBUTES_FUNCTION_REFERENCE);
-      newElement.setAttribute(STORAGE_NAME_COMPUTED_ATTRIBUTES_FUNCTION_REFERENCE, computedAttributeFunction.id);
-      value.appendChild(newElement);
-    }
-
-    return sidebar.createVertexTemplate(`shape=${AttackGraphNodeShape.ID};rhombus;` + style, 75, 75, value);
-  }
-
-  private createLinkVertexTemplate(
-    sidebar: Draw.Sidebar,
-    aggregationFunction: AttackgraphFunction | null
   ): HTMLAnchorElement {
-    const doc = mxUtils.createXmlDocument();
-    const value = doc.createElement('object');
-    value.setAttribute('label', 'A');
+    return this.createVertexTemplate(
+      sidebar,
+      `shape=${AttackGraphNodeShape.ID};` + style,
+      150, 75, mxResources.get('attackGraphs.activity'),
+      aggregationFunction,
+      computedAttributeFunction,
+      defaultValues ? this.getGlobalAttributes() : null
+    );
+  }
 
-    if (aggregationFunction) {
-      const newElement = doc.createElement(STORAGE_NAME_AGGREGATION_FUNCTION_REFERENCE);
-      newElement.setAttribute(STORAGE_NAME_AGGREGATION_FUNCTION_REFERENCE, aggregationFunction.id);
-      value.appendChild(newElement);
+  private createDefaultActivityVertexTemplate(sidebar: Draw.Sidebar) {
+    return this.createActivityVertexTemplate(
+      sidebar,
+      '',
+      false,
+      this.getDefaultGlobalAggregationFunction('activity_w'),
+      this.getDefaultGlobalComputedAttributesFunction('activity_w')
+    );
+  }
+
+  private createGreenActivityVertexTemplate(sidebar: Draw.Sidebar): HTMLAnchorElement {
+    return this.createActivityVertexTemplate(
+      sidebar,
+      'fillColor=#D7E3BF;',
+      true,
+      this.getDefaultGlobalAggregationFunction('activity_g'),
+      this.getDefaultGlobalComputedAttributesFunction('activity_g')
+    );
+  }
+
+  private createYellowActivityVertexTemplate(sidebar: Draw.Sidebar): HTMLAnchorElement {
+    return this.createActivityVertexTemplate(
+      sidebar,
+      'fillColor=#FEE599;',
+      true,
+      this.getDefaultGlobalAggregationFunction('activity_y'),
+      this.getDefaultGlobalComputedAttributesFunction('activity_y')
+    );
+  }
+
+  private createControlVertexTemplate(sidebar: Draw.Sidebar): HTMLAnchorElement {
+    let attributes = this.getGlobalAttributes();
+    if (attributes) {
+      attributes = attributes.map(x => {
+        x['value'] = '0';
+        return x;
+      })
     }
+    return this.createVertexTemplate(
+      sidebar,
+      `shape=${AttackGraphNodeShape.ID};fillColor=#DAE8FC;`,
+      150, 75, mxResources.get('attackGraphs.control'),
+      this.getDefaultGlobalAggregationFunction('measurement'),
+      this.getDefaultGlobalComputedAttributesFunction('measurement'),
+      attributes
+    );
+  }
 
-    return sidebar.createVertexTemplate(`shape=${AttackGraphLinkShape.ID};aspect=fixed;fontColor=none;noLabel=1;`, 60, 60, value);
+  private createImpactVertexTemplate(sidebar: Draw.Sidebar): HTMLAnchorElement {
+    return this.createVertexTemplate(
+      sidebar,
+      `shape=${AttackGraphNodeShape.ID};ellipse;aspect=fixed;fillColor=#ffcccb;`,
+      75, 75, mxResources.get('attackGraphs.impact'),
+      this.getDefaultGlobalAggregationFunction('impact'),
+      this.getDefaultGlobalComputedAttributesFunction('impact'),
+      null
+    );
+  }
+
+  private createSeverityVertexTemplate(sidebar: Draw.Sidebar): HTMLAnchorElement {
+    return this.createVertexTemplate(
+      sidebar,
+      `shape=${AttackGraphNodeShape.ID};rhombus;fillColor=#FFFF8F;`,
+      60, 60, mxResources.get('attackGraphs.severity'),
+      this.getDefaultGlobalAggregationFunction('severity'),
+      this.getDefaultGlobalComputedAttributesFunction('severity'),
+      null
+    );
+  }
+
+  private createANDVertexTemplate(sidebar: Draw.Sidebar): HTMLAnchorElement {
+    return this.createVertexTemplate(
+      sidebar,
+      'shape=or;whiteSpace=wrap;html=1;rotation=-90;',
+      45, 60, 'AND',
+      this.getDefaultGlobalAggregationFunction('and'),
+      this.getDefaultGlobalComputedAttributesFunction('and'),
+      null
+    );
+  }
+
+  private createORVertexTemplate(sidebar: Draw.Sidebar): HTMLAnchorElement {
+    return this.createVertexTemplate(
+      sidebar,
+      'shape=xor;whiteSpace=wrap;html=1;rotation=-90;',
+      45, 60, 'OR',
+      this.getDefaultGlobalAggregationFunction('or'),
+      this.getDefaultGlobalComputedAttributesFunction('or'),
+      null
+    );
+  }
+
+  private createLinkVertexTemplate(sidebar: Draw.Sidebar): HTMLAnchorElement {
+    return this.createVertexTemplate(
+      sidebar,
+      `shape=${AttackGraphLinkShape.ID};aspect=fixed;fontColor=none;noLabel=1;`,
+      60, 60, 'A',
+      this.getDefaultGlobalAggregationFunction('link'),
+      null,
+      null
+    );
   }
 
   private createVertexTemplate(
@@ -185,10 +173,17 @@ export class Sidebar {
     width: number, height: number,
     label: string | null,
     aggregationFunction: AttackgraphFunction | null,
-    computedAttributeFunction: AttackgraphFunction | null
-    ): HTMLAnchorElement {
+    computedAttributeFunction: AttackgraphFunction | null,
+    attributes: GlobalAttribute[] | null
+  ): HTMLAnchorElement {
     const doc = mxUtils.createXmlDocument();
     const value = doc.createElement('object');
+
+    if (attributes) {
+      for (const attribute of attributes) {
+        value.setAttribute(attribute['name'], attribute['value']);
+      }
+    }
 
     if (label) {
       value.setAttribute('label', label);
@@ -217,83 +212,18 @@ export class Sidebar {
     }
   }
 
-  private getGlobalAggregationFunctions() {
-    if (this.ui) {
-      return AttributeRenderer.rootAttributes().getGlobalAggregationFunctions();
-    }
-    return [];
-  }
-
-  private getDefaultGlobalAggregationFunctionByVertexType(type: string) {
+  private getDefaultGlobalAggregationFunction(type: string) {
     if (this.ui) {
       return AttributeRenderer.rootAttributes().getDefaultGlobalAggregationFunctionByVertexType(type);
     }
     return null;
   }
 
-  private getComputedAttributeFunctions() {
-    if (this.ui) {
-      return AttributeRenderer.rootAttributes().getGlobalComputedAttributesFunctions();
-    }
-    return [];
-  }
-
-  private getDefaultGlobalComputedAttributesFunctionByVertexType(type: string) {
+  private getDefaultGlobalComputedAttributesFunction(type: string) {
     if (this.ui) {
       return AttributeRenderer.rootAttributes().getDefaultGlobalComputedAttributesFunctionByVertexType(type);
     }
     return null;
-  }
-
-  private createDefaultActivityVertexTemplate(sidebar: Draw.Sidebar, aggregationFunction: AttackgraphFunction | null, computedAttributeFunction: AttackgraphFunction | null) {
-    return this.createActivityVertexTemplateOfShape(sidebar, '', false, aggregationFunction, computedAttributeFunction);
-  }
-
-  private createGreenActivityVertexTemplate(sidebar: Draw.Sidebar, aggregationFunction: AttackgraphFunction | null, computedAttributeFunction: AttackgraphFunction | null): HTMLAnchorElement {
-    return this.createActivityVertexTemplateOfShape(sidebar, 'fillColor=#D7E3BF', true, aggregationFunction, computedAttributeFunction);
-  }
-
-  private createYellowActivityVertexTemplate(sidebar: Draw.Sidebar, aggregationFunction: AttackgraphFunction | null, computedAttributeFunction: AttackgraphFunction | null): HTMLAnchorElement {
-    return this.createActivityVertexTemplateOfShape(sidebar, 'fillColor=#FEE599', true, aggregationFunction, computedAttributeFunction);
-  }
-
-  private createRiskConsequenceVertexTemplate(sidebar: Draw.Sidebar, aggregationFunction: AttackgraphFunction | null, computedAttributeFunction: AttackgraphFunction | null): HTMLAnchorElement {
-    return this.createImpactVertexTemplateOfShape(sidebar, 'fillColor=#ffcccb', false, aggregationFunction, computedAttributeFunction);
-  }
-  private createSeverityConsequenceVertexTemplate(sidebar: Draw.Sidebar, aggregationFunction: AttackgraphFunction | null, computedAttributeFunction: AttackgraphFunction | null): HTMLAnchorElement {
-    return this.createSeverityVertexTemplateOfShape(sidebar, 'fillColor=#FFFF8F', false, aggregationFunction, computedAttributeFunction);
-  }
-
-  private createControlVertexTemplate(
-    sidebar: Draw.Sidebar,
-    aggregationFunction: AttackgraphFunction | null,
-    computedAttributeFunction: AttackgraphFunction | null
-    ): HTMLAnchorElement {
-    const doc = mxUtils.createXmlDocument();
-    const value = doc.createElement('object');
-    value.setAttribute('label', mxResources.get('attackGraphs.control'));
-
-    const attributes = this.getGlobalAttributes();
-
-    if (attributes !== null) {
-      for (const attribute of attributes) {
-        value.setAttribute(attribute['name'], '0');
-      }
-    }
-
-    if (aggregationFunction) {
-      const newElement = doc.createElement(STORAGE_NAME_AGGREGATION_FUNCTION_REFERENCE);
-      newElement.setAttribute(STORAGE_NAME_AGGREGATION_FUNCTION_REFERENCE, aggregationFunction.id);
-      value.appendChild(newElement);
-    }
-
-    if (computedAttributeFunction) {
-      const newElement = doc.createElement(STORAGE_NAME_COMPUTED_ATTRIBUTES_FUNCTION_REFERENCE);
-      newElement.setAttribute(STORAGE_NAME_COMPUTED_ATTRIBUTES_FUNCTION_REFERENCE, computedAttributeFunction.id);
-      value.appendChild(newElement);
-    }
-
-    return sidebar.createVertexTemplate(`shape=${AttackGraphNodeShape.ID};fillColor=#DAE8FC`, 150, 75, value);
   }
 
   addPalette(): void {
@@ -306,18 +236,18 @@ export class Sidebar {
           content.appendChild(this.createIconLegendShape(sidebar));
         }
 
-        content.appendChild(this.createConsequenceVertexTemplate(sidebar, this.getDefaultGlobalAggregationFunctionByVertexType('consequence'), this.getDefaultGlobalComputedAttributesFunctionByVertexType('consequence')));
-        content.appendChild(this.createDefaultActivityVertexTemplate(sidebar, this.getDefaultGlobalAggregationFunctionByVertexType('activity_w'), this.getDefaultGlobalComputedAttributesFunctionByVertexType('activity_w')));
-        content.appendChild(this.createGreenActivityVertexTemplate(sidebar, this.getDefaultGlobalAggregationFunctionByVertexType('activity_g'), this.getDefaultGlobalComputedAttributesFunctionByVertexType('activity_g')));
-        content.appendChild(this.createYellowActivityVertexTemplate(sidebar, this.getDefaultGlobalAggregationFunctionByVertexType('activity_y'), this.getDefaultGlobalComputedAttributesFunctionByVertexType('activity_y')));
-        content.appendChild(this.createControlVertexTemplate(sidebar, this.getDefaultGlobalAggregationFunctionByVertexType('measurement'), this.getDefaultGlobalComputedAttributesFunctionByVertexType('measurement')));
-        content.appendChild(this.createRiskConsequenceVertexTemplate(sidebar, this.getDefaultGlobalAggregationFunctionByVertexType('impact'), this.getDefaultGlobalComputedAttributesFunctionByVertexType('impact')));
-        content.appendChild(this.createSeverityConsequenceVertexTemplate(sidebar, this.getDefaultGlobalAggregationFunctionByVertexType('severity'), this.getDefaultGlobalComputedAttributesFunctionByVertexType('severity')));
+        content.appendChild(this.createConsequenceVertexTemplate(sidebar));
+        content.appendChild(this.createDefaultActivityVertexTemplate(sidebar));
+        content.appendChild(this.createGreenActivityVertexTemplate(sidebar));
+        content.appendChild(this.createYellowActivityVertexTemplate(sidebar));
+        content.appendChild(this.createControlVertexTemplate(sidebar));
 
-        content.appendChild(this.createVertexTemplate(sidebar, 'shape=or;whiteSpace=wrap;html=1;rotation=-90;', 45, 60, 'AND', this.getDefaultGlobalAggregationFunctionByVertexType('and'), this.getDefaultGlobalComputedAttributesFunctionByVertexType('and')));
-        content.appendChild(this.createVertexTemplate(sidebar, 'shape=xor;whiteSpace=wrap;html=1;rotation=-90;', 45, 60, 'OR', this.getDefaultGlobalAggregationFunctionByVertexType('or'), this.getDefaultGlobalComputedAttributesFunctionByVertexType('or')));
+        content.appendChild(this.createImpactVertexTemplate(sidebar));
+        content.appendChild(this.createSeverityVertexTemplate(sidebar));
 
-        content.appendChild(this.createLinkVertexTemplate(sidebar, this.getDefaultGlobalAggregationFunctionByVertexType('link')));
+        content.appendChild(this.createANDVertexTemplate(sidebar));
+        content.appendChild(this.createORVertexTemplate(sidebar));
+        content.appendChild(this.createLinkVertexTemplate(sidebar));
       });
     }
 
