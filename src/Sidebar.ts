@@ -123,17 +123,6 @@ export class Sidebar {
     );
   }
 
-  private createSeverityVertexTemplate(sidebar: Draw.Sidebar): HTMLAnchorElement {
-    return this.createVertexTemplate(
-      sidebar,
-      `shape=${AttackGraphNodeShape.ID};rhombus;fillColor=#FFFF8F;`,
-      60, 60, mxResources.get('attackGraphs.severity'),
-      this.getDefaultGlobalAggregationFunction('severity'),
-      this.getDefaultGlobalComputedAttributesFunction('severity'),
-      null
-    );
-  }
-
   private createANDVertexTemplate(sidebar: Draw.Sidebar): HTMLAnchorElement {
     return this.createVertexTemplate(
       sidebar,
@@ -242,12 +231,13 @@ export class Sidebar {
         content.appendChild(this.createYellowActivityVertexTemplate(sidebar));
         content.appendChild(this.createControlVertexTemplate(sidebar));
 
-        content.appendChild(this.createImpactVertexTemplate(sidebar));
-        content.appendChild(this.createSeverityVertexTemplate(sidebar));
-
         content.appendChild(this.createANDVertexTemplate(sidebar));
         content.appendChild(this.createORVertexTemplate(sidebar));
         content.appendChild(this.createLinkVertexTemplate(sidebar));
+      });
+
+      sidebar.addPalette('AttackGraphs21434', 'Attack Graphs: ISO/SAE 21434', true, content => {
+        content.appendChild(this.createImpactVertexTemplate(sidebar));
       });
     }
 
@@ -260,10 +250,20 @@ export class Sidebar {
         c = c.firstChild as HTMLElement;
       }
 
-      if (c && c.firstChild && c.lastChild) {
-        (c.firstChild as HTMLElement).click();
-        c.insertBefore(c.lastChild, c.firstChild);
-        c.insertBefore(c.lastChild, c.firstChild);
+      if (c && c.firstChild && c.lastChild && c.firstChild.nextSibling && c.firstChild.nextSibling.nextSibling) {
+        // Skip search field and hide "General" palette
+        const curr = c.firstChild.nextSibling.nextSibling;
+        (curr as HTMLElement).click();
+
+        // Move attack graph paletts to the top
+        const items = [];
+        for (let i = 0; i < 4; i++) { // 2 pallets x (1 header + 1 body) = 4
+          items.push(c.lastChild);
+          c.insertBefore(c.lastChild, curr);
+        }
+        while(items.length > 0) { // Reverse
+          c.insertBefore(items.pop() || ({} as HTMLElement), curr);
+        }
       }
     }
   }
@@ -271,6 +271,7 @@ export class Sidebar {
   updatePalette(): void {
     if (this.ui) {
       this.ui.removeLibrarySidebar('AttackGraphs');
+      this.ui.removeLibrarySidebar('AttackGraphs21434');
       this.addPalette();
     }
   }
