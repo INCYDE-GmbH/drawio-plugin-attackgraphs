@@ -107,7 +107,7 @@ test.describe('attributes and default attributes', () => {
     await drawio.applyDialog();
 
     // Instantiate an attack step shape
-    await page.locator('.geSidebarContainer').locator('.geSidebar').first().locator('text=Attack Step').first().click();
+    await page.locator('.geSidebarContainer').locator('.geSidebar').locator('text=Attack Step').first().click();
     await page.locator('img.ag_function_handle').last().click();
 
     await expect(page.locator(`.ace_content`)).toHaveText(aggFunc);
