@@ -190,6 +190,11 @@ export abstract class FunctionListDialog extends SettingsDialog<AttackgraphFunct
 
   protected updateItems(items: AttackgraphFunction[]): void {
     for (const item of items) {
+      // Check defaults (imported item has preference)
+      for (const elem of this.items) {
+        elem.default = elem.default.filter(x => item.default.indexOf(x) < 0); // https://stackoverflow.com/a/40031292
+      }
+
       const idx = this.items.findIndex(x => x.name === item.name);
       if (idx >= 0) {
         this.items[idx] = item;
