@@ -126,13 +126,28 @@ export class DrawioPage {
     await this.page.locator(`tr:has-text(\"${prop1}\")`).locator('a.geButton').click();
   }
 
+  async openIconPickerDialogOnAttribute(row: number) {
+    let loc = this.page.locator('table.properties').locator('tr');
+    loc = (row >= 0) ? loc.nth(row) : loc.last();
+    await loc.locator('td').locator('span').click();
+  }
+
   async openIconPickerDialogOnFirstAttribute() {
-    await this.page.locator('table.properties').locator('tr').first().locator('td').locator('span').click();
+    this.openIconPickerDialogOnAttribute(0);
+  }
+
+  async selectIconFromIconPickerDialog(row: number, column: number): Promise<Locator> {
+    let loc = this.page.locator('tbody').locator('tr');
+    loc = (row >= 0) ? loc.nth(row) : loc.last();
+    loc = loc.locator('td')
+    loc = (column >= 0) ? loc.nth(column) : loc.last();
+    await loc.click();
+    return loc;
   }
 
   async selectLastIconFromIconPickerDialog() {
-    await this.page.locator('tbody').locator('tr').last().locator('td').last().click();
-    await this.page.locator('.geDialog').last().locator('text=Apply').click();
+    await this.selectIconFromIconPickerDialog(-1, -1);
+    await this.applyDialog();
   }
 
   async expectToFindCellAttribute(value: string) {

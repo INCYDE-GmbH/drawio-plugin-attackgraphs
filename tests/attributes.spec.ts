@@ -187,24 +187,19 @@ test.describe('attributes and default attributes', () => {
   test('will update an attributes icon', async ({ page, drawio }) => {
     await drawio.openDefaultAttributesDialog();
     await drawio.addPropertyInDefaultDialog('Knowledge');
-
-    await page.locator('table.properties').locator('tr').locator('td').locator('span').click();
+    await drawio.openIconPickerDialogOnAttribute(0);
     await drawio.selectLastIconFromIconPickerDialog();
-
     await drawio.applyDialog();
+
     await drawio.addActivityNode();
 
     await drawio.openDefaultAttributesDialog();
-
-    await page.locator('table.properties').locator('tr').locator('td').locator('span').click();
-    const icon = page.locator('tbody').locator('tr').last().locator('td').last();
-    await icon.click();
+    await drawio.openIconPickerDialogOnAttribute(0);
+    const icon = await drawio.selectIconFromIconPickerDialog(-1, 0); // Different icon
     const path = await icon.locator('path').getAttribute('d') || '';
-
     await drawio.applyDialog();
     await drawio.applyDialog();
 
-    await drawio.addActivityNode();
     const href = await page.locator('.geDiagramContainer').locator('text=Attack Step')
       .locator('xpath=..').locator('xpath=..').locator('xpath=..').locator('image').first().getAttribute('xlink:href') || '';
 
@@ -215,21 +210,90 @@ test.describe('attributes and default attributes', () => {
 
   test('will not render hidden attributes', async ({ page, drawio }) => {
     await drawio.openDefaultAttributesDialog();
-    await drawio.addPropertyInDefaultDialog('Knowledge');
 
-    await page.locator('table.properties').locator('tr').locator('td').locator('span').click();
+    await drawio.addPropertyInDefaultDialog('Knowledge');
+    await drawio.openIconPickerDialogOnAttribute(0);
     await drawio.selectLastIconFromIconPickerDialog();
 
     await drawio.addPropertyInDefaultDialog('_Test');
-
-    await page.locator('table.properties').locator('tr').locator('td').locator('span').last().click();
+    await drawio.openIconPickerDialogOnAttribute(1);
     await drawio.selectLastIconFromIconPickerDialog();
 
     await drawio.applyDialog();
     await drawio.addActivityNode();
 
-
     await expect(page.locator('.geDiagramContainer').locator(`text=_Test`)).not.toBeVisible();
+  });
+
+  test('can reorder attributes', async ({ page, drawio }) => {
+    await drawio.openDefaultAttributesDialog();
+    await drawio.addPropertyInDefaultDialog('Knowledge');
+    await drawio.addPropertyInDefaultDialog('Location');
+
+    const check = async (idx: number, text: string) => {
+      await expect(page.locator('table.properties').locator('tr').nth(idx).locator(`text=${text}`)).toBeVisible();
+    };
+
+    // Change order of properties
+    await page.locator('table.properties').locator('tr').first().locator('td[title="Down"]').locator('button').click();
+    await check(0, 'Location');
+    await check(1, 'Knowledge');
+
+    // Undo change
+    await page.locator('table.properties').locator('tr').last().locator('td[title="Up"]').locator('button').click();
+    await check(0, 'Knowledge');
+    await check(1, 'Location');
+
+    // Check that overflows are not possible
+    await page.locator('table.properties').locator('tr').first().locator('td[title="Up"]').locator('button').click();
+    await check(0, 'Knowledge');
+    await check(1, 'Location');
+    await page.locator('table.properties').locator('tr').last().locator('td[title="Down"]').locator('button').click();
+    await check(0, 'Knowledge');
+    await check(1, 'Location');
+  });
+
+  test('attributes are rendered in the same order as in the DefaultAttributesDialog', async ({ page, drawio }) => {
+    // Prepare properties
+    await drawio.openDefaultAttributesDialog();
+
+    await drawio.addPropertyInDefaultDialog('Knowledge');
+    await drawio.openIconPickerDialogOnAttribute(0);
+    const knowledgeIcon = await drawio.selectIconFromIconPickerDialog(-1, 0);
+    const knowledgePath = await knowledgeIcon.locator('path').getAttribute('d') || '';
+    await drawio.applyDialog();
+
+    await drawio.addPropertyInDefaultDialog('Location');
+    await drawio.openIconPickerDialogOnAttribute(1);
+    const locationIcon = await drawio.selectIconFromIconPickerDialog(-1, 1);
+    const locationPath = await locationIcon.locator('path').getAttribute('d') || '';
+    await drawio.applyDialog();
+
+    await drawio.applyDialog();
+
+    // Add activity node
+    await drawio.addActivityNode();
+    const images = page.locator('.geDiagramContainer').locator('text=Attack Step')
+      .locator('xpath=..').locator('xpath=..').locator('xpath=..').locator('image');
+    const check = async (idx: number, path: string) => {
+      let href = await images.nth(idx).getAttribute('xlink:href') || '';
+      let regex = RegExp(path, 'gm');
+      let result = regex.exec(href) || '';
+      expect(result.length).toBeGreaterThan(0);
+    };
+
+    // Check: #1 Knowledge, #2 Location
+    await check(0, knowledgePath);
+    await check(1, locationPath)
+
+    // Change order of properties
+    await drawio.openDefaultAttributesDialog();
+    await page.locator('table.properties').locator('tr').first().locator('td[title="Down"]').locator('button').click();
+    await drawio.applyDialog();
+
+    // Check: #1 Location, #2 Knowledge
+    await check(0, locationPath);
+    await check(1, knowledgePath);
   });
 
 });
