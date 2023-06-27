@@ -2,6 +2,10 @@
 
 ## [Unreleased](https://github.com/INCYDE-GmbH/drawio-plugin-attackgraphs/compare/v1.3.0...HEAD)
 
+### Fixes and Improvements
+
+- Include connectors in sidebar ([#138](https://github.com/INCYDE-GmbH/drawio-plugin-attackgraphs/issues/138))
+
 ### Internals
 
 - Fix: Use the latest draw.io version for the web version ([#123](https://github.com/INCYDE-GmbH/drawio-plugin-attackgraphs/issues/123))
