@@ -4,6 +4,7 @@ import { Framework7Icons } from '../Framework7Icons';
 import { IconLegend } from '../IconLegend';
 import { GlobalAttribute } from '../Model';
 import { IconPickerDialog } from './IconPickerDialog';
+import { TemplateType } from './FileDialog';
 import { SettingsDialog } from './SettingsDialog';
 
 
@@ -46,9 +47,9 @@ export class DefaultAttributesDialog extends SettingsDialog<true> {
     return values;
   }
 
-  saveAttributes(): void {
+  saveAttributes(values?: GlobalAttribute[]): void {
     if (this.ui !== null) {
-      AttributeRenderer.rootAttributes().setGlobalAttributes(this.collectValues());
+      AttributeRenderer.rootAttributes().setGlobalAttributes(values ? values : this.collectValues());
     }
   }
 
@@ -64,12 +65,20 @@ export class DefaultAttributesDialog extends SettingsDialog<true> {
     const globalAttributesTitle = this.getTitleDiv(mxResources.get('attackGraphs.defaultAttributes'));
     const addMoreGlobalAttributesTitle = this.getTitleDiv(mxResources.get('attackGraphs.addFurther'));
 
+    // Form
     const form = new mxForm('properties');
     form.table.style.cssText = 'width:100%;display:block;overflow-x:auto;white-space:nowrap;';
     this.attributeTable = form.table;
     this.addTextAreasTo(form, this.values);
 
+    // Add properties
     const keyInputArea = this.getInputArea(mxResources.get('attackGraphs.attributeName'));
+    mxEvent.addListener(keyInputArea, 'keyup', () => {
+      this.updateButton(addBtn, keyInputArea.value.length > 0);
+    });
+    mxEvent.addListener(keyInputArea, 'change', () => {
+      this.updateButton(addBtn, keyInputArea.value.length > 0);
+    });
     const valueInputArea = this.getInputArea(mxResources.get('attackGraphs.attributeValue'));
     const inputWrapper = document.createElement('div');
     inputWrapper.style.cssText = 'flex - direction: row;';
@@ -87,19 +96,16 @@ export class DefaultAttributesDialog extends SettingsDialog<true> {
         return;
       }
 
+      this.setAlertMessage();
       this.addCustomRowToForm(form, { name: keyInputArea.value, value: valueInputArea.value, iconName: '', min: '', max: '' });
       this.clearInput(keyInputArea);
       this.clearInput(valueInputArea);
       this.updateButton(addBtn, keyInputArea.value.length > 0);
     });
+    newProp.appendChild(inputWrapper);
+    newProp.appendChild(addBtn);
 
-    mxEvent.addListener(keyInputArea, 'keyup', () => {
-      this.updateButton(addBtn, keyInputArea.value.length > 0);
-    });
-    mxEvent.addListener(keyInputArea, 'change', () => {
-      this.updateButton(addBtn, keyInputArea.value.length > 0);
-    });
-
+    // Dialog buttons
     const applyBtn = this.getApplyButton(() => {
       if (this.checkMinMaxValue()) {
         this.apply(true);
@@ -108,7 +114,6 @@ export class DefaultAttributesDialog extends SettingsDialog<true> {
           IconLegend.updateLegend(this.getRenderableAttributes().length);
         }
       }
-
     });
     const cancelBtn = this.getCancelButton(() => {
       this.cancelDialog(ui)
@@ -117,8 +122,8 @@ export class DefaultAttributesDialog extends SettingsDialog<true> {
     buttons.appendChild(applyBtn);
     buttons.appendChild(cancelBtn);
 
-    newProp.appendChild(inputWrapper);
-    newProp.appendChild(addBtn);
+    // Construct dialog
+    top.appendChild(this.alertMessage);
 
     top.appendChild(globalAttributesTitle);
     top.appendChild(form.table);
@@ -127,10 +132,17 @@ export class DefaultAttributesDialog extends SettingsDialog<true> {
       noElements.textContent = mxResources.get('attackGraphs.noAttributes');
       top.appendChild(noElements);
     }
+
     top.appendChild(addMoreGlobalAttributesTitle);
     top.appendChild(newProp);
 
-    top.appendChild(this.alertMessage);
+    top.appendChild(
+      this.getImportFileDiv(
+        TemplateType.DefaulttAttributes,
+        file => this.updateAttributes(file.default_attributes, form)
+      )
+    );
+
     this.container.append(top);
     this.container.appendChild(buttons);
   }
@@ -147,6 +159,26 @@ export class DefaultAttributesDialog extends SettingsDialog<true> {
       }
     }
     return true;
+  }
+
+  private getAddButton(
+    callback: (event: MouseEvent) => void
+  ): HTMLElement {
+    const addBtn: HTMLElement = mxUtils.button(mxResources.get('addProperty'), callback) as HTMLElement;
+
+    addBtn.setAttribute('title', mxResources.get('addProperty'));
+    addBtn.setAttribute('disabled', 'disabled');
+    addBtn.style.textOverflow = 'ellipsis';
+    addBtn.style.position = 'static';
+    addBtn.style.overflow = 'hidden';
+    addBtn.style.display = 'block';
+    addBtn.style.right = '0px';
+    addBtn.style.marginTop = '5px';
+    addBtn.style.marginLeft = '0px';
+    addBtn.style.padding = '0px';
+    addBtn.className = 'geBtn';
+
+    return addBtn;
   }
 
   protected override addTextAreasTo(
@@ -329,5 +361,42 @@ export class DefaultAttributesDialog extends SettingsDialog<true> {
 
   getRenderableAttributes(): GlobalAttribute[] {
     return RootAttributeProvider.getRenderableAttributes(this.values);
+  }
+
+  private updateAttributes(attributes: GlobalAttribute[], form?: import('mxgraph').mxForm): void {
+    for (const attribute of attributes) {
+      const idx = this.values.findIndex(x => x.name === attribute.name)
+      if (idx >= 0) {
+        this.values[idx] = attribute;
+        this.textAreas[idx].value = attribute.value;
+        this.minTextAreas[idx].value = attribute.min;
+        this.maxTextAreas[idx].value = attribute.max;
+      } else {
+        this.values.push(attribute);
+        if (form) {
+          this.addCustomRowToForm(form, attribute);
+        }
+      }
+    }
+  }
+
+  /**
+   * Allows to import a list of attributes.
+   * Intended to be used by the template import dialog.
+   */
+  static importAttributes(ui: Draw.UI, attributes: GlobalAttribute[]): void {
+    const dlg = new DefaultAttributesDialog(ui, 0, 0);
+    dlg.values = dlg.getGlobalAttributes();
+    dlg.updateAttributes(attributes);
+    dlg.saveAttributes(dlg.values);
+  }
+
+  /**
+   * Allows to export a list of attributes.
+   * Intended to be used by the template export dialog.
+   */
+  static exportAttributes(ui: Draw.UI): GlobalAttribute[] {
+    const dlg = new DefaultAttributesDialog(ui, 0, 0);
+    return dlg.getGlobalAttributes();
   }
 }

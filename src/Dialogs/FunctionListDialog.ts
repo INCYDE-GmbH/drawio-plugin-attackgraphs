@@ -2,6 +2,7 @@ import { AttackgraphFunction, getUUID } from '../Model';
 import { EditFunctionDialog } from './EditFunctionDialog';
 import { SettingsDialog } from './SettingsDialog';
 import { STORAGE_ID_NONE_FUNCTION } from '../CellUtils';
+import { TemplateFile, TemplateType } from './FileDialog';
 
 type VertexType = {
   type: string,
@@ -24,7 +25,7 @@ const VERTEX_TYPES: VertexType[] = [
 
 export abstract class FunctionListDialog extends SettingsDialog<AttackgraphFunction[]> {
   protected width = 500;
-  protected height = 360;
+  protected height = 500;
   protected title: string | null = null;
   protected editDialogTitle: string | null = null;
 
@@ -40,7 +41,7 @@ export abstract class FunctionListDialog extends SettingsDialog<AttackgraphFunct
     top.appendChild(title);
 
     const inner = document.createElement('div');
-    inner.style.height = '270px';
+    inner.style.maxHeight = '300px';
     inner.style.overflow = 'auto';
     top.appendChild(inner);
 
@@ -141,6 +142,7 @@ export abstract class FunctionListDialog extends SettingsDialog<AttackgraphFunct
 
     refresh();
 
+    // Add buttons
     const addBtn = mxUtils.button(mxResources.get('add') + '...', async () => {
       const newAggregationFunction = { name: '', fn: '', id: '', default: [] };
       const dialog = new EditFunctionDialog(ui, undefined, undefined, newAggregationFunction, this.editDialogTitle || '').init();
@@ -164,14 +166,42 @@ export abstract class FunctionListDialog extends SettingsDialog<AttackgraphFunct
     });
 
     const buttons = document.createElement('div');
-    buttons.style.marginTop = '14px';
-    buttons.style.textAlign = 'right';
+    buttons.style.cssText = 'position:absolute;left:30px;right:30px;text-align:right;bottom:30px;height:40px;';
     buttons.appendChild(addBtn);
     buttons.appendChild(applyBtn);
     buttons.appendChild(cancelBtn);
 
+    // Construct dialog
     this.container.append(top);
+    this.container.append(
+      this.getImportFileDiv(
+        this.getImportType(),
+        file => this.importFileCallback(file, refresh)
+      )
+    );
     this.container.appendChild(buttons);
+  }
+
+  protected abstract importFileCallback(file: TemplateFile, callback: () => void): void;
+
+  protected getImportType(): TemplateType {
+    throw new Error('Method not implemented.');
+  }
+
+  protected updateItems(items: AttackgraphFunction[]): void {
+    for (const item of items) {
+      // Check defaults (imported item has preference)
+      for (const elem of this.items) {
+        elem.default = elem.default.filter(x => item.default.indexOf(x) < 0); // https://stackoverflow.com/a/40031292
+      }
+
+      const idx = this.items.findIndex(x => x.name === item.name);
+      if (idx >= 0) {
+        this.items[idx] = item;
+      } else {
+        this.items.push(item);
+      }
+    }
   }
 
   private createDefaultFunctionSelectFormHeader(thead: HTMLTableSectionElement) : void {
@@ -250,5 +280,24 @@ export abstract class FunctionListDialog extends SettingsDialog<AttackgraphFunct
         }
       }
     }
+  }
+
+  /**
+   * Intended to be used by the template import.
+   */
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  static importFunctionItems(ui: Draw.UI, items: AttackgraphFunction[]): void {
+    throw new Error('Method not implemented.');
+  }
+
+  protected importFunctionItems(items: AttackgraphFunction[]): void {
+    this.items = this.getFunctionItems();
+    this.updateItems(items);
+    this.setFunctionItems(this.items);
+  }
+
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  static exportFunctionItems(ui: Draw.UI): AttackgraphFunction[] {
+    throw new Error('Method not implemented.');
   }
 }

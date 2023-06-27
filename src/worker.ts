@@ -1,11 +1,8 @@
 import * as acorn from 'acorn';
 global.acorn = acorn;
-import { Interpreter } from '../lib/js-interpreter/interpreter.js';
+import Interpreter from 'js-interpreter';
 
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
-/* eslint-disable @typescript-eslint/no-explicit-any */
-/* eslint-disable @typescript-eslint/no-unsafe-assignment */
-/* eslint-disable @typescript-eslint/no-unsafe-call */
 
 self.onerror = function(e: string | Event) {
   if (e instanceof Error) {
@@ -39,7 +36,7 @@ self.onmessage = function(e: MessageEvent<WorkerRequest>) {
     void (async () => {
       try {
         const result = await self.fetch('https://api.github.com/repos/INCYDE-GmbH/drawio-plugin-attackgraphs/releases/latest');
-        const json = await result.json();
+        const json = await result.json() as {[id:string]: string};
         returnValue(json);
       } catch (e) {
         if (e instanceof Error) {
@@ -52,7 +49,7 @@ self.onmessage = function(e: MessageEvent<WorkerRequest>) {
   }
 }
 
-function returnValue(result?: any, error?: string) {
+function returnValue(result?: unknown, error?: string) {
   if (result) {
     const response: WorkerResponse = { result: result };
     self.postMessage(response);

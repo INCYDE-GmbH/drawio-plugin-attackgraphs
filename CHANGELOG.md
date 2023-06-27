@@ -1,5 +1,22 @@
 # Changelog
 
+## [1.4.0](https://github.com/INCYDE-GmbH/drawio-plugin-attackgraphs/compare/v1.3.0...v1.4.0) - 2023-06-27
+
+## Added
+
+- Enable the import and export of default attributes, computed attributes functions, and aggreagtion functions ([#132](https://github.com/INCYDE-GmbH/drawio-plugin-attackgraphs/issues/132))
+- Add template files for the RKL and TS50701 attack graph templates
+
+### Fixes and Improvements
+
+- Include connectors in sidebar ([#138](https://github.com/INCYDE-GmbH/drawio-plugin-attackgraphs/issues/138))
+
+### Internals
+
+- Fix: Use the latest draw.io version for the web version ([#123](https://github.com/INCYDE-GmbH/drawio-plugin-attackgraphs/issues/123))
+- Fix: Use the [NPM provided module](https://www.npmjs.com/package/js-interpreter) of the JS interpreter
+- Fix: Run the `Draw.io Plugin CI` GitHub Action only once for every change
+
 ## [1.3.0](https://github.com/INCYDE-GmbH/drawio-plugin-attackgraphs/compare/v1.2.3...v1.3.0) - 2023-04-26
 
 ### Added

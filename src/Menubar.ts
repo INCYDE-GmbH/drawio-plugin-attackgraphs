@@ -7,6 +7,9 @@ import { Sidebar } from './Sidebar';
 import { SensitivityAnalysisCache } from './Analysis/SensitivityAnalysisProvider';
 import { BinaryPopupDialog } from './Dialogs/BinaryPopupDialog';
 import { VersionDialog } from './Dialogs/VersionDialog';
+import { ImportFileDialog } from './Dialogs/ImportFileDialog';
+import { TemplateType } from './Dialogs/FileDialog';
+import { ExportFileDialog } from './Dialogs/ExportFileDialog';
 
 declare const __COMMIT_HASH__: string;
 
@@ -26,7 +29,12 @@ export class Menubar {
       ui.menus.addMenuItem(menu, 'attackGraphs.openDefaultAttributesDialog');
       ui.menus.addMenuItem(menu, 'attackGraphs.openComputedAttributesDialog');
       ui.menus.addMenuItem(menu, 'attackGraphs.openAggregationFunctionsDialog');
+      menu.addSeparator();
+      ui.menus.addMenuItem(menu, 'attackGraphs.openImportTemplateDialog');
+      ui.menus.addMenuItem(menu, 'attackGraphs.openExportTemplateDialog');
+      menu.addSeparator();
       ui.menus.addMenuItem(menu, 'attackGraphs.documentation');
+      menu.addSeparator();
       ui.menus.addMenuItem(menu, 'attackGraphs.showVersion');
     });
 
@@ -119,6 +127,44 @@ export class Menubar {
 
     ui.toolbar.addSeparator();
     this.updateWorkersStatus(ui); // Updates the sensitivity analysis toolbar
+
+    // Handle import template files dialog
+    ui.actions.addAction('attackGraphs.openImportTemplateDialog', () => {
+      // https://stackoverflow.com/a/40971885
+      const input = document.createElement('input');
+      input.type = 'file';
+      input.onchange = e => {
+        void (async () => {
+          const content = await ImportFileDialog.handleFileInput(e);
+          const dlg = new ImportFileDialog(ui, content, TemplateType.All);
+          if (await dlg.init().show() && dlg.result) {
+            DefaultAttributesDialog.importAttributes(ui, dlg.result.default_attributes);
+            ComputedAttributesDialog.importFunctionItems(ui, dlg.result.computed_attributes);
+            AggregationFunctionListDialog.importFunctionItems(ui, dlg.result.aggregation_functions);
+          } else {
+            // Dialog cancelled
+          }
+        })();
+      }
+      input.click();
+    });
+
+    // Handle export template files dialog
+    ui.actions.addAction('attackGraphs.openExportTemplateDialog', () => {
+      void (async () => {
+        const file = ExportFileDialog.convert2File(
+          DefaultAttributesDialog.exportAttributes(ui),
+          ComputedAttributesDialog.exportFunctionItems(ui),
+          AggregationFunctionListDialog.exportFunctionItems(ui)
+        );
+        const dlg = new ExportFileDialog(ui, file);
+        if (await dlg.init().show() && dlg.result) {
+          ExportFileDialog.handleFileOutput(dlg.result);
+        } else {
+          // Dialog cancelled
+        }
+      })();
+    });
 
     ui.actions.addAction('attackGraphs.documentation', () => {
       window.open('https://incyde-gmbh.github.io/drawio-plugin-attackgraphs/', '_blank')?.focus();

@@ -1,13 +1,13 @@
 {
   "name": "drawio-plugin-attackgraphs",
-  "version": "1.3.0",
+  "version": "1.4.0",
   "description": "An Attack Graphs Extension for Draw.io",
   "main": "index.js",
   "private": true,
   "scripts": {
-    "docker": "docker build -t drawio-plugin-attackgraphs:test -f docs/Dockerfile .",
-    "start": "docker run --rm -d -p 127.0.0.1:8000:8080 --name drawio --mount type=bind,src=$(pwd)/dist/attackgraphs.js,dst=/usr/local/tomcat/webapps/draw/plugins/attackgraphs.js --mount type=bind,src=$(pwd)/dist/attackgraphs.js.map,dst=/usr/local/tomcat/webapps/draw/plugins/attackgraphs.js.map --mount type=bind,src=$(pwd)/dist/templates/AttackGraphTemplate_RKL.drawio,dst=/usr/local/tomcat/webapps/draw/templates/basic/attackgraph_RKL.xml --mount type=bind,src=$(pwd)/dist/templates/AttackGraphTemplate_TS50701.drawio,dst=/usr/local/tomcat/webapps/draw/templates/basic/attackgraph_TS50701.xml drawio-plugin-attackgraphs:test",
-    "stop": "docker stop drawio",
+    "docker": "docker compose -f docker/docker-compose.yml build --no-cache app",
+    "start": "docker compose -f docker/docker-compose.yml up -d",
+    "stop": "docker compose -f docker/docker-compose.yml down",
     "build": "webpack --mode=production",
     "watch": "webpack --watch --mode=development",
     "lint": "eslint src --ext .ts --max-warnings=0",
@@ -32,6 +32,7 @@
   },
   "dependencies": {
     "ace-builds": "^1.4.13",
-    "acorn": "^8.5.0"
+    "acorn": "^8.5.0",
+    "js-interpreter": "^4.0.0"
   }
 }

@@ -136,6 +136,7 @@ declare namespace Draw {
   class Sidebar {
     container: HTMLElement;
     createVertexTemplate(style: string, width: number, height: number, value?: any, title?: string, showLabel?: boolean, showTitle?: boolean, allowCellsInserted?: boolean, showTooltip?: boolean): HTMLAnchorElement;
+    createEdgeTemplate(style: string, width: number, height: number, value?: any, title?: string, showLabel?: boolean, allowCellsInserted?: boolean, showTooltip?: boolean): HTMLAnchorElement;
     addPalette(id: string, title: string, expanded: boolean, onInit: (content: HTMLDivElement, title?: HTMLAnchorElement) => void);
     //removePalette(id: string); // Buggy
     updatePalette();
