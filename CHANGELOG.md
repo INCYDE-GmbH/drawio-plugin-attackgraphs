@@ -7,6 +7,10 @@
 - Enable the import and export of default attributes, computed attributes functions, and aggreagtion functions ([#132](https://github.com/INCYDE-GmbH/drawio-plugin-attackgraphs/issues/132))
 - Add template files for the RKL and TS50701 attack graph templates
 
+### Fixes and Improvements
+
+- Include connectors in sidebar ([#138](https://github.com/INCYDE-GmbH/drawio-plugin-attackgraphs/issues/138))
+
 ### Internals
 
 - Fix: Use the latest draw.io version for the web version ([#123](https://github.com/INCYDE-GmbH/drawio-plugin-attackgraphs/issues/123))
