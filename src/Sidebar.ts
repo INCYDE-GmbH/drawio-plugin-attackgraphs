@@ -141,6 +141,21 @@ export class Sidebar {
     return sidebar.createVertexTemplate(style, width, height, value);
   }
 
+  private createEdgeTemplate(
+    sidebar: Draw.Sidebar,
+    style: string,
+    width: number, height: number,
+    title: string | null,
+    label: string | null
+  ): HTMLAnchorElement {
+    const doc = mxUtils.createXmlDocument();
+    const value = doc.createElement('object');
+    if (label) {
+      value.setAttribute('label', label);
+    }
+    return sidebar.createEdgeTemplate(style, width, height, (label) ? value : undefined, (title) ? title : undefined, true, false, title !== null);
+  }
+
   private getGlobalAttributes(): GlobalAttribute[] | null {
     if (this.ui !== null) {
       return AttributeRenderer.rootAttributes().getGlobalAttributes();
@@ -241,6 +256,9 @@ export class Sidebar {
         content.appendChild(this.createVertexTemplate(sidebar, 'shape=xor;whiteSpace=wrap;html=1;rotation=-90;', 45, 60, 'OR', this.getDefaultGlobalAggregationFunctionByVertexType('or'), this.getDefaultGlobalComputedAttributesFunctionByVertexType('or')));
 
         content.appendChild(this.createLinkVertexTemplate(sidebar, this.getDefaultGlobalAggregationFunctionByVertexType('link')));
+
+        content.appendChild(this.createEdgeTemplate(sidebar, 'html=1;strokeWidth=2;', 50, 50, 'Normal Arrow', null));
+        content.appendChild(this.createEdgeTemplate(sidebar, 'html=1;strokeWidth=2;startArrow=diamondThin;startFill=1;endArrow=none;endFill=0;',50, 50, 'Control Arrow', null));
       });
     }
 
