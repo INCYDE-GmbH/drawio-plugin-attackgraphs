@@ -2,6 +2,11 @@
 
 ## [Unreleased](https://github.com/INCYDE-GmbH/drawio-plugin-attackgraphs/compare/v1.3.0...HEAD)
 
+## Added
+
+- Enable the import and export of default attributes, computed attributes functions, and aggreagtion functions ([#132](https://github.com/INCYDE-GmbH/drawio-plugin-attackgraphs/issues/132))
+- Add template files for the RKL and TS50701 attack graph templates
+
 ### Fixes and Improvements
 
 - Include connectors in sidebar ([#138](https://github.com/INCYDE-GmbH/drawio-plugin-attackgraphs/issues/138))

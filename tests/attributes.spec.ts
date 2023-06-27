@@ -141,9 +141,9 @@ test.describe('attributes and default attributes', () => {
 
     const dialog = page.locator('.geDialog');
 
-    await expect(dialog.locator('text=Knowledge')).toHaveCount(0, { timeout: 100 });
-    await expect(dialog.locator('text=Ressourcen')).toHaveCount(0, { timeout: 100 });
-    await expect(dialog.locator('text=Ort')).toHaveCount(0, { timeout: 100 });
+    await expect(dialog.locator('tr:has-text(\"Knowledge\")')).toHaveCount(0, { timeout: 100 });
+    await expect(dialog.locator('tr:has-text(\"Ressourcen\")')).toHaveCount(0, { timeout: 100 });
+    await expect(dialog.locator('tr:has-text(\"Ort\")')).toHaveCount(0, { timeout: 100 });
     await drawio.applyDialog();
   });
 
