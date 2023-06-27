@@ -57,7 +57,6 @@ var queryObj = {
 	'mode': 'device',
 	'export': 'https://convert.diagrams.net/node/export',
 	'disableUpdate': disableUpdate? 1 : 0,
-	'winCtrls': isMac? 0 : 1,
 	'enableSpellCheck': enableSpellCheck? 1 : 0,
 	'enableStoreBkp': enableStoreBkp? 1 : 0
 };
@@ -100,7 +99,6 @@ function createWindow (opt = {})
 
 	let options = Object.assign(
 	{
-		frame: isMac,
 		backgroundColor: '#FFF',
 		width: parseInt(lastWinSize[0]),
 		height: parseInt(lastWinSize[1]),
@@ -319,6 +317,8 @@ app.on('ready', e =>
 				'export all pages (for PDF format only)')
 			.option('-p, --page-index <pageIndex>',
 				'selects a specific page, if not specified and the format is an image, the first page is selected', parseInt)
+			.option('-l, --layers <comma separated layer indexes>',
+				'selects which layers to export (applies to all pages), if not specified, all layers are selected')
 			.option('-g, --page-range <from>..<to>',
 				'selects a page range (for PDF format only)', argsRange)
 			.option('-u, --uncompressed',
@@ -350,6 +350,11 @@ app.on('ready', e =>
     	
     	windowsRegistry.push(dummyWin);
     	
+		/*ipcMain.on('log', function(event, msg)
+		{
+			console.log(msg);
+		});*/
+	
     	try
     	{
 	    	//Prepare arguments and confirm it's valid
@@ -418,6 +423,11 @@ app.on('ready', e =>
 				uncompressed: options.uncompressed
 			};
 
+			if (options.layers)
+			{
+				expArgs.extras = JSON.stringify({layers: options.layers.split(',')});
+			}
+
 			var paths = program.args;
 			
 			// If a file is passed 
@@ -475,14 +485,9 @@ app.on('ready', e =>
 						{
 							var ext = path.extname(curFile);
 							
-							expArgs.xml = fs.readFileSync(curFile, ext === '.png' || ext === '.vsdx' ? null : 'utf-8');
+							let fileContent = fs.readFileSync(curFile, ext === '.png' || ext === '.vsdx' ? null : 'utf-8');
 							
-							if (ext === '.png')
-							{
-								expArgs.xml = Buffer.from(expArgs.xml).toString('base64');
-								startExport();
-							}
-							else if (ext === '.vsdx')
+							if (ext === '.vsdx')
 							{
 								dummyWin.loadURL(`file://${__dirname}/vsdxImporter.html`);
 								
@@ -490,7 +495,7 @@ app.on('ready', e =>
 
 								contents.on('did-finish-load', function()
 							    {
-									contents.send('import', expArgs.xml);
+									contents.send('import', fileContent);
 
 									ipcMain.once('import-success', function(evt, xml)
 						    	    {
@@ -507,6 +512,19 @@ app.on('ready', e =>
 							}
 							else
 							{
+								if (ext === '.csv')
+								{
+									expArgs.csv = fileContent;
+								}
+								else if (ext === '.png')
+								{
+									expArgs.xml = Buffer.from(fileContent).toString('base64');
+								}
+								else
+								{
+									expArgs.xml = fileContent;
+								}
+
 								startExport();
 							}
 							
@@ -871,7 +889,7 @@ app.on('activate', function ()
 
 app.on('will-finish-launching', function()
 {
-	app.on("open-file", function(event, path) 
+	app.on("open-file", function(event, filePath) 
 	{
 	    event.preventDefault();
 		// Creating a new window while a save/open dialog is open crashes the app
@@ -889,7 +907,7 @@ app.on('will-finish-launching', function()
 				
 				if (loadEvtCount == 2)
 				{
-	    	    	win.webContents.send('args-obj', {args: [path]});
+	    	    	win.webContents.send('args-obj', {args: [filePath]});
 				}
 			}
 			
@@ -906,7 +924,7 @@ app.on('will-finish-launching', function()
 	    }
 	    else
 		{
-	    	firstWinFilePath = path
+	    	firstWinFilePath = filePath
 		}
 	});
 });
@@ -1069,6 +1087,7 @@ autoUpdater.on('update-available', (a, b) =>
 
 //Pdf export
 const MICRON_TO_PIXEL = 264.58 		//264.58 micron = 1 pixel
+const PIXELS_PER_INCH = 100.117		// Usually it is 100 pixels per inch but this give better results
 const PNG_CHUNK_IDAT = 1229209940;
 const LARGE_IMAGE_AREA = 30000000;
 
@@ -1394,22 +1413,18 @@ function exportDiagram(event, args, directFinalize)
 				}
 				else
 				{
-					//Chrome generates Pdf files larger than requested pixels size and requires scaling
-					var fixingScale = 0.959;
-	
-					var w = Math.ceil(bounds.width * fixingScale);
-					
-					// +0.1 fixes cases where adding 1px below is not enough
-					// Increase this if more cropped PDFs have extra empty pages
-					var h = Math.ceil(bounds.height * fixingScale + 0.1);
-					
 					pdfOptions = {
 						printBackground: true,
 						pageSize : {
-							width: w * MICRON_TO_PIXEL,
-							height: (h + 2) * MICRON_TO_PIXEL //the extra 2 pixels to prevent adding an extra empty page						
+							width: bounds.width / PIXELS_PER_INCH,
+							height: (bounds.height + 2) / PIXELS_PER_INCH //the extra 2 pixels to prevent adding an extra empty page						
 						},
-						marginsType: 1 // no margin
+						margins: {
+							top: 0,
+							bottom: 0,
+							left: 0,
+							right: 0
+						} // no margin
 					}
 				}
 				
@@ -1857,13 +1872,14 @@ async function getFileDrafts(fileObject)
 
 async function saveDraft(fileObject, data)
 {
-	if (!checkFileContent(data))
+	var draftFileName = fileObject.draftFileName || getDraftFileName(fileObject);
+
+	if (!checkFileContent(data) || path.resolve(draftFileName).startsWith(__dirname))
 	{
 		throw new Error('Invalid file data');
 	}
 	else
 	{
-		var draftFileName = fileObject.draftFileName || getDraftFileName(fileObject);
 		await fsProm.writeFile(draftFileName, data, 'utf8');
 		
 		if (isWin)
@@ -1871,7 +1887,7 @@ async function saveDraft(fileObject, data)
 			try
 			{
 				// Add Hidden attribute:
-				spawn("attrib", ["+h", draftFileName]);
+				spawn('attrib', ['+h', draftFileName], {shell: true});
 			} catch(e) {}
 		}
 
@@ -1881,7 +1897,7 @@ async function saveDraft(fileObject, data)
 
 async function saveFile(fileObject, data, origStat, overwrite, defEnc)
 {
-	if (!checkFileContent(data))
+	if (!checkFileContent(data) || path.resolve(fileObject.path).startsWith(__dirname))
 	{
 		throw new Error('Invalid file data');
 	}
@@ -1974,7 +1990,7 @@ async function saveFile(fileObject, data, origStat, overwrite, defEnc)
 					try
 					{
 						// Add Hidden attribute:
-						spawn("attrib", ["+h", bkpPath]);
+						spawn('attrib', ['+h', bkpPath], {shell: true});
 					} catch(e) {}
 				}
 			}
@@ -2003,15 +2019,15 @@ async function saveFile(fileObject, data, origStat, overwrite, defEnc)
 	}
 };
 
-async function writeFile(path, data, enc)
+async function writeFile(filePath, data, enc)
 {
-	if (!checkFileContent(data, enc))
+	if (!checkFileContent(data, enc) || path.resolve(filePath).startsWith(__dirname))
 	{
 		throw new Error('Invalid file data');
 	}
 	else
 	{
-		return await fsProm.writeFile(path, data, enc);
+		return await fsProm.writeFile(filePath, data, enc);
 	}
 };
 
@@ -2133,7 +2149,7 @@ async function readFile(filename, encoding)
 {
 	let data = await fsProm.readFile(filename, encoding);
 
-	if (checkFileContent(data, encoding))
+	if (checkFileContent(data, encoding) && !path.resolve(filename).startsWith(__dirname))
 	{
 		return data;
 	}
@@ -2185,7 +2201,7 @@ async function deleteFile(file)
 	await fh.read(buffer, 0, 16);
 	await fh.close();
 
-	if (checkFileContent(buffer))
+	if (checkFileContent(buffer) && !path.resolve(file).startsWith(__dirname))
 	{
 		await fsProm.unlink(file);
 	}
@@ -2238,17 +2254,17 @@ function openExternal(url)
 	return false;
 }
 
-function watchFile(path)
+function watchFile(filePath)
 {
 	let win = BrowserWindow.getFocusedWindow();
 
 	if (win)
 	{
-		fs.watchFile(path, (curr, prev) => {
+		fs.watchFile(filePath, (curr, prev) => {
 			try
 			{
 				win.webContents.send('fileChanged', {
-					path: path,
+					path: filePath,
 					curr: curr,
 					prev: prev
 				});
@@ -2258,14 +2274,9 @@ function watchFile(path)
 	}
 }
 
-function unwatchFile(path)
+function unwatchFile(filePath)
 {
-	fs.unwatchFile(path);
-}
-
-function getCurDir()
-{
-	return __dirname;
+	fs.unwatchFile(filePath);
 }
 
 ipcMain.on("rendererReq", async (event, args) => 
@@ -2347,9 +2358,6 @@ ipcMain.on("rendererReq", async (event, args) =>
 			break;
 		case 'unwatchFile':	
 			ret = await unwatchFile(args.path);
-			break;
-		case 'getCurDir':
-			ret = await getCurDir();
 			break;
 		};
 

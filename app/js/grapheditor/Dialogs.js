@@ -210,15 +210,17 @@ var ColorDialog = function(editorUi, color, apply, cancelFn)
 
 		var clrInput = document.createElement('input');
 		clrInput.setAttribute('type', 'color');
+		clrInput.style.position = 'relative';
 		clrInput.style.visibility = 'hidden';
+		clrInput.style.top = '10px';
 		clrInput.style.width = '0px';
 		clrInput.style.height = '0px';
 		clrInput.style.border = 'none';
-		clrInput.style.marginLeft = '2px';
+		
 		div.style.whiteSpace = 'nowrap';
 		div.appendChild(clrInput);
 
-		div.appendChild(mxUtils.button('...', function()
+		var dropperBtn = mxUtils.button('', function()
 		{
 			// LATER: Check if clrInput is expanded
 			if (document.activeElement == clrInput)
@@ -230,9 +232,20 @@ var ColorDialog = function(editorUi, color, apply, cancelFn)
 				clrInput.value = '#' + input.value;
 				clrInput.click();
 			}
-		}));
+		});
 
-		mxEvent.addListener(clrInput, 'input', function()
+		var dropper = document.createElement('img');
+		dropper.src = Editor.colorDropperImage;
+		dropper.className = 'geAdaptiveAsset';
+		dropper.style.position = 'relative';
+		dropper.style.verticalAlign = 'middle';
+		dropper.style.width = 'auto';
+		dropper.style.height = '14px';
+
+		dropperBtn.appendChild(dropper);
+		div.appendChild(dropperBtn);
+
+		mxEvent.addListener(clrInput, 'change', function()
 		{
 			picker.fromString(clrInput.value.substring(1));
 		});
@@ -1539,11 +1552,36 @@ var EditDataDialog = function(ui, cell)
 		
 		mxEvent.addListener(text, 'dblclick', function(evt)
 		{
-			if (mxEvent.isShiftDown(evt))
+			var dlg = new FilenameDialog(ui, id, mxResources.get('apply'), mxUtils.bind(this, function(value)
 			{
-				var dlg = new FilenameDialog(ui, id, mxResources.get('apply'), mxUtils.bind(this, function(value)
+				if (value != null && value.length > 0 && value != id)
 				{
-					if (value != null && value.length > 0 && value != id)
+					if (graph.model.isRoot(cell))
+					{
+						var page = ui.getPageById(id);
+
+						if (page != null)
+						{
+							if (ui.getPageById(value) == null)
+							{
+								var index = ui.getPageIndex(page);
+
+								if (index >= 0)
+								{
+									ui.removePage(page);
+									page.node.setAttribute('id', value);
+									id = value;
+									idInput.innerHTML = mxUtils.htmlEntities(value);
+									ui.insertPage(page, index);
+								}
+							}
+							else
+							{
+								ui.handleError({message: mxResources.get('alreadyExst', [mxResources.get('page')])});
+							}
+						}
+					}
+					else
 					{
 						if (graph.getModel().getCell(value) == null)
 						{
@@ -1558,13 +1596,11 @@ var EditDataDialog = function(ui, cell)
 							ui.handleError({message: mxResources.get('alreadyExst', [value])});
 						}
 					}
-				}), mxResources.get('id'));
-				ui.showDialog(dlg.container, 300, 80, true, true);
-				dlg.init();
-			}
+				}
+			}), mxResources.get('id'), null, null, null, null, null, null, 200);
+			ui.showDialog(dlg.container, 300, 80, true, true);
+			dlg.init();
 		});
-
-		text.setAttribute('title', 'Shift+Double Click to Edit ID');
 	}
 	
 	for (var i = 0; i < temp.length; i++)
@@ -1584,6 +1620,8 @@ var EditDataDialog = function(ui, cell)
 	top.appendChild(form.table);
 
 	var newProp = document.createElement('div');
+	newProp.style.display = 'flex';
+	newProp.style.alignItems = 'center';
 	newProp.style.boxSizing = 'border-box';
 	newProp.style.paddingRight = '160px';
 	newProp.style.whiteSpace = 'nowrap';
@@ -1595,7 +1633,10 @@ var EditDataDialog = function(ui, cell)
 	nameInput.setAttribute('type', 'text');
 	nameInput.setAttribute('size', (mxClient.IS_IE || mxClient.IS_IE11) ? '36' : '40');
 	nameInput.style.boxSizing = 'border-box';
+	nameInput.style.borderWidth = '1px';
+	nameInput.style.borderStyle = 'solid';
 	nameInput.style.marginLeft = '2px';
+	nameInput.style.padding = '4px';
 	nameInput.style.width = '100%';
 	
 	newProp.appendChild(nameInput);
@@ -1607,7 +1648,8 @@ var EditDataDialog = function(ui, cell)
 		var name = nameInput.value;
 
 		// Avoid ':' in attribute names which seems to be valid in Chrome
-		if (name.length > 0 && name != 'label' && name != 'placeholders' && name.indexOf(':') < 0)
+		if (name.length > 0 && name != 'label' && name != 'id' &&
+			name != 'placeholders' && name.indexOf(':') < 0)
 		{
 			try
 			{
@@ -1687,9 +1729,24 @@ var EditDataDialog = function(ui, cell)
 		ui.hideDialog.apply(ui, arguments);
 	});
 	
-
 	cancelBtn.setAttribute('title', 'Escape');
 	cancelBtn.className = 'geBtn';
+
+	var exportBtn = mxUtils.button(mxResources.get('export'), mxUtils.bind(this, function(evt)
+	{
+		var result = graph.getDataForCells([cell]);
+
+		var dlg = new EmbedDialog(ui, JSON.stringify(result, null, 2), null, null, function()
+		{
+			console.log(result);
+			ui.alert('Written to Console (Dev Tools)');
+		}, mxResources.get('export'), null, 'Console', 'data.json');
+		ui.showDialog(dlg.container, 450, 240, true, true);
+		dlg.init();
+	}));
+	
+	exportBtn.setAttribute('title', mxResources.get('export'));
+	exportBtn.className = 'geBtn';
 	
 	var applyBtn = mxUtils.button(mxResources.get('apply'), function()
 	{
@@ -1818,11 +1875,13 @@ var EditDataDialog = function(ui, cell)
 	if (ui.editor.cancelFirst)
 	{
 		buttons.appendChild(cancelBtn);
-		buttons.appendChild(applyBtn);
 	}
-	else
+	
+	buttons.appendChild(exportBtn);
+	buttons.appendChild(applyBtn);
+
+	if (!ui.editor.cancelFirst)
 	{
-		buttons.appendChild(applyBtn);
 		buttons.appendChild(cancelBtn);
 	}
 
@@ -2050,8 +2109,8 @@ var LayersWindow = function(editorUi, x, y, w, h)
 	var graph = editorUi.editor.graph;
 	
 	var div = document.createElement('div');
+	div.className = 'geBackground';
 	div.style.userSelect = 'none';
-	div.style.background = (!Editor.isDarkMode()) ? '#fff' : Dialog.backdropColor;
 	div.style.border = '1px solid whiteSmoke';
 	div.style.height = '100%';
 	div.style.marginBottom = '10px';
@@ -2060,7 +2119,7 @@ var LayersWindow = function(editorUi, x, y, w, h)
 	var tbarHeight = (!EditorUi.compactUi) ? '30px' : '26px';
 	
 	var listDiv = document.createElement('div')
-	listDiv.style.backgroundColor = (!Editor.isDarkMode()) ? '#fff' : Dialog.backdropColor;
+	listDiv.className = 'geBackground';
 	listDiv.style.position = 'absolute';
 	listDiv.style.overflow = 'auto';
 	listDiv.style.left = '0px';
@@ -2099,9 +2158,7 @@ var LayersWindow = function(editorUi, x, y, w, h)
 	ldiv.style.height = tbarHeight;
 	ldiv.style.overflow = 'hidden';
 	ldiv.style.padding = (!EditorUi.compactUi) ? '1px' : '4px 0px 3px 0px';
-	ldiv.style.backgroundColor = (!Editor.isDarkMode()) ? 'whiteSmoke' : Dialog.backdropColor;
 	ldiv.style.borderWidth = '1px 0px 0px 0px';
-	ldiv.style.borderColor = '#c3c3c3';
 	ldiv.style.borderStyle = 'solid';
 	ldiv.style.display = 'block';
 	ldiv.style.whiteSpace = 'nowrap';
@@ -2360,7 +2417,8 @@ var LayersWindow = function(editorUi, x, y, w, h)
 			ldiv.style.padding = '4px';
 			ldiv.style.height = '22px';
 			ldiv.style.display = 'block';
-			ldiv.style.backgroundColor = (!Editor.isDarkMode()) ? 'whiteSmoke' : Dialog.backdropColor;
+			ldiv.style.backgroundColor = (Editor.isDarkMode()) ?
+				Editor.darkColor : 'whiteSmoke';
 			ldiv.style.borderWidth = '0px 0px 1px 0px';
 			ldiv.style.borderColor = '#c3c3c3';
 			ldiv.style.borderStyle = 'solid';

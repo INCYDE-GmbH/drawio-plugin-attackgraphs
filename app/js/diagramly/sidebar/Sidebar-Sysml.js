@@ -127,7 +127,11 @@
 			this.createEdgeTemplateEntry('edgeStyle=none;html=1;endSize=12;endArrow=block;endFill=0;dashed=1;', 
 					160, 0, '', 'Realization', null, this.getTagsForStencil(gn, '', dt + 'realization').join(' ')),
 			this.createEdgeTemplateEntry('edgeStyle=none;html=1;endArrow=open;endSize=12;dashed=1;verticalAlign=bottom;', 
-					160, 0, '&lt;&lt;refine&gt;&gt;', 'Refine', null, this.getTagsForStencil(gn, '', dt + 'refine').join(' '))
+					160, 0, '&lt;&lt;refine&gt;&gt;', 'Refine', null, this.getTagsForStencil(gn, '', dt + 'refine').join(' ')),
+		    this.createVertexTemplateEntry('shape=triangle;fillColor=strokeColor;', 
+		    		10, 10, '', 'Flow Direction', null, null, this.getTagsForStencil(gn, '', dt + 'flow direction').join(' ')),
+		    this.createVertexTemplateEntry('shape=triangle;fillColor=strokeColor;direction=south;', 
+		    		10, 10, '', 'Flow Direction', null, null, this.getTagsForStencil(gn, '', dt + 'flow direction').join(' '))
 		];
 		
 		this.addPalette('sysmlModel Elements', 'SysML / Model Elements', expand || false, mxUtils.bind(this, function(content)
@@ -399,7 +403,6 @@
 				'3VXLbsIwEPwaXyoVmaQU9Uh4nSpVoj9g4iWx6nijjaHA19chJoGmqRCiEuohkne8s17P2DELx9l2TiJPX1GCZuGUhWNCtNUo245BaxZwJVk4YUHA3ceCWcds/zDLc0Fg7CWEoCJshF5DhYiiwFgJq9D4aoXdaT+5AbIqFnqkVWIctERrMWNhlNrM9T7puyEYOSLCTxcaNFAiMoGFL4JkU0zQCD1t0KiwguxM6bIGP8YLtS8Z/eAIHMtKJTI08j1VroeoarJco1ODA+QFmANmYGnnUgi02+fmnCeKKkzqvJr6hspVbFIKXFMMHj0V+Zi49SIP+Hltt5kEbIvoBif9NdDBs5/9C1v+tU0jKNReLA8hP/dKeB81rJxU0Xd7LeYO1WIJOhLxR0K4NnKMGqkxd4WmdspvM0ZjILZ+yfoM8rI8bDtdCn52yRMeee+l4lxs25muv4j41BIxJ8xds7vghmLWd+Xf6zlo6cmGEZIEAsmGLua813u4RlpSSXrvB/XvdH3uPKdXXfouMe/soN5MTxc2D2v1rz19d78A'),
 			this.addDataEntry(dt + 'multibranch part association', 250, 50, 'Multibranch Part Association',
 				'7VfBbtswDP0aX3YoHCtptmOdNt1lwIDuBxSbsYXKoiEraZyvH23JTlzHqNO0azfsYEAkRYoiHx9kjy2y3b3mefoDY5Aeu/PYQiMau8p2C5DSC3wRe+zWCwKfPi9YDlgntdXPuQZlxjgE1mHL5QashhcFRoIbgcpFK0wpnXEL2oiIyxspEkWqFRqDmcfC1GSU++2ElnSAyAtyCNdCygVK1GQpjMZHcFK4RmWWPBOyJNN3kFuowjrDg9hXx00mTm5CxLDmG0nXCl3SlAzsBi9eq9yt7wEzMLqkLY1DwKzLk4hNanVTq0lBJKnpqHhhxaSNc6gpLVxZT5eY9Uqca8wp97JfX4gTeHAiyBU+3R0U3RqTjdYparGnEnEyhNw1Rdv0w8FmgYpvtK4DKFRVaI0bFUOVsE+S5CuQIY8ek1rf1N/tvbB3heG63TatFCnPKyFCpSAyNT5sYapqdNpb4EZH0EHuGR23DhokgXvbDXyqvy7QTxQUv40SzOxA+WUnjSYAXS4B43yeYaRNaRRspj3Y+FdXX3qI0VCIPV/Vot8FyUt4MJiPanbTrAuhcQoKR5xAl2GMLZeMPWOO52PvcOLu3DLcS3TA3hQcY4d/Njj8wcXD3/Tz/+h/zOhP56Nmn+rNy6NtebWhGD5m8u3kMQfA2YCv5ZXrT8krn5k5Zh/CHPNB5mDvwRwS1mOJIxY8QxX/SoXq8QdtWwrZnqfipsnBu5PL38ElZz0bzqWO61Nvk7cijq89QPbfryNYYwBo/xppzP8EaZB4+FW0LT3+k/wN'),
-//<mxlibrary>[{"xml":"7VdRj5swDP41vOzhREm77vXoHbeXSZNufyAFF6ILMQppr/TXz5BAy1F0nLpu3bQHpNiOHcf+/Cl4bJXvnzQvsm+YgPTYo8dWGtHYVb5fgZRe4IvEYw9eEPj0eUE0Yp01Vr/gGpSZ4hBYhx2XW7AaXpYYC24EKhetNJV0xh1oI2Iu76VIFanWaAzmHgszk1PuDzNa0gGiKMkh3AgpVyhRk6U0Gl/ASeEGlYl4LmRFpq8gd1CHdYZncaiPm82c3IZIYMO3kq4VuqQpGdiPXrxRuVs/AeZgdEVbWoeAWZdXkZjM6uZWk4FIM9NT8dKKaRfnWFNauLKeLzEblLjQWFDu1bC+kKTw7ESQa3x9PCr6NSYbrTPU4kAl4mQIuWuKtumHo80Cldxr3QRQqOrQGrcqgTphnyTJ1yBDHr+kjb6tv9t7Ye9Kw3W3bd4oTpBBRWCMRRFjtSXjRb0tRqUgNg1ybMnqOvUaX+JWx9DD9AewYB00SIL9rh/4XOddoO8oKH4XJVjYUfOrXhptALp2Csb5vEFPl9IkQM0HgPLv7j4NsKShFAe+bkS/D5/3kGKwmASDto0XguYcSMYwccopbwnB4cTdueO+94iC/VJwTKWFxSgtBBfTQtvP/6Rwa6QwX16LFT7fJCvc8twv/sjcL0fnnl1j7iVspo59IniOKvmRCTWYftoWCdmdp5K2ycH1qeEvZ4JrPwe+DAA1fFdOmPoRoPxrQ7/8HUNP4vEXzrb09A/vJw==","w":250,"h":47,"aspect":"fixed"}]</mxlibrary>			this.addDataEntry(dt + 'multibranch shared association', 250, 50, 'Multibranch Shared Association',
 			this.addDataEntry(dt + 'multibranch shared association', 250, 50, 'Multibranch Shared Association',
 				'7VbLbtswEPwaXXoIZNKu22PkPE4FCqQ/QEtriQjFFUjasfz1XYmUbUUWojRNmwI9GODucofrGQ7EiK/K/b0RVfENM1ARv434yiA6vyr3K1AqYrHMIn4TMRbTL2J3I9VZW40rYUC7KQ3MN+yE2oLPCGsxlcJJ1AHNulqF4g6Mk6lQ10rmmlJrdA7LiCeFK2n2mxkt6QBZWWpINlKpFSo0VLHO4COEKAmnEhrsRydvU2Hse8ASnKlpS9fAuG95kpkrfG7uMwXIvHC9lLA+zI84J1JoEXi5zBEfcFQZrGj2ekgQZDk8hBDUGp9uT4k+SVSjdYFGHlA7QYVEBFaNHz8ZZRt0dm1MC6BRN9AGtzqDZuCYIiXWoBKRPuZtvtMg7PVDN5P2qLe4NSn0rsUr1PANBhTdnF0f+BL3Aeg7SsI/orCFv61x3RujA3DC5OBCzzP9jiNNknQ+kDS+uvo0UNOAlQexbsP4gkBngj7XymH1ohAbEv5BHhr02VTZUtQaUheGOvr7JS/x36reVOcsRp3D3uycjvD/vhn6Zr6cZBziQtRn26pmgx0/Zvb14jGny+ABf9WUnz+gKd/iucVf8dxy1HP8PTynYDPVcpkUJersRyH1wHm07U42/6mLOgnYv2jL9/58fRloPHyJjNkkCPZhXLL8Ey6h8PSm9oSfP7l/Ag=='),
 			    
@@ -479,7 +482,7 @@
 			}),				
 				
 			this.addDataEntry(dt + 'participant property', 400, 80, 'Participant Property',
-				'5ZZfT+MwDMA/TV+QDvXPxu4e18Hxckjo+ARZY9qINK7SjG18etwm3ShpUREDIfEwLXbi1P7FjhMkq3J3rVlV3CAHGSRXQbLSiMaOyt0KpAziUPAguQziOKRfEP8dmY3a2bBiGpSZYhBbg0cmN2A1qcTswalrs5dOXResaoYaMto4LUxJvl5GNLxHZe7cwkbeFsLAXcWyRrGlyEjHpMgViRm5BZoU7rOgDexGXW9Vzu9rwBKM3tOSreCmsCvmNrqwAJEXzspFHLLayvnB8siBBg7FMJZkGEv0nbE4g6Rj8gWYZh6mZV1jJpgRqN4D6wRxRzMX0N7KFz6GKP4kDnOPgxc78By6dFCo6C8FxZda4/ao8Yg0Vj0eNW50Br3aNUznYHp5O4GaBkmn9Njf/SMMLjwGlcaKTnQ/cJlQGQiV/4P7xsmkH3lXFLKdTZukEBmTS6deozFY0oRka5C3WIsm2Zqssmdq9SnLHnKNG8VXKFEfEbdlKZ7aqnQnn6FSlJFs3bkXTkrH+Zvp+MtZnJzzwuM8UGgf4Guw+rlwf48m8Sjk/+4qGaHcgZucxu5Yvgfoz+L8x78wFylqDhp4sCA5DM/Pz06MfDizfwTvzul3dqgXcP1mxVldAJ/erman703O9BYF7XiASMnTewlErzq8bZjO6BXDgxdDWEk8vszt8pcP92c='),
+				'5ZZRb9sgEMc/jV8mrcJ20myPcbr1ZZOq9RMQfLVRMWdh0iT79DsMTuLantI1nSr1IQp3cPj48YcjSlfV7tbwuvyJOago/RalK4NofavarUCpKGEyj9KbKEkY/aLk+0Rv3PaymhvQ9pyAxAc8cbUB78kUisfgbuxeBXdT8to1DQiaOCttRbnexNR8QG3vw0Bnb0tp4b7mwjm2tDLycSULTaagtMCQI3wWjIXdZOqtK+R9C1iBNXsaspW5Lf2IuV8dK0EWZYgKK2a88XZxiDxyoEZAMY4lHccSv2csISDtmPwHTLMBpmXToJDcStQvgTUG5wIs4llY5N7b10M0cfJGbOYDNgMekBfQSUSjpr8MdL40BrdHzwklgxudg5ufHfi4OXp0GtwYAb3TbbkpwPaUfQZDA4r28ak/+2uIXA+I1AZr2t/9yHVDWpC6+AEPLsm0z6E7NqrtzZxEpOBqGdxrtBYr6lB8DeoOG+nk6HTnd9j7My4ei5boChWaI/D24Mrf7bkNOhCoNWmWr7v02FninP9VnJ9DxMU5LwacR47iK/harD8u3C+TIp6E/CtcLBOUO3Bnyzhsy/sA/Vacvw6vz0WGJgdDF+CCbMaurj5dGPm4sj8E7y7pF9arE7jD0pXzpmzL1T8Vr9nlK1UIvUNJMx6QkpR6r4T4WfX35TMEPSN6yGIMMpnHl7wffvrQ/wM='),
 			    
 		    this.createVertexTemplateEntry('shape=rect;html=1;overflow=fill;whiteSpace=wrap;', 300, 80, 
 		    		'<p style="margin:0px;margin-top:4px;text-align:center;">' +
@@ -555,7 +558,7 @@
 		    	label4.setConnectable(false);
 		    	label4.vertex = true;
 		    	edge2.insert(label4);
-			   	var cardCell6 = new mxCell('c2: Association2', new mxGeometry(140, 210, 120, 20), inh + 'shape=rect;html=1;align=center;');
+			   	var cardCell6 = new mxCell('c2: Association2', new mxGeometry(140, 210, 120, 20), inh + 'shape=rect;html=1;align=center;whiteSpace=wrap;');
 			   	cardCell6.vertex = true;
 			   	bg.insert(cardCell6);
 			   	var edge3 = new mxCell('', new mxGeometry(0, 0, 0, 0), inh + 'edgeStyle=none;html=1;endArrow=none;dashed=1;');
@@ -987,7 +990,67 @@
 		    	cardCell.insertEdge(assoc2, true);
 			    
 			   	return sb.createVertexTemplateFromCells([cardCell, assoc1, assoc2], 250, 60, 'Provided Interface');
-			})				
+			}),
+			
+			    this.createVertexTemplateEntry(s + 'port;sysMLPortType=flowN;', 
+    		20, 20, '', 'Port, Flow North', null, null, this.getTagsForStencil(gn, '', dt + 'item flow north').join(' ')),
+			    this.createVertexTemplateEntry(s + 'port;sysMLPortType=doubleH;', 
+    		20, 20, '', 'Port, Double Flow, Horizontal', null, null, this.getTagsForStencil(gn, '', dt + 'item double flow horizontal').join(' ')),
+				
+			this.addEntry(dt + 'ports', function()
+		    {
+		    	var mainShape = new mxCell('', new mxGeometry(0, 0, 200, 140), 'whiteSpace=wrap;align=center;html=1;');
+		    	mainShape.vertex = true;
+		    	var port1 = new mxCell('port1', new mxGeometry(0, 0, 20, 20), s + 'port;html=1;resizable=0;sysMLPortType=flowS;labelPosition=center;verticalLabelPosition=bottom;align=center;verticalAlign=top;');
+		    	port1.geometry.relative = true;
+		    	port1.vertex = true;
+				port1.geometry.offset = new mxPoint(50, -10);
+		    	mainShape.insert(port1);
+			    
+		    	var port2 = new mxCell('port2', new mxGeometry(1, 0, 20, 20), s + 'port;html=1;resizable=0;sysMLPortType=empty;labelPosition=center;verticalLabelPosition=bottom;align=center;verticalAlign=top;');
+		    	port2.geometry.relative = true;
+		    	port2.vertex = true;
+				port2.geometry.offset = new mxPoint(-70, -10);
+		    	mainShape.insert(port2);
+			    
+		    	var port3 = new mxCell('port3', new mxGeometry(0, 0, 20, 20), s + 'port;html=1;resizable=0;sysMLPortType=flowE;labelPosition=right;verticalLabelPosition=middle;align=left;verticalAlign=middle;');
+		    	port3.geometry.relative = true;
+		    	port3.vertex = true;
+				port3.geometry.offset = new mxPoint(-10, 30);
+		    	mainShape.insert(port3);
+			    
+		    	var port4 = new mxCell('port4', new mxGeometry(0, 1, 20, 20), s + 'port;html=1;resizable=0;sysMLPortType=doubleH;labelPosition=right;verticalLabelPosition=middle;align=left;verticalAlign=middle;');
+		    	port4.geometry.relative = true;
+		    	port4.vertex = true;
+				port4.geometry.offset = new mxPoint(-10, -50);
+		    	mainShape.insert(port4);
+			    
+		    	var port5 = new mxCell('port5', new mxGeometry(1, 0, 20, 20), s + 'port;html=1;resizable=0;sysMLPortType=flowE;labelPosition=left;verticalLabelPosition=middle;align=right;verticalAlign=middle;');
+		    	port5.geometry.relative = true;
+		    	port5.vertex = true;
+				port5.geometry.offset = new mxPoint(-10, 30);
+		    	mainShape.insert(port5);
+			    
+		    	var port6 = new mxCell('port6', new mxGeometry(1, 1, 20, 20), s + 'port;html=1;resizable=0;sysMLPortType=doubleH;labelPosition=left;verticalLabelPosition=middle;align=right;verticalAlign=middle;');
+		    	port6.geometry.relative = true;
+		    	port6.vertex = true;
+				port6.geometry.offset = new mxPoint(-10, -50);
+		    	mainShape.insert(port6);
+			    
+		    	var port7 = new mxCell('port7', new mxGeometry(0, 1, 20, 20), s + 'port;html=1;resizable=0;sysMLPortType=flowN;labelPosition=center;verticalLabelPosition=top;align=center;verticalAlign=bottom;');
+		    	port7.geometry.relative = true;
+		    	port7.vertex = true;
+				port7.geometry.offset = new mxPoint(50, -10);
+		    	mainShape.insert(port7);
+			    
+		    	var port8 = new mxCell('port8', new mxGeometry(1, 1, 20, 20), s + 'port;html=1;resizable=0;sysMLPortType=doubleV;labelPosition=center;verticalLabelPosition=top;align=center;verticalAlign=bottom;');
+		    	port8.geometry.relative = true;
+		    	port8.vertex = true;
+				port8.geometry.offset = new mxPoint(-70, -10);
+		    	mainShape.insert(port8);
+			    
+			   	return sb.createVertexTemplateFromCells([mainShape], 220, 160, 'Ports');
+			})
 	    ];
 	    
 	    this.addPalette('sysmlPorts and Flows', 'SysML / Ports and Flows', expand || false, mxUtils.bind(this, function(content)
@@ -1127,7 +1190,7 @@
 	
 		    this.addEntry(dt + 'is stream', function()
 		    {
-		    	var cardCell = new mxCell('act', new mxGeometry(0, 0, 200, 100), s + 'isActStream;align=left;spacingLeft=5;verticalAlign=top;spacingTop=-3;');
+		    	var cardCell = new mxCell('act', new mxGeometry(0, 0, 200, 100), s + 'isActStream;align=left;spacingLeft=5;verticalAlign=top;spacingTop=-3;whiteSpace=wrap;');
 		    	cardCell.vertex = true;
 		    	var label1 = new mxCell('{stream}', new mxGeometry(200, 50, 0, 0), 'resizable=0;html=1;align=left;verticalAlign=top;labelPosition=left;verticalLabelPosition=middle;labelBackgroundColor=none;fontSize=10;spacingTop=5;');
 		    	label1.geometry.relative = false;
@@ -1263,7 +1326,7 @@
 			this.addDataEntry(dt + 'probability', 250, 60, 'Probability',
 				'7VRNb4MwDP01uVYU1vVc6NrTpGlctmMAF7IFjEJaYL9+Dkk/aJlU7bTDkBD284t5PIewICq7reJ18YwZSBY8sSBSiNpGZReBlMz3RMaCNfN9j27mb36ozoeqV3MFlb5ngW8XHLjcg0VWqRZYWbjRvXRwoUsSt56zIGwKXhu07HKje9b0TSlnmHxsJLavRGgLoSGueWpYLXEI41LkFaUpCQNFgHsxKA3dj+IHyCnfApagVU+UVmS6cIxH+4FeASIv3LIjxhub56elZysocG5MOxPcOMOWoZGnMOGJkEIbJUPFkuIaUrETKbf+eWy5vnERshxil1ZY0SO8MPbGI+MONZQrV0hQayypAFW2UgpbwrCGyiKx+DJ9575JO6HfXFsTv1PszRaU7YSUEUpUg6JgN1yES56ADHn6mSvcV9mR4lTaLzHyR7NqcK9SGG2lO8Y3nrcCSZYdxo2nJucavaCg/qcu/uJq2JqrHLRjXc37JOKuLfDwB7eAxvp//pPz76f//V9vB0rP57ClXx7T3w=='),
 			this.addDataEntry(dt + 'probability', 250, 60, 'Probability',
-				'3VRNb4MwDP01XCcK23ou7dbTPiQu2zGAC9lCjIJb6H79HJK2o2ulqqdpSAj72THPfoYgntf90oimesICVBA/BPHcIJKz6n4OSgVRKIsgXgRRFPIdRI9nopMhGjbCgKZLDkTuwEaoNTjkJfuAnBh7Zj4u2tJW+WhbicaaxubESVdJgrQRucU67oIxoWSp2c2ZAhgG/CvAEPRnaQ6Q57gErIHMllM6WVDlM+5dK2EFsqz8sR0mWueX+6OHptnwfZ+eQfxrBsE0sfQMZiKTSpJlMkRcUtpALlcyFyRR29B08WtQUJSQelej5kdSUc0UFpNTM7LT4YJq5gMZEmHNAdDFzBjsGMMGtENS+WXrTiLr9pLefFlrv7Md3sTsraRSc1RoBkbxargYVyIDlYj8szS41sUuxbN0nVj6I61aXJscRktzgXxjvQ0oHtlmXPiUcr7QK0pNhyrR3ZHYJEwJ5LOO9N6TuGgFbv/gChA21+s//c/6b09/+1evA7uHP65L//lD/gY='),
+				'5VRNb8IwDP01vU6l3cYZysZpH1Iv2zFtTZstjavU0LJfP6cJsA6QEKdJQ0Kynz/6/GwliJO6XxrRVE9YgArihyBODCI5q+4TUCqIQlkE8SKIopD/QfR4JjoZomEjDGi6pCByBRuh1uCQl+wDcmLsmfm4aEtb5aNtJRprGpsTz7tKEqSNyC3W8RSMCSVLzW7OFMAwUFHNcy0mbPqvgSHozzIeIE93CVgDmS2ndLKgymfcu6nCCmRZ+bIdJlrnl/vSw/xseAlOyxEfyRFM55aewUxkUkmyTIaIS0obyOVK5oIkahuaLo40g6KE1LsaNYwlOZLLqsMN1cwHMiTCmgOgi5kx2DGGDWiHpPLL9p1E1u0lvfm21n5nO7yJ2VtJpRJUaAZG8Wr4Ma5EBmou8s/S4FoXuxTPcsDAShPud2eHGW2uxbXJYXRNFyxzvH0DigXcjBuf2qNv9IpS06FLdPdr9SRMCeSzfm1/T+Kig7j9gwdB2Fx/DdP/cw3b0+/C1cfB7uFhduk/3+1v'),
 			    
 			this.createEdgeTemplateEntry('edgeStyle=none;html=1;endArrow=open;endSize=12;verticalAlign=top;labelBackgroundColor=none;', 160, 0, 
 					'{ rate = constant }\n{rate = distribution}\n&lt;&lt;continuous&gt;&gt;\n&lt;&lt;discrete&gt;&gt;', 
@@ -1498,7 +1561,7 @@
 				
 			this.addEntry(dt + 'composite state', function()
 		    {
-			   	var bg = new mxCell('CompositeState1', new mxGeometry(0, 0, 220, 190), s + 'compState;align=left;verticalAlign=top;spacingTop=-3;spacingLeft=18;strokeWidth=1;recursiveResize=0;');
+			   	var bg = new mxCell('CompositeState1', new mxGeometry(0, 0, 220, 190), s + 'compState;align=left;verticalAlign=top;spacingTop=-3;spacingLeft=18;strokeWidth=1;recursiveResize=0;html=1;');
 			   	bg.vertex = true;
 			   	var cardCell2 = new mxCell('', new mxGeometry(20, 50, 20, 20), 'shape=ellipse;html=1;fillColor=strokeColor;verticalLabelPosition=bottom;labelBackgroundColor=#ffffff;verticalAlign=top;');
 			   	cardCell2.vertex = true;
@@ -1532,7 +1595,7 @@
 
 		    this.addEntry(dt + 'exit point', function()
 		    {
-			    var cardCell = new mxCell('aborted', new mxGeometry(0, 10, 20, 20), s + 'flowFinal;labelPosition=right;verticalLabelPosition=top;spacingTop=5;spacingLeft=3;align=left;verticalAlign=top;resizable=0;');
+			    var cardCell = new mxCell('aborted', new mxGeometry(0, 10, 20, 20), s + 'flowFinal;labelPosition=right;verticalLabelPosition=top;spacingTop=5;spacingLeft=3;align=left;verticalAlign=top;resizable=0;html=1;');
 		    	cardCell.vertex = true;
 			    
 			   	return sb.createVertexTemplateFromCells([cardCell], cardCell.geometry.width, cardCell.geometry.height, 'Exit Point');
@@ -1548,13 +1611,13 @@
 		    		40, 40, '', 'Initial Pseudo State', null, null, this.getTagsForStencil(gn, '', dt + 'initial pseudo state').join(' ')),
 		    this.createVertexTemplateEntry('shape=ellipse;html=1;fillColor=strokeColor;fontSize=18;fontColor=#ffffff;', 
 		    		40, 40, '', 'Junction Pseudo State', null, null, this.getTagsForStencil(gn, '', dt + 'junction pseudo state').join(' ')),
-		    this.createVertexTemplateEntry(s + 'accEvent;flipH=1;whiteSpace=wrap;align=center;', 
+		    this.createVertexTemplateEntry(s + 'accEvent;flipH=1;whiteSpace=wrap;align=center;html=1;', 
 		    		140, 40, 'Req(Id)', 'Receive Signal Action', null, null, this.getTagsForStencil(gn, 'accEvent', dt + 'receive signal action').join(' ')),
-		    this.createVertexTemplateEntry(s + 'sendSigAct;whiteSpace=wrap;align=center;', 
+		    this.createVertexTemplateEntry(s + 'sendSigAct;whiteSpace=wrap;align=center;html=1;', 
 		    		140, 40, 'TurnOn', 'Send Signal Action', null, null, this.getTagsForStencil(gn, 'sendSigAct', dt + 'send signal action').join(' ')),
 		    this.createVertexTemplateEntry('shape=rect;html=1;whiteSpace=wrap;align=center;', 
 		    		140, 40, 'MinorReq := Id;', 'Action', null, null, this.getTagsForStencil(gn, '', dt + 'action').join(' ')),
-		    this.createVertexTemplateEntry(s + 'region;align=left;verticalAlign=top;spacingTop=-3;spacingLeft=25;', 
+		    this.createVertexTemplateEntry(s + 'region;align=left;verticalAlign=top;spacingTop=-3;spacingLeft=25;html=1;', 
 		    		200, 160, 'S', 'Region', null, null, this.getTagsForStencil(gn, '', dt + 'region').join(' ')),
 		    this.createVertexTemplateEntry('shape=rect;rounded=1;html=1;whiteSpace=wrap;align=center;', 
 		    		100, 40, 'State1', 'Simple State', null, null, this.getTagsForStencil(gn, '', dt + 'simple state').join(' ')),

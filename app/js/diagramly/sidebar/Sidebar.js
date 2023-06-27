@@ -113,7 +113,7 @@
 	 */
 	Sidebar.prototype.configuration = [{id: 'general', libs: ['general', 'misc', 'advanced']},
 									   {id: 'uml'}, {id: 'uml25'}, {id: 'search'}, {id: 'er'},
-									   {id: 'azure2', prefix: 'azure2', libs: ['AI Machine Learning', 'Analytics', 'App Services', 'Azure Stack', 'Azure VMware Solution', 'Blockchain', 'Compute', 'Containers', 'CXP', 'Databases', 'DevOps', 'General', 'Identity', 'Integration', 'Internet of Things', 'Intune', 'IoT', 'Management Governance', 'Migrate', 'Mixed Reality', 'Monitor', 'Networking', 'Other', 'Preview', 'Security', 'Storage', 'Web']},
+									   {id: 'azure2', prefix: 'azure2', libs: ['AI Machine Learning', 'Analytics', 'App Services', 'Azure Ecosystem', 'Azure Stack', 'Azure VMware Solution', 'Blockchain', 'Compute', 'Containers', 'CXP', 'Databases', 'DevOps', 'General', 'Identity', 'Integration', 'Internet of Things', 'Intune', 'IoT', 'Management Governance', 'Menu', 'Migrate', 'Mixed Reality', 'Monitor', 'Networking', 'Other', 'Preview', 'Security', 'Storage', 'Web']},
 	                                   {id: 'ios', prefix: 'ios', libs: [''/*prefix is library*/, '7icons', '7ui']}, 
 	                                   {id: 'android', prefix: 'android', libs: [''/*prefix is library*/]}, {id: 'aws3d'},
 	                                   {id: 'flowchart'}, {id: 'basic'}, {id: 'infographic'}, {id: 'arrows'}, {id: 'arrows2'}, {id: 'lean_mapping'}, {id: 'citrix'}, {id: 'azure'}, {id: 'network'}, {id: 'vvd'}, 
@@ -329,9 +329,9 @@
 		{
 			for (var i = 0; i < this.customEntries.length; i++)
 			{
-				var section = this.customEntries[i];
+				var section = this.customEntries[i] || {};
 				
-				for (var j = 0; j < section.entries.length; j++)
+				for (var j = 0; section.entries != null && j < section.entries.length; j++)
 				{
 					var entry = section.entries[j];
 					
@@ -374,9 +374,9 @@
 			{
 				for (var i = 0; i < this.customEntries.length; i++)
 				{
-					var section = this.customEntries[i];
+					var section = this.customEntries[i] || {};
 					
-					for (var j = 0; j < section.entries.length; j++)
+					for (var j = 0; section.entries != null && j < section.entries.length; j++)
 					{
 						var entry = section.entries[j];
 						
@@ -471,9 +471,9 @@
 		{
 			for (var i = 0; i < this.customEntries.length; i++)
 			{
-				var section = this.customEntries[i];
+				var section = this.customEntries[i] || {};
 				
-				for (var j = 0; j < section.entries.length; j++)
+				for (var j = 0; section.entries != null && j < section.entries.length; j++)
 				{
 					var entry = section.entries[j];
 					
@@ -492,22 +492,44 @@
 			}
 		}
 	};
-
+	
 	/**
 	 * Overrides the sidebar init.
 	 */
 	Sidebar.prototype.init = function()
 	{
-		// Defines all entries for the sidebar. This is used in the MoreShapes dialog. Create screenshots using the savesidebar URL parameter and
-		// http://www.alderg.com/merge.html for creating a vertical stack of PNG images if multiple sidebars are part of an entry.
+		this.updateEntries();
 
+		// Uses search.xml index file instead (faster load times)
+		this.addStencilsToIndex = false;
+		
+		// Contains additional tags for shapes
+		this.shapetags = {};
+
+		// Adds tags from compressed text file for improved searches
+		if (this.tagIndex != null)
+		{
+			this.addTagIndex(Graph.decompress(this.tagIndex));
+			this.tagIndex = null;	
+		}
+		
+		this.initPalettes();
+	};
+	 
+	/**
+	 * Defines all entries for the sidebar. This is used in the MoreShapes dialog. Create screenshots using the savesidebar URL parameter and
+	 * http://www.alderg.com/merge.html for creating a vertical stack of PNG images if multiple sidebars are part of an entry.
+	 */
+	Sidebar.prototype.updateEntries = function()
+	{
 		var stdEntries = [{title: mxResources.get('general'), id: 'general', image: IMAGE_PATH + '/sidebar-general.png'},
 			{title: mxResources.get('basic'), id: 'basic', image: IMAGE_PATH + '/sidebar-basic.png'},
 			{title: mxResources.get('arrows'), id: 'arrows2', image: IMAGE_PATH + '/sidebar-arrows2.png'},
 			{title: mxResources.get('clipart'), id: 'clipart', image: IMAGE_PATH + '/sidebar-clipart.png'},
 			{title: mxResources.get('flowchart'), id: 'flowchart', image: IMAGE_PATH + '/sidebar-flowchart.png'}];
 		
-		if (urlParams['sketch'] == '1')
+		if (Editor.currentTheme == 'sketch' ||
+			Editor.currentTheme == 'min')
 		{
 			stdEntries = [{title: mxResources.get('searchShapes'), id: 'search'},
 				{title: mxResources.get('scratchpad'), id: '.scratchpad'}].
@@ -570,22 +592,8 @@
 								{title: 'Web Icons', id: 'webicons', image: IMAGE_PATH + '/sidebar-webIcons.png'},
 								{title: mxResources.get('signs'), id: 'signs', image: IMAGE_PATH + '/sidebar-signs.png'}]}];
 
-		// Uses search.xml index file instead (faster load times)
-		this.addStencilsToIndex = false;
-		
-		// Contains additional tags for shapes
-		this.shapetags = {};
+	};
 
-		// Adds tags from compressed text file for improved searches
-		if (this.tagIndex != null)
-		{
-			this.addTagIndex(Graph.decompress(this.tagIndex));
-			this.tagIndex = null;	
-		}
-		
-		this.initPalettes();
-	}
-	
 	/**
 	 * Overridden to add image export via servlet
 	 */
@@ -920,9 +928,9 @@
 			
 			for (var i = 0; i < this.customEntries.length; i++)
 			{
-				var section = this.customEntries[i];
+				var section = this.customEntries[i] || {};
 				
-				for (var j = 0; j < section.entries.length; j++)
+				for (var j = 0; section.entries != null && j < section.entries.length; j++)
 				{
 					var entry = section.entries[j];
 					
@@ -1417,7 +1425,52 @@
 		
 		sidebarSearchEntries.apply(this, arguments);
 	};
+	
+	// Fixes sidebar tooltips (previews)
+	var sidebarGetTooltipOffset = Sidebar.prototype.getTooltipOffset;
+	
+	Sidebar.prototype.getTooltipOffset = function(elt, bounds)
+	{
+		if (Editor.currentTheme == 'simple' ||
+			Editor.currentTheme == 'sketch' || 
+			Editor.currentTheme == 'min')
+		{
+			if (mxUtils.isAncestorNode(this.editorUi.sketchPickerMenuElt, elt))
+			{
+				var off = mxUtils.getOffset(elt);
 
+				if (Editor.currentTheme == 'simple')
+				{
+					off.x += (elt.offsetWidth - bounds.width) / 2 - 14;
+					off.y = elt.parentNode.offsetHeight - 2;
+				}
+				else
+				{
+					off.x = elt.parentNode.offsetLeft + elt.parentNode.offsetWidth + 2;
+					off.y += (elt.offsetHeight - bounds.height) / 2;
+				}
+				
+				return new mxPoint(Math.max(0, off.x), Math.max(0, off.y));
+			}
+			else if (this.editorUi.sidebarWindow != null)
+			{
+				var off = mxUtils.getOffset(this.editorUi.sidebarWindow.window.div);
+
+				off.x += this.editorUi.sidebarWindow.window.div.offsetWidth + 2;
+				off.y += elt.offsetTop + (elt.offsetHeight - bounds.height) / 2;
+
+				if (elt.offsetParent != null)
+				{
+					off.y -= elt.offsetParent.scrollTop;
+				}
+				
+				return new mxPoint(Math.max(0, off.x), Math.max(0, off.y));
+			}
+		}
+		
+		return sidebarGetTooltipOffset.apply(this, arguments);
+	};
+    
 	/**
 	 * Adds a click handler for inserting the cell as target for dangling edge.
 	 */

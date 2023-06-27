@@ -1,6 +1,10 @@
 /**
  * Copyright (c) 2006-2016, JGraph Ltd
  */
+// Disables theme in viewer and lightbox
+Editor.currentTheme = '';
+window.uiTheme = '';
+
 /**
  * No CSS and resources available in embed mode. Parameters and docs:
  * https://www.diagrams.net/doc/faq/embed-html-options
@@ -170,6 +174,7 @@ GraphViewer.prototype.init = function(container, xmlNode, graphConfig)
 				this.graph = new Graph(container);
 				this.graph.enableFlowAnimation = true;
 				this.graph.defaultPageBackgroundColor = 'transparent';
+				this.graph.diagramBackgroundColor = 'transparent';
 				this.graph.transparentBackground = false;
 				
 				if (this.responsive && this.graph.dialect == mxConstants.DIALECT_SVG)
@@ -476,18 +481,25 @@ GraphViewer.prototype.init = function(container, xmlNode, graphConfig)
 				
 				this.graph.customLinkClicked = function(href)
 				{
-					if (Graph.isPageLink(href))
+					try
 					{
-						var comma = href.indexOf(',');
-						
-						if (!self.selectPageById(href.substring(comma + 1)))
+						if (Graph.isPageLink(href))
 						{
-							alert(mxResources.get('pageNotFound') || 'Page not found');
+							var comma = href.indexOf(',');
+							
+							if (!self.selectPageById(href.substring(comma + 1)))
+							{
+								alert(mxResources.get('pageNotFound') || 'Page not found');
+							}
+						}
+						else
+						{
+							this.handleCustomLink(href);
 						}
 					}
-					else
+					catch (e)
 					{
-						this.handleCustomLink(href);
+						alert(e.message);
 					}
 					
 					return true;
@@ -1484,8 +1496,11 @@ GraphViewer.prototype.addToolbar = function()
 						
 						mxEvent.addListener(tagsDialog, 'mouseleave', function()
 						{
-							tagsDialog.parentNode.removeChild(tagsDialog);
-							tagsDialog = null;
+							if (tagsDialog != null)
+							{
+								tagsDialog.parentNode.removeChild(tagsDialog);
+								tagsDialog = null;
+							}
 						});
 						
 						var r = tagsButton.getBoundingClientRect();
@@ -1874,7 +1889,6 @@ GraphViewer.prototype.showLightbox = function(editable, closable, target)
  */
 GraphViewer.prototype.showLocalLightbox = function()
 {
-	var origin = mxUtils.getDocumentScrollOrigin(document);
 	var backdrop = document.createElement('div');
 
 	backdrop.style.cssText = 'position:fixed;top:0;left:0;bottom:0;right:0;';
@@ -2024,42 +2038,66 @@ GraphViewer.prototype.showLocalLightbox = function()
 
 	window.setTimeout(mxUtils.bind(this, function()
 	{
-		// Disables focus border in Chrome
-		lightbox.style.outline = 'none';
-		lightbox.style.zIndex = this.lightboxZIndex;
-		closeImg.style.zIndex = this.lightboxZIndex;
-
-		document.body.appendChild(lightbox);
-		document.body.appendChild(closeImg);
-		
-		ui.setFileData(this.xml);
-
-		mxUtils.setPrefixedStyle(lightbox.style, 'transform', 'rotateY(0deg)');
-		ui.chromelessToolbar.style.bottom = 60 + 'px';
-		ui.chromelessToolbar.style.zIndex = this.lightboxZIndex;
-		
-		// Workaround for clipping in IE11-
-		document.body.appendChild(ui.chromelessToolbar);
-	
-		ui.getEditBlankXml = mxUtils.bind(this, function()
+		try
 		{
-			return this.xml;
-		});
-	
-		ui.lightboxFit();
-		ui.chromelessResize();
-		this.showLayers(graph, this.graph);
+			// Click on backdrop closes lightbox
+			mxEvent.addListener(backdrop, 'click', function()
+			{
+				ui.destroy();
+			});
+
+			// Disables focus border in Chrome
+			lightbox.style.outline = 'none';
+			lightbox.style.zIndex = this.lightboxZIndex;
+			closeImg.style.zIndex = this.lightboxZIndex;
+
+			document.body.appendChild(lightbox);
+			document.body.appendChild(closeImg);
+			
+			ui.setFileData(this.xml);
+			
+			mxUtils.setPrefixedStyle(lightbox.style, 'transform', 'rotateY(0deg)');
+			ui.chromelessToolbar.style.bottom = 60 + 'px';
+			ui.chromelessToolbar.style.zIndex = this.lightboxZIndex;
+			
+			// Workaround for clipping in IE11-
+			document.body.appendChild(ui.chromelessToolbar);
 		
-		// Click on backdrop closes lightbox
-		mxEvent.addListener(backdrop, 'click', function()
+			ui.getEditBlankXml = mxUtils.bind(this, function()
+			{
+				return this.xml;
+			});
+		
+			ui.lightboxFit();
+			ui.chromelessResize();
+			this.showLayers(graph, this.graph);
+		}
+		catch (e)
 		{
-			ui.destroy();
-		});
+			ui.handleError(e, null, function()
+			{
+				ui.destroy();
+			});
+		}
 	}), 0);
 
 	return ui;
 };
 
+/**
+ * Removes the dialog from the DOM.
+ */
+Dialog.prototype.getDocumentSize = function()
+{
+	var vw = Math.max(document.documentElement.clientWidth || 0, window.innerWidth || 0)
+	var vh = Math.max(document.documentElement.clientHeight || 0, window.innerHeight || 0)
+
+	return new mxRectangle(0, 0, vw, vh);
+};
+
+/**
+ * 
+ */
 GraphViewer.prototype.updateTitle = function(title)
 {
 	title = title || '';
@@ -2180,6 +2218,47 @@ GraphViewer.createViewerForElement = function(element, callback)
 	}
 };
 
+GraphViewer.logAncestorFrames = function()
+{
+	try
+	{
+		if (window.location.ancestorOrigins && window.location.hostname &&
+				window.location.ancestorOrigins.length && window.location.ancestorOrigins.length > 0)
+		{
+			var hostname = window.location.hostname;
+
+			if (hostname && hostname.length > 1 && hostname.charAt(hostname.length - 1) == '/')
+			{
+				hostname = hostname.substring(0, hostname.length - 1)
+			}
+
+			var message = '';
+
+			for (var i = 0; i < window.location.ancestorOrigins.length; i++)
+			{
+				message += ' -> ' + window.location.ancestorOrigins[i];
+			}
+
+			if (hostname.endsWith('.draw.io') && window.location.ancestorOrigins.length == 1 &&
+					window.location.ancestorOrigins[0] && window.location.ancestorOrigins[0].endsWith('.atlassian.net'))
+			{
+				// do not log *.draw.io domains embedded directly into atlassian.net
+			}
+			else if (window.location.ancestorOrigins.length > 0)
+			{
+				var img = new Image();
+				img.src = 'https://log.diagrams.net/images/1x1.png?src=ViewerAncestorFrames' +
+					((typeof window.EditorUi !== 'undefined') ? '&v=' + encodeURIComponent(EditorUi.VERSION) : '') +
+					'&data=' + encodeURIComponent(message);
+			}
+		}
+	}
+	catch (e)
+	{
+		// ignore
+	}
+};
+
 /**
  * Adds event if grid size is changed.
  */
@@ -2255,6 +2334,9 @@ GraphViewer.initCss = function()
 			'.geDialog {	position:absolute;	background:white;	overflow:hidden;	padding:30px;	border:1px solid #acacac;	-webkit-box-shadow:0px 0px 2px 2px #d5d5d5;	-moz-box-shadow:0px 0px 2px 2px #d5d5d5;	box-shadow:0px 0px 2px 2px #d5d5d5;	_filter:progid:DXImageTransform.Microsoft.DropShadow(OffX=2, OffY=2, Color=\'#d5d5d5\', Positive=\'true\');	z-index: 2;}.geDialogClose {	position:absolute;	width:9px;	height:9px;	opacity:0.5;	cursor:pointer;	_filter:alpha(opacity=50);}.geDialogClose:hover {	opacity:1;}.geDialogTitle {	box-sizing:border-box;	white-space:nowrap;	background:rgb(229, 229, 229);	border-bottom:1px solid rgb(192, 192, 192);	font-size:15px;	font-weight:bold;	text-align:center;	color:rgb(35, 86, 149);}.geDialogFooter {	background:whiteSmoke;	white-space:nowrap;	text-align:right;	box-sizing:border-box;	border-top:1px solid #e5e5e5;	color:darkGray;}',
 			'.geBtn {	background-color: #f5f5f5;	border-radius: 2px;	border: 1px solid #d8d8d8;	color: #333;	cursor: default;	font-size: 11px;	font-weight: bold;	height: 29px;	line-height: 27px;	margin: 0 0 0 8px;	min-width: 72px;	outline: 0;	padding: 0 8px;	cursor: pointer;}.geBtn:hover, .geBtn:focus {	-webkit-box-shadow: 0px 1px 1px rgba(0,0,0,0.1);	-moz-box-shadow: 0px 1px 1px rgba(0,0,0,0.1);	box-shadow: 0px 1px 1px rgba(0,0,0,0.1);	border: 1px solid #c6c6c6;	background-color: #f8f8f8;	background-image: linear-gradient(#f8f8f8 0px,#f1f1f1 100%);	color: #111;}.geBtn:disabled {	opacity: .5;}.gePrimaryBtn {	background-color: #4d90fe;	background-image: linear-gradient(#4d90fe 0px,#4787ed 100%);	border: 1px solid #3079ed;	color: #fff;}.gePrimaryBtn:hover, .gePrimaryBtn:focus {	background-color: #357ae8;	background-image: linear-gradient(#4d90fe 0px,#357ae8 100%);	border: 1px solid #2f5bb7;	color: #fff;}.gePrimaryBtn:disabled {	opacity: .5;}'].join('\n');
 		document.getElementsByTagName('head')[0].appendChild(style);
+
+		// Log the ansestor frames
+		GraphViewer.logAncestorFrames();
 	}
 	catch (e)
 	{

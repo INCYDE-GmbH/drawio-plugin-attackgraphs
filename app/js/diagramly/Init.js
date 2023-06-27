@@ -50,6 +50,9 @@ window.TEMPLATE_PATH = window.TEMPLATE_PATH || 'templates';
 window.NEW_DIAGRAM_CATS_PATH = window.NEW_DIAGRAM_CATS_PATH || 'newDiagramCats';
 window.PLUGINS_BASE_PATH = window.PLUGINS_BASE_PATH || '';
 
+// Allows third-party plugins to run
+window.ALLOW_CUSTOM_PLUGINS = window.ALLOW_CUSTOM_PLUGINS || false;
+
 // Directory for i18 files and basename for main i18n file
 window.RESOURCES_PATH = window.RESOURCES_PATH || 'resources';
 window.RESOURCE_BASE = window.RESOURCE_BASE || RESOURCES_PATH + '/dia';
@@ -292,21 +295,21 @@ window.uiTheme = window.uiTheme || (function()
 		}
 	}
 	
-	// Uses minimal theme on small screens
+	// Uses simple theme on small screens in own domain standalone app
 	try
 	{
-		if (ui == null)
+		if (ui == null && urlParams['embed'] != '1' &&
+			(window.location.hostname === 'test.draw.io' ||
+			window.location.hostname === 'www.draw.io' ||
+			window.location.hostname === 'stage.diagrams.net' ||
+			window.location.hostname === 'app.diagrams.net' ||
+			window.location.hostname === 'jgraph.github.io'))
 		{
 			var iw = window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth;
-
-			if (iw <= 768)
+			
+			if (iw <= 800)
 			{
-				if (urlParams['pages'] == null)
-				{
-					urlParams['pages'] = '1';
-				}
-
-				ui = 'sketch';
+				ui = 'simple';
 			}
 		}
 	}
@@ -315,11 +318,11 @@ window.uiTheme = window.uiTheme || (function()
 		// ignore
 	}
 
-	// Redirects sketch UI to min UI with sketch URL parameter
-	if (ui == 'sketch')
+	// Activates sketch mode in Confluence Cloud sketch theme
+	if (ui == 'sketch' && urlParams['sketch'] == null &&
+		window.location.hostname === 'ac.draw.io')
 	{
 		urlParams['sketch'] = '1';
-		ui = 'min';
 	}
 	else if (urlParams['dark'] == '1' && (ui == '' || ui == 'kennedy'))
 	{
@@ -434,7 +437,8 @@ window.uiTheme = window.uiTheme || (function()
 
 // Enables offline mode
 if (urlParams['offline'] == '1' || urlParams['demo'] == '1' || 
-		urlParams['stealth'] == '1' || urlParams['local'] == '1' || urlParams['lockdown'] == '1')
+	urlParams['stealth'] == '1' || urlParams['local'] == '1' ||
+	urlParams['lockdown'] == '1')
 {
 	urlParams['picker'] = '0';
 	urlParams['gapi'] = '0';

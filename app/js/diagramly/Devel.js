@@ -11,14 +11,16 @@ if (!mxIsElectron && location.protocol !== 'http:')
 	(function()
 	{
 		var hashes = 'default-src \'self\'; ' +
-			// storage.googleapis.com is needed for workbox-service-worker
-			'script-src %script-src% \'self\' https://viewer.diagrams.net https://storage.googleapis.com ' +
-			'https://apis.google.com https://*.pusher.com ' +
+			'script-src %script-src% \'self\' https://viewer.diagrams.net https://apis.google.com https://*.pusher.com ' +
 			// Below are the SHAs of the two script blocks in index.html.
 			// These must be updated here and in the CDN after changes.
 			//----------------------------------------------------------//
 			//------------- Bootstrap script in index.html -------------//
 			//----------------------------------------------------------//
+			// Version 20.8.14
+			'\'sha256-vrEVJkYyBW9H4tt1lYZtK5fDowIeRwUgYZfFTT36YpE=\' ' +
+			// Version 20.8.12
+			'\'sha256-6g514VrT/cZFZltSaKxIVNFF46+MFaTSDTPB8WfYK+c=\' ' +
 			// Version 16.4.4
 			'\'sha256-AVuOIxynOo/05KDLjyp0AoBE+Gt/KE1/vh2pS+yfqes=\' ' +
 			// Version 15.8.3
@@ -33,9 +35,9 @@ if (!mxIsElectron && location.protocol !== 'http:')
 			//---------------------------------------------------------//
 			'; ';
 
-		var styleHashes = '\'sha256-JjkxVHHCCVO0nllPD6hU8bBYSlsikA8TM/o3fhr0bas=\' ' + // index.html
-			'\'sha256-4pUt7OuaoLNo5uDuX+AclpTryPwhRX6uqZWQH/jtOvE=\' ' + // Minimal.js/Light
-			'\'sha256-C26P0UwTt9j3PuMuqZ6wTb7DL6A9c0DoJcT8e2atugc=\' ' + // Minimal.js/Dark
+		var styleHashes = '\'sha256-pVoUz0B9cDvBP/6KP+5uOMqPh1c14hF0KFqSELqeyNQ=\' ' + // index.html
+			'\'sha256-D9Gy46rimBnLRtBqv9U464kXQ5oT5JvkurboVMjtN0Q=\' ' + // MinimalCss/Light
+			'\'sha256-C9BzsAi3ukZpBZzbdTpUNpxHfPR/+KJbeueKj1U6QGY=\' ' + // MinimalCss/Dark
 			'\'sha256-7kY8ozVqKLIIBwZ24dhdmZkM26PsOlZmEi72RhmZKoM=\' ' + // mxTooltipHandler.js
 			'\'sha256-kuk5TvxZ/Kwuobo4g6uasb1xRQwr1+nfa1A3YGePO7U=\' ' + // MathJax
 			'\'sha256-ByOXYIXIkfNC3flUR/HoxR4Ak0pjOEF1q8XmtuIa6po=\' ' + // purify.min.js
@@ -48,7 +50,7 @@ if (!mxIsElectron && location.protocol !== 'http:')
 			'https://*.googleapis.com wss://app.diagrams.net wss://*.pusher.com https://*.pusher.com ' +
 			'https://api.github.com https://raw.githubusercontent.com https://gitlab.com ' +
 			'https://graph.microsoft.com https://*.sharepoint.com  https://*.1drv.com https://api.onedrive.com ' +
-			'https://dl.dropboxusercontent.com ' +
+			'https://dl.dropboxusercontent.com https://api.openai.com ' +
 			'https://*.google.com https://fonts.gstatic.com https://fonts.googleapis.com; ' +
 			// font-src about: is required for MathJax HTML-CSS output with STIX
 			'img-src * data: blob:; media-src * data:; font-src * about:; ' +
@@ -85,17 +87,16 @@ if (!mxIsElectron && location.protocol !== 'http:')
 					replace(/  /g, ' ') + ' frame-ancestors \'self\' https://teams.microsoft.com;';
 			console.log('app.diagrams.net:', app_diagrams_net);
 
-			var se_diagrams_net = hashes.replace(/%script-src%/g, '') +
-				'connect-src \'self\' https://*.diagrams.net ' +
-				'https://*.googleapis.com wss://app.diagrams.net wss://*.pusher.com https://*.pusher.com ' +
-				'https://*.google.com https://fonts.gstatic.com https://fonts.googleapis.com; ' +
-				'img-src * data: blob:; media-src * data:; font-src * about:; ' +
-				'frame-src \'self\' https://viewer.diagrams.net https://*.google.com; ' +
-				'style-src \'self\' https://fonts.googleapis.com ' + styleHashes + ' ' +
+			var viewer_diagrams_net = hashes.replace(/%script-src%/g, 'https://www.dropbox.com https://api.trello.com https://app.diagrams.net') +
+				'connect-src *; ' +
+				'img-src * data: blob:; ' +
+				'media-src * data:; ' +
+				'font-src * about:; ' +
+				'style-src \'self\' https://fonts.googleapis.com \'unsafe-inline\'; ' +
+				'base-uri \'none\';' +
 				'object-src \'none\';' +
-				'frame-src \'none\';' +
-				'worker-src https://se.diagrams.net/service-worker.js;'
-			console.log('se.diagrams.net:', se_diagrams_net);
+				'worker-src https://viewer.diagrams.net/service-worker.js;'
+			console.log('viewer.diagrams.net:', viewer_diagrams_net);
 
 			var ac_draw_io = csp.replace(/%script-src%/g, 'https://aui-cdn.atlassian.com https://connect-cdn.atl-paas.net').
 					replace(/%frame-src%/g, 'https://www.lucidchart.com https://app.lucidchart.com https://lucid.app blob:').
@@ -122,10 +123,9 @@ if (!mxIsElectron && location.protocol !== 'http:')
 					"Content-Security-Policy" : app_diagrams_net,
 					"Permissions-Policy" : "microphone=()"
 				},
-				se: {
-					"Content-Security-Policy" : se_diagrams_net,
+				viewer: {
+					"Content-Security-Policy" : viewer_diagrams_net,
 					"Permissions-Policy" : "microphone=()",
-					"Access-Control-Allow-Origin": "https://se.diagrams.net"
 				},
 				teams: {
 					"Content-Security-Policy" : app_diagrams_net.replace(/ 'sha256-[^']+'/g, '') + 'worker-src https://app.diagrams.net/service-worker.js;',
@@ -241,6 +241,7 @@ mxscript(drawDevUrl + 'js/diagramly/Editor.js');
 mxscript(drawDevUrl + 'js/diagramly/EditorUi.js');
 mxscript(drawDevUrl + 'js/diagramly/DiffSync.js');
 mxscript(drawDevUrl + 'js/diagramly/Settings.js');
+mxscript(drawDevUrl + 'js/diagramly/DrawioFilePuller.js');
 mxscript(drawDevUrl + 'js/diagramly/DrawioFileSync.js');
 
 //Comments
@@ -303,3 +304,6 @@ if (urlParams['orgChartDev'] == '1')
 
 // Miro Import
 mxscript(drawDevUrl + 'js/diagramly/miro/MiroImporter.js');
+
+// Mermaid to draw.io converter
+mxscript(drawDevUrl + 'js/mermaid/mermaid2drawio.js');
