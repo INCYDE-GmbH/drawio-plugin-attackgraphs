@@ -13,7 +13,7 @@ jobs:
       should_skip: ${{ steps.skip_check.outputs.should_skip }}
     steps:
       - id: skip_check
-        uses: fkirc/skip-duplicate-actions@12aca0a884f6137d619d6a8a09fcc3406ced5281
+        uses: fkirc/skip-duplicate-actions@v5
         with:
           skip_after_successful_duplicate: 'true'
           concurrent_skipping: 'same_content_newer'
@@ -25,10 +25,10 @@ jobs:
     if: ${{ needs.pre_job.outputs.should_skip != 'true' }}
     steps:
       - name: Check out the repository
-        uses: actions/checkout@8e5e7e5ab8b370d6c329ec480221332ada57f0ab
+        uses: actions/checkout@v4
 
       - name: Use Node.js 16.x
-        uses: actions/setup-node@64ed1c7eab4cce3362f8c340dee64e5eaeef8f7c
+        uses: actions/setup-node@v4
         with:
           node-version: 16.x
           cache: 'npm'
@@ -50,7 +50,7 @@ jobs:
         run: npm run test
 
       - name: Archive Playwright test results
-        uses: actions/upload-artifact@0b7f8abb1508181956e8e162db84b466c27e18ce
+        uses: actions/upload-artifact@v4
         if: always()
         with:
           name: playwright-test-results
@@ -61,7 +61,7 @@ jobs:
         run: npm run stop
 
       - name: Archive compiled plugin
-        uses: actions/upload-artifact@0b7f8abb1508181956e8e162db84b466c27e18ce
+        uses: actions/upload-artifact@v4
         with:
           name: plugin
           path: dist/attackgraphs.js
