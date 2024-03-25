@@ -21,7 +21,7 @@
     "@typescript-eslint/eslint-plugin": "^5.7.0",
     "@typescript-eslint/parser": "^5.7.0",
     "copy-webpack-plugin": "^9.1.0",
-    "cypress": "^8.7.0",
+    "cypress": "^13.7.1",
     "eslint": "^8.5.0",
     "eslint-plugin-github": "^4.3.5",
     "ts-loader": "^9.2.6",
