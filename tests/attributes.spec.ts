@@ -50,7 +50,8 @@ test.describe('attributes and default attributes', () => {
 
     await page.locator('.geMenubar').locator('text=File').click();
     await page.locator('.mxPopupMenu').locator('text="Save"').click();
-    await page.locator('text=Browser').click();
+    await page.locator('.geDialog').locator('select').last().selectOption('browser');
+    await page.locator('text=Save').last().click();
 
     // Wait to be sure that the file was saved in the browser
     // TODO: Replace with wait for selector (spinning wheel) to be hidden
@@ -61,7 +62,7 @@ test.describe('attributes and default attributes', () => {
 
     await page.locator('.geMenubar').locator('text=File').click();
     await page.locator('.mxPopupMenu').locator('text=Open Recent').click();
-    await page.locator('.mxPopupMenu').locator('text="Untitled Diagram (Browser)"').click();
+    await page.locator('.mxPopupMenu').locator('text="Untitled Diagram.drawio (Browser)"').click();
     await page.locator('text="Open in This Window"').click();
 
     // First activity vertex (white node) shall not have a default value
