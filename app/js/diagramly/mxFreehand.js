@@ -15,7 +15,7 @@ function mxFreehand(graph)
 	}));
 	
 	//Code inspired by https://stackoverflow.com/questions/40324313/svg-smooth-freehand-drawing
-	var bufferSize = mxFreehand.prototype.NORMAL_SMOOTHING;
+	var bufferSize = mxFreehand.prototype.MILD_SMOOTHING;
 	var path = null;
 	var partPathes = [];
 	var strPath;
@@ -30,6 +30,7 @@ function mxFreehand(graph)
 	var enabled = false;
 	var stopClickEnabled = false;
 	var selectInserted = false;
+	var currentStrokeColor = 'default';
 	var perfectFreehandOptions = {
 		size: 5,
 		thinning: 0.5,
@@ -85,9 +86,14 @@ function mxFreehand(graph)
 		selectInserted = value;
 	};
 
-	this.setSmoothing = function(smoothing)//TODO add smoothing settings
+	this.setSmoothing = function(smoothing)
 	{
 		bufferSize = smoothing;
+	};
+
+	this.getSmoothing = function()
+	{
+		return bufferSize;
 	};
 	
 	this.setPerfectFreehandMode = function(value)
@@ -168,18 +174,24 @@ function mxFreehand(graph)
 	var edge = new mxCell();
 	edge.edge = true;
 
-	var getStrokeColor = function()
+	this.getStrokeColor = function(allowDefault)
 	{
-		var defaultStyle = graph.getCurrentCellStyle(edge);
-		var strokeColor = mxUtils.getValue(graph.currentVertexStyle, mxConstants.STYLE_STROKECOLOR,
-			mxUtils.getValue(defaultStyle, mxConstants.STYLE_STROKECOLOR, '#000'))
+		var strokeColor = (currentStrokeColor != null) ? currentStrokeColor :
+			mxUtils.getValue(graph.currentVertexStyle, mxConstants.STYLE_STROKECOLOR,
+			mxUtils.getValue(graph.getCurrentCellStyle(edge),
+			mxConstants.STYLE_STROKECOLOR, '#000'))
 
-		if (strokeColor == 'default')
+		if (strokeColor == 'default' && !allowDefault)
 		{
 			strokeColor = graph.shapeForegroundColor;
 		}
 
 		return strokeColor;
+	};
+
+	this.setStrokeColor = function(value)
+	{
+		currentStrokeColor = value;
 	};
 
 	this.createStyle = function(stencil)
@@ -190,6 +202,8 @@ function mxFreehand(graph)
 		{
 			style = ';lineShape=1;';
 		}
+
+		style += 'strokeColor=' + this.getStrokeColor(true) + ';';
 
 		return mxConstants.STYLE_SHAPE + '=' + stencil + style;
 	};
@@ -359,17 +373,20 @@ function mxFreehand(graph)
 		    {
 				var e = me.getEvent();
 				
-				if (!enabled || mxEvent.isPopupTrigger(e) || mxEvent.isMultiTouchEvent(e))
+				if (!enabled || mxEvent.isPopupTrigger(e) ||
+					mxEvent.isMiddleMouseButton(e) ||
+					mxEvent.isMultiTouchEvent(e))
 				{
 					return;
 				}
 				
 				var strokeWidth = parseFloat(graph.currentVertexStyle[mxConstants.STYLE_STROKEWIDTH] || 1);
 				strokeWidth = Math.max(1, strokeWidth * graph.view.scale);
-				var strokeColor = getStrokeColor();
+				var strokeColor = this.getStrokeColor();
 
 			    path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
 			    path.setAttribute('fill', perfectFreehandMode? strokeColor : 'none');
+				path.setAttribute('pointer-events', 'none');
 			    path.setAttribute('stroke', strokeColor);
 			    path.setAttribute('stroke-width', strokeWidth);
 			    
@@ -400,7 +417,8 @@ function mxFreehand(graph)
 	    }),
 	    mouseMove: mxUtils.bind(this, function(sender, me)
 	    {
-		    if (path && graph.isEnabled() && !graph.isCellLocked(graph.getDefaultParent()))
+		    if (path != null && graph.isEnabled() &&
+				!graph.isCellLocked(graph.getDefaultParent()))
 		    {
 	    		var e = me.getEvent();
 				var pt = getMousePosition(e);
@@ -418,7 +436,8 @@ function mxFreehand(graph)
 	    }),
 	    mouseUp: mxUtils.bind(this, function(sender, me)
 	    {
-			if (path && graph.isEnabled() && !graph.isCellLocked(graph.getDefaultParent())) 
+			if (path != null && graph.isEnabled() &&
+				!graph.isCellLocked(graph.getDefaultParent())) 
 			{
 				endPath(me.getEvent());
 				me.consume();

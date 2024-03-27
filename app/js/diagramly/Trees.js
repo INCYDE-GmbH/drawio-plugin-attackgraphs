@@ -493,6 +493,24 @@
 		graph.moveCells = function(cells, dx, dy, clone, target, evt, mapping)
 		{
 			var result = null;
+
+			// Adds collapsed subtrees
+			var allCells = [];
+
+			for (var i = 0; i < cells.length; i++)
+			{
+				if (((isTreeMoving(cells[i]) || isTreeVertex(cells[i])) &&
+					!hasLayoutParent(cells[i])) && this.isCellCollapsed(cells[i])	)
+				{
+					allCells = allCells.concat(this.getSubtree(cells[i]));
+				}
+				else
+				{
+					allCells.push(cells[i]);
+				}
+			}
+
+			cells = mxUtils.removeDuplicates(allCells);
 			
 			this.model.beginUpdate();
 			try
@@ -1067,7 +1085,10 @@
 				88: ui.actions.get('selectDescendants'), // Alt+Shift+X
 				80: ui.actions.get('selectParent'), // Alt+Shift+P
 				83: ui.actions.get('selectSiblings')} // Alt+Shift+S
-
+		
+		// New keyboard shortcuts for copy-/pasteStyle
+		var altActions = {67: ui.actions.get('copyStyle'), // Alt+C
+			86: ui.actions.get('pasteStyle')}; // Alt+V
 		var editorUiOnKeyDown = ui.onKeyDown;
 		
 		ui.onKeyDown = function(evt)
@@ -1079,8 +1100,9 @@
 				if (graph.isEnabled() && !graph.isEditing() && cell != null)
 				{
 					var action = (mxEvent.isAltDown(evt) && mxEvent.isShiftDown(evt)) ? 
-						altShiftActions[evt.keyCode] : null;
-					
+						altShiftActions[evt.keyCode] : (mxEvent.isAltDown(evt) ?
+							altActions[evt.keyCode] : null);
+
 					if (action != null)
 					{
 						action.funct(evt);
@@ -1220,35 +1242,44 @@
 			return cells;
 		};
 		
-		var vertexHandlerInit = mxVertexHandler.prototype.init;
+		var vertexHandlerRefresh = mxVertexHandler.prototype.refresh;
 		
-		mxVertexHandler.prototype.init = function()
+		mxVertexHandler.prototype.refresh = function()
 		{
-			vertexHandlerInit.apply(this, arguments);
-			
+			vertexHandlerRefresh.apply(this, arguments);
+
 			if (((isTreeMoving(this.state.cell) || isTreeVertex(this.state.cell)) &&
 				!hasLayoutParent(this.state.cell)) && this.graph.getOutgoingTreeEdges(
-				this.state.cell).length > 0)
+				this.state.cell).length > 0 && !this.graph.isCellCollapsed(this.state.cell))
 			{
-				this.moveHandle = mxUtils.createImage(Editor.moveImage);
-				this.moveHandle.setAttribute('title', 'Move Subtree');
-				this.moveHandle.style.position = 'absolute';
-				this.moveHandle.style.cursor = 'pointer';
-				this.moveHandle.style.width = '24px';
-				this.moveHandle.style.height = '24px';
-				this.graph.container.appendChild(this.moveHandle);
-				
-				mxEvent.addGestureListeners(this.moveHandle, mxUtils.bind(this, function(evt)
+				if (this.moveHandle == null)
 				{
-					this.graph.graphHandler.start(this.state.cell,
-						mxEvent.getClientX(evt), mxEvent.getClientY(evt),
-						this.graph.getSubtree(this.state.cell));
-					this.graph.graphHandler.cellWasClicked = true;
-					this.graph.isMouseTrigger = mxEvent.isMouseEvent(evt);
-					this.graph.isMouseDown = true;
-					ui.hoverIcons.reset();
-					mxEvent.consume(evt);
-				}));
+					this.moveHandle = mxUtils.createImage(Editor.moveImage);
+					this.moveHandle.setAttribute('title', 'Move Subtree');
+					this.moveHandle.style.position = 'absolute';
+					this.moveHandle.style.cursor = 'pointer';
+					this.moveHandle.style.width = '24px';
+					this.moveHandle.style.height = '24px';
+					this.graph.container.appendChild(this.moveHandle);
+					this.redrawMoveHandle();
+					
+					mxEvent.addGestureListeners(this.moveHandle, mxUtils.bind(this, function(evt)
+					{
+						this.graph.graphHandler.start(this.state.cell,
+							mxEvent.getClientX(evt), mxEvent.getClientY(evt),
+							this.graph.getSubtree(this.state.cell));
+						this.graph.graphHandler.cellWasClicked = true;
+						this.graph.isMouseTrigger = mxEvent.isMouseEvent(evt);
+						this.graph.isMouseDown = true;
+						ui.hoverIcons.reset();
+						mxEvent.consume(evt);
+					}));
+				}
+			}
+			else if (this.moveHandle != null)
+			{
+				this.moveHandle.parentNode.removeChild(this.moveHandle);
+				this.moveHandle = null;
 			}
 		};
 
@@ -1257,7 +1288,11 @@
 		mxVertexHandler.prototype.redrawHandles = function()
 		{
 			vertexHandlerRedrawHandles.apply(this, arguments);
-			
+			this.redrawMoveHandle();
+		};
+		
+		mxVertexHandler.prototype.redrawMoveHandle = function()
+		{
 			if (this.moveHandle != null)
 			{
 				this.moveHandle.style.left = this.state.x + this.state.width +
@@ -1303,7 +1338,8 @@
 		{
 			var result = sidebarCreateAdvancedShapes.apply(this, arguments);
 			var graph = this.graph;
-			
+			var sb = this;
+
 			// Style that defines the key, value pairs to be used for creating styles of new connections if no incoming edge exists
 			var orgEdgeStyle = 'edgeStyle=elbowEdgeStyle;elbow=vertical;sourcePerimeterSpacing=0;' +
 				'targetPerimeterSpacing=0;startArrow=none;endArrow=none;rounded=0;curved=0;';
@@ -1558,7 +1594,7 @@
 	
 					cell2.insertEdge(edge2, false);
 										
-				    	return sb.createVertexTemplateFromCells([edge, edge2, cell, cell2], 220, 60, 'Sub Sections');
+				    return sb.createVertexTemplateFromCells([edge, edge2, cell, cell2], 220, 60, 'Sub Sections');
 				})
 			]);
 		};

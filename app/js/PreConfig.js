@@ -7,14 +7,15 @@
       t.parentNode.insertBefore(s, t);
   } catch (e) {} // ignore
 })();
+window.ALLOW_CUSTOM_PLUGINS = true;
 window.EXPORT_URL = '/service/0'; //This points to ExportProxyServlet which uses the local export server at port 8000. This proxy configuration allows https requests to the export server via Tomcat.
 window.PLANT_URL = '/service/1';
 window.DRAWIO_BASE_URL = 'https://incyde-gmbh.github.io/drawio-plugin-attackgraphs/app';
+window.DRAWIO_SERVER_URL = window.DRAWIO_BASE_URL + '/';
 window.DRAWIO_VIEWER_URL = '';
 window.DRAWIO_LIGHTBOX_URL = '';
 window.DRAW_MATH_URL = 'math/es5';
 window.DRAWIO_CONFIG = null;
-window.ALLOW_CUSTOM_PLUGINS = true;
 urlParams['sync'] = 'manual'; //Disable Real-Time
 urlParams['db'] = '0'; //dropbox
 urlParams['gh'] = '0'; //github

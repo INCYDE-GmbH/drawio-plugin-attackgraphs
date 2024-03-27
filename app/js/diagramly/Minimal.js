@@ -1,4 +1,9 @@
 /**
+ * Installing theme.
+ */
+Editor.themes.push('min');
+
+/**
  * Testing dockable windows.
  */
 EditorUi.windowed = urlParams['windows'] != '0';
@@ -1033,6 +1038,11 @@ EditorUi.initMinimalTheme = function()
             if (ui.actions.layersWindow != null)
             {
             	ui.actions.layersWindow.window.fit();
+            }
+
+            if (ui.menus.chatWindow != null)
+            {
+            	ui.menus.chatWindow.window.fit();
             }
 
             if (ui.menus.tagsWindow != null)

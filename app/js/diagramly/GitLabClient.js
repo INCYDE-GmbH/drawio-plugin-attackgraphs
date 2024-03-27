@@ -1,6 +1,6 @@
 /**
- * Copyright (c) 2006-2020, JGraph Ltd
- * Copyright (c) 2006-2020, draw.io AG
+ * Copyright (c) 2006-2024, JGraph Ltd
+ * Copyright (c) 2006-2024, draw.io AG
  */
 //Add a closure to hide the class private variables without changing the code a lot
 (function()
@@ -41,7 +41,7 @@ GitLabClient.prototype.maxFileSize = 10000000 /*10MB*/;
  */
 GitLabClient.prototype.authToken = 'Bearer';
 
-GitLabClient.prototype.redirectUri = window.location.protocol + '//' + window.location.host + '/gitlab';
+GitLabClient.prototype.redirectUri = window.DRAWIO_SERVER_URL + 'gitlab';
 
 /**
  * Authorizes the client, gets the userId and calls <open>.
@@ -75,16 +75,23 @@ GitLabClient.prototype.authenticateStep2 = function(state, success, error)
 			
 			if (authRemembered != null)
 			{
-				var req = new mxXmlRequest(this.redirectUri + '?state=' + encodeURIComponent('cId=' + this.clientId + '&domain=' + window.location.hostname + '&token=' + state), null, 'GET'); //To identify which app/domain is used
+				var req = new mxXmlRequest(this.redirectUri + '?state=' + encodeURIComponent('cId=' + this.clientId + '&domain=' + window.location.host + '&token=' + state), null, 'GET'); //To identify which app/domain is used
 				
 				req.send(mxUtils.bind(this, function(req)
 				{
 					if (req.getStatus() >= 200 && req.getStatus() <= 299)
 					{
-						_token = JSON.parse(req.getText()).access_token;
-						this.setToken(_token);
-						this.setUser(null);
-						success();
+						try
+						{
+							_token = JSON.parse(req.getText()).access_token;
+							this.setToken(_token);
+							this.setUser(null);
+							success();
+						}
+						catch (e)
+						{
+							error({message: mxResources.get('authFailed'), retry: auth});
+						}
 					}
 					else 
 					{
@@ -112,7 +119,7 @@ GitLabClient.prototype.authenticateStep2 = function(state, success, error)
 						this.clientId + '&scope=' + this.scope + 
 						'&redirect_uri=' + encodeURIComponent(this.redirectUri) +
 						'&response_type=code&state=' + encodeURIComponent('cId=' + this.clientId + //To identify which app/domain is used
-							'&domain=' + window.location.hostname + '&token=' + state) , 'gitlabauth'); 
+							'&domain=' + window.location.host + '&token=' + state) , 'gitlabauth'); 
 					
 					if (win != null)
 					{
@@ -260,11 +267,6 @@ GitLabClient.prototype.executeRequest = function(req, success, error, ignoreNotF
 				else if (req.getStatus() === 404)
 				{
 					error({message: this.getErrorMessage(req, mxResources.get('fileNotFound'))});
-				}
-				else if (req.getStatus() === 400)
-				{
-					// Special case: flag to the caller that there was a conflict
-					error({status: 400});
 				}
 				else
 				{
@@ -1274,7 +1276,8 @@ GitLabClient.prototype.showGitLabDialog = function(showFiles, fn, hideNoFilesErr
 							{
 								if (inFlightRequests === 0)
 								{
-									var dlg = new FilenameDialog(this.ui, 'org/repo/ref', mxResources.get('ok'), mxUtils.bind(this, function(value)
+									var dlg = new FilenameDialog(this.ui, 'org/repo/ref', mxResources.get('ok'),
+										mxUtils.bind(this, function(value)
 									{
 										if (value != null)
 										{
@@ -1426,7 +1429,7 @@ GitLabClient.prototype.showGitLabDialog = function(showFiles, fn, hideNoFilesErr
 GitLabClient.prototype.logout = function()
 {
 	//Send to server to clear refresh token cookie
-	this.ui.editor.loadUrl(this.redirectUri + '?doLogout=1&state=' + encodeURIComponent('cId=' + this.clientId + '&domain=' + window.location.hostname));
+	this.ui.editor.loadUrl(this.redirectUri + '?doLogout=1&state=' + encodeURIComponent('cId=' + this.clientId + '&domain=' + window.location.host));
 	this.clearPersistentToken();
 	this.setUser(null);
 	_token = null;

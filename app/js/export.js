@@ -1,8 +1,79 @@
 var mxIsElectron = navigator.userAgent != null &&
-	navigator.userAgent.toLowerCase().indexOf(' electron/') > -1;
+	navigator.userAgent.toLowerCase().indexOf(' electron/') > -1 && 
+	navigator.userAgent.indexOf(' draw.io/') > -1;
 var GOOGLE_APPS_MAX_AREA = 25000000;
-var GOOGLE_SHEET_MAX_AREA = 1048576; //1024x1024
+var GOOGLE_SHEET_MAX_AREA = 1000000; // The maximum number of pixels is 1 million.
 
+/**
+ * Adds meta tag to the page.
+ */
+function mxmeta(content, httpEquiv)
+{
+	try
+	{
+		var s = document.createElement('meta');
+		
+		s.setAttribute('content', content);
+		s.setAttribute('http-equiv', httpEquiv);
+
+		var t = document.getElementsByTagName('meta')[0];
+		t.parentNode.insertBefore(s, t);
+	}
+	catch (e)
+	{
+		// ignore
+	}
+};
+
+function mxscript(src, onLoad)
+{
+	var s = document.createElement('script');
+	s.setAttribute('type', 'text/javascript');
+	s.setAttribute('src', src);
+	
+	if (onLoad != null)
+	{
+		var r = false;
+	
+		s.onload = s.onreadystatechange = function()
+		{
+			if (!r && (!this.readyState || this.readyState == 'complete'))
+			{
+				r = true;
+				onLoad();
+			}
+		};
+	}
+
+	var t = document.getElementsByTagName('script')[0];
+	
+	if (t != null)
+	{
+		t.parentNode.insertBefore(s, t);
+	}
+};
+
+if (mxIsElectron)
+{
+	mxmeta('default-src \'self\'; script-src \'self\'; connect-src \'self\' https://*.draw.io https://*.diagrams.net https://fonts.googleapis.com https://fonts.gstatic.com; img-src * data:; media-src *; font-src *; frame-src \'none\'; style-src \'self\' \'unsafe-inline\' https://fonts.googleapis.com; base-uri \'none\';child-src \'self\';object-src \'none\';', 'Content-Security-Policy');
+	
+	// We can't use eval in Electron because of CSP, so load all shapes and disable eval
+	mxscript('js/stencils.min.js', function()
+	{
+		mxscript('js/shapes-14-6-5.min.js', function()
+		{
+			if (window.pendingRequest != null)
+			{
+				render(window.pendingRequest);
+			}
+
+			window.shapesLoaded = true;
+		});
+	});
+	
+	// Disables eval for JS (uses shapes-14-6-5.min.js)
+	mxStencilRegistry.allowEval = false;
+}
 //TODO Add support for loading math from a local folder
 Editor.initMath((remoteMath? 'https://app.diagrams.net/' : '') + 'math/es5/startup.js');
 
@@ -110,6 +181,28 @@ function render(data)
 		Graph.diagramLanguage = extras.diagramLanguage;
 		Graph.translateDiagram = true;
 	}
+	
+	// Overrides graph bounds to include background images
+	var graphGetGraphBounds = graph.getGraphBounds;
+
+	graph.getGraphBounds = function()
+	{
+		var bounds = graphGetGraphBounds.apply(this, arguments);
+		var img = this.backgroundImage;
+		
+		if (img != null && img.width != null && img.height != null)
+		{
+			var t = this.view.translate;
+			var s = this.view.scale;
+
+			bounds = mxRectangle.fromRectangle(bounds);
+			bounds.add(new mxRectangle(
+				(t.x + img.x) * s, (t.y + img.y) * s,
+				img.width * s, img.height * s));
+		}
+
+		return bounds;
+	};
 	
 	//PNG+XML format
 	if (data.xml.substring(0, 5) == 'iVBOR' || (extras != null && extras.isPng))
@@ -280,7 +373,27 @@ function render(data)
 								bg = null;
 							}
 							
-							var svgRoot = graph.getSvg(bg, 1, 0, false, null, true, null, null, null);
+							if (data.theme == 'dark')
+							{
+								// TODO Support enableCssDarkMode?
+								graph.shapeForegroundColor = Editor.lightColor;
+								graph.shapeBackgroundColor = Editor.darkColor;
+								graph.stylesheet = graph.getDefaultStylesheet();
+								graph.refresh();
+							}
+
+							var linkTarget = null;
+
+							if (data.linkTarget == 'same-win')
+							{
+								linkTarget = '_top';
+							}
+							else if (data.linkTarget == 'new-win')
+							{
+								linkTarget = '_blank';
+							}
+
+							var svgRoot = graph.getSvg(bg, expScale, 0, false, null, true, null, null, linkTarget);
 							
 							if (graph.shadowVisible)
 							{
@@ -396,7 +509,8 @@ function render(data)
 		//Note: This code targets Chrome as it is the browser used by export server
 		for (var i = 0; i < extFonts.length; i++)
 		{
-			if (extFonts[i].url.indexOf(Editor.GOOGLE_FONTS) == 0)
+			if (extFonts[i].url.indexOf(Editor.GOOGLE_FONTS) == 0 ||
+				extFonts[i].url.indexOf(Editor.GOOGLE_FONTS_CSS2) == 0)
 			{
 				var link = document.createElement('link');
 				
@@ -458,7 +572,8 @@ function render(data)
 		
 		var pages = document.querySelectorAll('[id^=mxPage]');
 		
-		var cssTxt = 'margin: 0;padding: 0;background-image: ' + gridImage + ';background-position: ' + position;
+		var cssTxt = 'margin: 0;padding: 0;background-image: ' + gridImage + ';background-position: ' + position
+						+ ';background-color: ' + document.body.style.backgroundColor;
 		document.body.style.cssText = cssTxt;
 
 		for (var i = 0; i < pages.length; i++)
@@ -814,7 +929,7 @@ function render(data)
 				preview = new mxPrintPreview(graph, scale, pf, border, x0, y0);
 				preview.printBackgroundImage = true;
 				preview.autoOrigin = autoOrigin;
-				preview.backgroundColor = bg;
+				preview.backgroundColor = gridColor? 'transparent' : bg;
 				// Renders print output into this document and removes the graph container
 				preview.open(null, window, null, null, anchorId);
 				graph.container.parentNode.removeChild(graph.container);
@@ -862,7 +977,9 @@ function render(data)
 
 				if (t.x < 0 || t.y < 0)
 				{
-					graph.view.setTranslate(t.x < 0? -bgImg.x * s : t.x, t.y < 0? -bgImg.y * s : t.y);
+					graph.view.setTranslate(
+						t.x < 0 ? Math.max(-bgImg.x * s, t.x) : t.x,
+						t.y < 0 ? Math.max(-bgImg.y * s, t.y) : t.y);
 					bounds.x = 0.5;
 					bounds.y = 0.5;
 				}
@@ -986,7 +1103,14 @@ if (mxIsElectron)
 		{
 			try
 			{
-				render(arg);
+				if (window.shapesLoaded)
+				{
+					render(arg);
+				}
+				else
+				{
+					window.pendingRequest = arg;
+				}
 			}
 			catch(e)
 			{

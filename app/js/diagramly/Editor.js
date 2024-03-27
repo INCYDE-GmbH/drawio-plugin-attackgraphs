@@ -37,7 +37,7 @@
 	Editor.thinUndoImage = 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIGhlaWdodD0iNDgiIHdpZHRoPSI0OCI+PHBhdGggZD0iTTE0LjQgMzcuNXYtMi4yNWgxMy45cTMuNiAwIDYuMjI1LTIuMzc1UTM3LjE1IDMwLjUgMzcuMTUgMjYuOXEwLTMuNTUtMi42MjUtNS45LTIuNjI1LTIuMzUtNi4yMjUtMi4zNUgxMi45NUwxOSAyNC43bC0xLjYgMS42LTguOC04LjggOC44LTguOCAxLjYgMS42LTYuMDUgNi4wNWgxNS4zcTQuNTUgMCA3Ljg1IDMuMDV0My4zIDcuNXEwIDQuNS0zLjMgNy41NXQtNy44NSAzLjA1WiIvPjwvc3ZnPg==';
 	Editor.thinRedoImage = 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIGhlaWdodD0iNDgiIHdpZHRoPSI0OCI+PHBhdGggZD0iTTE5Ljc1IDM3LjVxLTQuNTUgMC03Ljg1LTMuMDVUOC42IDI2LjlxMC00LjQ1IDMuMy03LjV0Ny44NS0zLjA1aDE1LjNMMjkgMTAuM2wxLjYtMS42IDguOCA4LjgtOC44IDguOC0xLjYtMS42IDYuMDUtNi4wNUgxOS43cS0zLjYgMC02LjIyNSAyLjM1LTIuNjI1IDIuMzUtMi42MjUgNS45IDAgMy42IDIuNjI1IDUuOTc1UTE2LjEgMzUuMjUgMTkuNyAzNS4yNWgxMy45djIuMjVaIi8+PC9zdmc+';
 	Editor.thinDoubleArrowRightImage = 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIGhlaWdodD0iNDgiIHdpZHRoPSI0OCI+PHBhdGggZD0ibTEzIDM1LjMtMS42LTEuNiA5Ljc1LTkuNzUtOS43NS05LjcgMS42LTEuNiAxMS4zNSAxMS4zWm0xMi4zIDAtMS42LTEuNiA5Ljc1LTkuNzUtOS43NS05LjcgMS42LTEuNiAxMS4zIDExLjNaIi8+PC9zdmc+';
-	Editor.thinNoteAddImage = 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIGhlaWdodD0iNDgiIHdpZHRoPSI0OCI+PHBhdGggZD0iTTIyLjg1IDM1LjdoMi4zdi02LjNoNi4zNXYtMi4zaC02LjM1di02LjM1aC0yLjN2Ni4zNUgxNi41djIuM2g2LjM1Wk0xMS45IDQzcS0xLjIgMC0yLjA1LS44NVE5IDQxLjMgOSA0MC4xVjcuOXEwLTEuMi44NS0yLjA1UTEwLjcgNSAxMS45IDVoMTcuMzVMMzkgMTQuNzVWNDAuMXEwIDEuMi0uODUgMi4wNS0uODUuODUtMi4wNS44NVptMTYuMjUtMjcuMjV2LTguNUgxMS45cS0uMjUgMC0uNDUuMnQtLjIuNDV2MzIuMnEwIC4yNS4yLjQ1dC40NS4yaDI0LjJxLjI1IDAgLjQ1LS4ydC4yLS40NVYxNS43NVptLTE2LjktOC41djguNS04LjVWNDAuNzUgNy4yNVoiLz48L3N2Zz4=';
+	Editor.thinNoteImage = 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIGhlaWdodD0iNDgiIHZpZXdCb3g9IjAgOTYgOTYwIDk2MCIgd2lkdGg9IjQ4Ij48cGF0aCBkPSJNMjM3LjY5NCA5NTUuOTk5cS0yMy41MjkgMC00MC42MTEtMTcuMDgyLTE3LjA4Mi0xNy4wODItMTcuMDgyLTQwLjYxMVYyNTMuNjk0cTAtMjMuNTI5IDE3LjA4Mi00MC42MTEgMTcuMDgyLTE3LjA4MiA0MC42MTEtMTcuMDgyaDM0Ny41MzdsMTk0Ljc2OCAxOTQuNzY4djUwNy41MzdxMCAyMy41MjktMTcuMDgyIDQwLjYxMS0xNy4wODIgMTcuMDgyLTQwLjYxMSAxNy4wODJIMjM3LjY5NFpNNTYyLjUzOSA0MTEuMjNWMjQxLjM4NUgyMzcuNjk0cS00LjYxNiAwLTguNDYzIDMuODQ2LTMuODQ2IDMuODQ3LTMuODQ2IDguNDYzdjY0NC42MTJxMCA0LjYxNiAzLjg0NiA4LjQ2MyAzLjg0NyAzLjg0NiA4LjQ2MyAzLjg0Nmg0ODQuNjEycTQuNjE2IDAgOC40NjMtMy44NDYgMy44NDYtMy44NDcgMy44NDYtOC40NjNWNDExLjIzSDU2Mi41MzlaTTIyNS4zODUgMjQxLjM4NVY0MTEuMjMgMjQxLjM4NXY2NjkuMjNWMjQxLjM4NVoiLz48L3N2Zz4=';
 	Editor.thinTableImage = 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIGhlaWdodD0iNDgiIHdpZHRoPSI0OCI+PHBhdGggZD0iTTcgNDFWN2gzNHYzNFptMi4yNS0yMy42aDI5LjVWOS4yNUg5LjI1Wm0xMC42IDEwLjdoOC4zdi04LjRoLTguM1ptMCAxMC42NWg4LjN2LTguNGgtOC4zWk05LjI1IDI4LjFoOC4zNXYtOC40SDkuMjVabTIxLjE1IDBoOC4zNXYtOC40SDMwLjRaTTkuMjUgMzguNzVoOC4zNXYtOC40SDkuMjVabTIxLjE1IDBoOC4zNXYtOC40SDMwLjRaIi8+PC9zdmc+';
 	Editor.thinAddCircleImage = 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIGhlaWdodD0iNDgiIHdpZHRoPSI0OCI+PHBhdGggZD0iTTIzIDMzLjVoMi4yNXYtOC4yaDguMjVWMjNoLTguMjV2LTguNUgyM1YyM2gtOC41djIuM0gyM1ptMSA5LjVxLTMuOTUgMC03LjQtMS41dC02LjAyNS00LjA3NVE4IDM0Ljg1IDYuNSAzMS40VDUgMjRxMC0zLjk1IDEuNS03LjQyNVE4IDEzLjEgMTAuNTc1IDEwLjU1IDEzLjE1IDggMTYuNiA2LjVUMjQgNXEzLjk1IDAgNy40MjUgMS41UTM0LjkgOCAzNy40NSAxMC41NSA0MCAxMy4xIDQxLjUgMTYuNTc1IDQzIDIwLjA1IDQzIDI0cTAgMy45NS0xLjUgNy40dC00LjA1IDYuMDI1UTM0LjkgNDAgMzEuNDI1IDQxLjUgMjcuOTUgNDMgMjQgNDNabS4wNS0yLjI1cTYuOTUgMCAxMS44MjUtNC45IDQuODc1LTQuOSA0Ljg3NS0xMS45IDAtNi45NS00Ljg3NS0xMS44MjVRMzEgNy4yNSAyNCA3LjI1cS02Ljk1IDAtMTEuODUgNC44NzVRNy4yNSAxNyA3LjI1IDI0cTAgNi45NSA0LjkgMTEuODUgNC45IDQuOSAxMS45IDQuOVpNMjQgMjRaIi8+PC9zdmc+';
 	Editor.thinArrowLeftImage = 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIGhlaWdodD0iNDgiIHdpZHRoPSI0OCI+PHBhdGggZD0iTTI4LjA1IDM1LjMgMTYuNyAyMy45NSAyOC4wNSAxMi42bDEuNiAxLjY1LTkuNyA5LjcgOS43IDkuNzVaIi8+PC9zdmc+';
@@ -56,8 +56,10 @@
 	Editor.thinRectangleImage = 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIGhlaWdodD0iNDgiIHdpZHRoPSI0OCI+PHBhdGggZD0iTTUgMzlWOWgzOHYzMFptMi4yNS0yLjI1aDMzLjV2LTI1LjVINy4yNVptMCAwdi0yNS41IDI1LjVaIi8+PC9zdmc+';
 	Editor.thinDataImage = 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIGhlaWdodD0iNDgiIHdpZHRoPSI0OCI+PHBhdGggZD0iTTI4Ljg1IDM5LjF2LTIuMjVIMzRxMS4yIDAgMi4wMjUtLjgyNVQzNi44NSAzNHYtNC45cTAtMS43NSAxLjA3NS0zLjEyNXQyLjcyNS0xLjgyNXYtLjNxLTEuNjUtLjQ1LTIuNzI1LTEuODI1UTM2Ljg1IDIwLjY1IDM2Ljg1IDE4LjlWMTRxMC0xLjItLjgyNS0yLjAyNVQzNCAxMS4xNWgtNS4xNVY4LjlIMzRxMi4xNSAwIDMuNjI1IDEuNVQzOS4xIDE0djQuOXEwIDEuMjUuODUgMi4wNzUuODUuODI1IDIuMS44MjVoLjg1djQuNGgtLjg1cS0xLjI1IDAtMi4xLjgyNS0uODUuODI1LS44NSAyLjA3NVYzNHEwIDIuMS0xLjUgMy42VDM0IDM5LjFaTTE0IDM5LjFxLTIuMTUgMC0zLjYyNS0xLjVUOC45IDM0di00LjlxMC0xLjI1LS44NS0yLjA3NS0uODUtLjgyNS0yLjEtLjgyNUg1LjF2LTQuNGguODVxMS4yNSAwIDIuMS0uODI1Ljg1LS44MjUuODUtMi4wNzVWMTRxMC0yLjEgMS41LTMuNlQxNCA4LjloNS4xNXYyLjI1SDE0cS0xLjIgMC0yLjAyNS44MjVUMTEuMTUgMTR2NC45cTAgMS43NS0xLjA3NSAzLjEyNVQ3LjM1IDIzLjg1di4zcTEuNjUuNDUgMi43MjUgMS44MjVRMTEuMTUgMjcuMzUgMTEuMTUgMjkuMVYzNHEwIDEuMi44MjUgMi4wMjVUMTQgMzYuODVoNS4xNXYyLjI1WiIvPjwvc3ZnPg==';
 	Editor.thinExpandImage = 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIGhlaWdodD0iNDgiIHdpZHRoPSI0OCI+PHBhdGggZD0iTTI0IDMwLjEgMTIuNyAxOC43NWwxLjYtMS42IDkuNyA5LjcgOS43LTkuNyAxLjYgMS42NVoiLz48L3N2Zz4=';
+	Editor.thinGridImage = 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIGhlaWdodD0iNDgiIHZpZXdCb3g9IjAgLTk2MCA5NjAgOTYwIiB3aWR0aD0iNDgiPjxwYXRoIGQ9Ik0yMjMuMjkxLTE1NC41cS0yOS4xMTcgMC00OC45NTQtMTkuODM3VDE1NC41LTIyMy4yOTFxMC0yOS4xMTggMTkuODM3LTQ4LjkxM1ExOTQuMTc0LTI5MiAyMjMuMjkxLTI5MnEyOS4xMTggMCA0OC45MTMgMTkuNzk2UTI5Mi0yNTIuNDA5IDI5Mi0yMjMuMjkxcTAgMjkuMTE3LTE5Ljc5NiA0OC45NTQtMTkuNzk1IDE5LjgzNy00OC45MTMgMTkuODM3Wm0yNTYuOCAwcS0yOS4wNDggMC00OC44ODUtMTkuODM3LTE5LjgzNi0xOS44MzctMTkuODM2LTQ4Ljk1NCAwLTI5LjExOCAxOS43NDUtNDguOTEzUTQ1MC44NjEtMjkyIDQ3OS45MDktMjkydDQ4Ljg4NSAxOS43OTZxMTkuODM2IDE5Ljc5NSAxOS44MzYgNDguOTEzIDAgMjkuMTE3LTE5Ljc0NSA0OC45NTQtMTkuNzQ2IDE5LjgzNy00OC43OTQgMTkuODM3Wm0yNTYuNjE4IDBxLTI5LjExOCAwLTQ4LjkxMy0xOS44MzdRNjY4LTE5NC4xNzQgNjY4LTIyMy4yOTFxMC0yOS4xMTggMTkuNzk2LTQ4LjkxM1E3MDcuNTkxLTI5MiA3MzYuNzA5LTI5MnEyOS4xMTcgMCA0OC45NTQgMTkuNzk2IDE5LjgzNyAxOS43OTUgMTkuODM3IDQ4LjkxMyAwIDI5LjExNy0xOS44MzcgNDguOTU0VDczNi43MDktMTU0LjVaTTIyMy4yOTEtNDExLjM3cS0yOS4xMTcgMC00OC45NTQtMTkuNzQ1LTE5LjgzNy0xOS43NDYtMTkuODM3LTQ4Ljc5NHQxOS44MzctNDguODg1cTE5LjgzNy0xOS44MzYgNDguOTU0LTE5LjgzNiAyOS4xMTggMCA0OC45MTMgMTkuNzQ1UTI5Mi01MDkuMTM5IDI5Mi00ODAuMDkxdC0xOS43OTYgNDguODg1cS0xOS43OTUgMTkuODM2LTQ4LjkxMyAxOS44MzZabTI1Ni44IDBxLTI5LjA0OCAwLTQ4Ljg4NS0xOS43NDUtMTkuODM2LTE5Ljc0Ni0xOS44MzYtNDguNzk0dDE5Ljc0NS00OC44ODVxMTkuNzQ2LTE5LjgzNiA0OC43OTQtMTkuODM2dDQ4Ljg4NSAxOS43NDVxMTkuODM2IDE5Ljc0NiAxOS44MzYgNDguNzk0dC0xOS43NDUgNDguODg1cS0xOS43NDYgMTkuODM2LTQ4Ljc5NCAxOS44MzZabTI1Ni42MTggMHEtMjkuMTE4IDAtNDguOTEzLTE5Ljc0NVE2NjgtNDUwLjg2MSA2NjgtNDc5LjkwOXQxOS43OTYtNDguODg1cTE5Ljc5NS0xOS44MzYgNDguOTEzLTE5LjgzNiAyOS4xMTcgMCA0OC45NTQgMTkuNzQ1IDE5LjgzNyAxOS43NDYgMTkuODM3IDQ4Ljc5NHQtMTkuODM3IDQ4Ljg4NXEtMTkuODM3IDE5LjgzNi00OC45NTQgMTkuODM2Wk0yMjMuMjkxLTY2OHEtMjkuMTE3IDAtNDguOTU0LTE5Ljc5Ni0xOS44MzctMTkuNzk1LTE5LjgzNy00OC45MTMgMC0yOS4xMTcgMTkuODM3LTQ4Ljk1NHQ0OC45NTQtMTkuODM3cTI5LjExOCAwIDQ4LjkxMyAxOS44MzdRMjkyLTc2NS44MjYgMjkyLTczNi43MDlxMCAyOS4xMTgtMTkuNzk2IDQ4LjkxM1EyNTIuNDA5LTY2OCAyMjMuMjkxLTY2OFptMjU2LjggMHEtMjkuMDQ4IDAtNDguODg1LTE5Ljc5Ni0xOS44MzYtMTkuNzk1LTE5LjgzNi00OC45MTMgMC0yOS4xMTcgMTkuNzQ1LTQ4Ljk1NCAxOS43NDYtMTkuODM3IDQ4Ljc5NC0xOS44Mzd0NDguODg1IDE5LjgzN3ExOS44MzYgMTkuODM3IDE5LjgzNiA0OC45NTQgMCAyOS4xMTgtMTkuNzQ1IDQ4LjkxM1E1MDkuMTM5LTY2OCA0ODAuMDkxLTY2OFptMjU2LjYxOCAwcS0yOS4xMTggMC00OC45MTMtMTkuNzk2UTY2OC03MDcuNTkxIDY2OC03MzYuNzA5cTAtMjkuMTE3IDE5Ljc5Ni00OC45NTQgMTkuNzk1LTE5LjgzNyA0OC45MTMtMTkuODM3IDI5LjExNyAwIDQ4Ljk1NCAxOS44Mzd0MTkuODM3IDQ4Ljk1NHEwIDI5LjExOC0xOS44MzcgNDguOTEzUTc2NS44MjYtNjY4IDczNi43MDktNjY4WiIvPjwvc3ZnPg==';
+	Editor.thinOpenImage = 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIGhlaWdodD0iMjQiIHZpZXdCb3g9IjAgLTk2MCA5NjAgOTYwIiB3aWR0aD0iMjQiPjxwYXRoIGQ9Ik0yNDAtODBxLTMzIDAtNTYuNS0yMy41VDE2MC0xNjB2LTY0MHEwLTMzIDIzLjUtNTYuNVQyNDAtODgwaDMyMGwyNDAgMjQwdjI0MGgtODB2LTIwMEg1MjB2LTIwMEgyNDB2NjQwaDM2MHY4MEgyNDBabTYzOCAxNUw3NjAtMTgzdjg5aC04MHYtMjI2aDIyNnY4MGgtOTBsMTE4IDExOC01NiA1N1ptLTYzOC05NXYtNjQwIDY0MFoiLz48L3N2Zz4=';
 	Editor.selectImage = 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIGhlaWdodD0iNDgiIHdpZHRoPSI0OCI+PHBhdGggZD0iTTkgNDJxLTEuMjUgMC0yLjEyNS0uODc1VDYgMzlWOXEwLTEuMjUuODc1LTIuMTI1VDkgNmgzMHEuNyAwIDEuMjc1LjN0LjkyNS43TDM5IDkuMlY5SDl2MzBoMzBWMjEuODVsMy0zVjM5cTAgMS4yNS0uODc1IDIuMTI1VDM5IDQyWm0xNC4wNS04LjQtMTEuMS0xMS4xIDIuMS0yLjEgOSA5IDE5LjEtMTkuMSAyLjEgMi4xWiIvPjwvc3ZnPg==';
-	
+
 	/**
 	 * 
 	 */
@@ -178,6 +180,13 @@
 	 * at runtime in the kennedy theme.
 	 */
 	Editor.enableSimpleTheme = true;
+			
+	/**
+	 * Specifies if the URL should be rewritten to contain the selected page.
+	 * Default is true for online app without embed.
+	 */
+	Editor.enableHashObjects = !mxClient.IS_CHROMEAPP && !EditorUi.isElectronApp &&
+		urlParams['embed'] != '1' && window.top == window.self;
 	
 	/**
 	 * Sets the default value for including a copy of the diagram.
@@ -196,7 +205,7 @@
 	/**
 	 * Specifies if web fonts are enabled.
 	 */
-	Editor.enableWebFonts = urlParams['safe-style-src'] != '1';
+	Editor.enableWebFonts = urlParams['safe-style-src'] != '1' && !window.mxIsElectron;
 
 	/**
 	 * Disables the shadow option in the format panel.
@@ -214,6 +223,17 @@
 	Editor.enableRealtime = true;
 
 	/**
+	 * Enables cache for patches and Pusher for messages. Default is true.
+	 */
+	Editor.enableRealtimeCache = true;
+	
+	/**
+	 * Enables P2P instead of Pusher for messages. (Ignored if enableRealtimeCache is false.)
+	 * Default is false.
+	 */
+	Editor.p2pSyncNotify = false;
+	
+	/**
 	 * Specifies if XML files should be compressed. Default is true.
 	 */
 	Editor.compressXml = true;
@@ -222,6 +242,11 @@
 	 * Specifies if XML files should be compressed by default. Default is false.
 	 */
 	Editor.defaultCompressed = false;
+
+	/**
+	 * Specifies if data should be compressed internally. Default is false.
+	 */
+	Editor.internalCompression = urlParams['internal-compression'] == '1';
 
 	/**
 	 * Specifies if XML files should be compressed. Default is true.
@@ -234,6 +259,53 @@
 	Editor.globalVars = null;
 
 	/**
+	 * Default border for image export (to allow for sketch style).
+	 */
+	Editor.defaultBorder = 5;
+
+	/**
+	 * Specifies the ChatGPT API key. Default is null.
+	 */
+	Editor.gptApiKey = (urlParams['gpt-api-key'] != null) ?
+		decodeURIComponent(urlParams['gpt-api-key']) : null;
+
+	/**
+	 * Specifies the ChatGPT model. Default is 'gpt-3.5-turbo'.
+	 */
+	Editor.gptModel = (urlParams['gpt-model'] != null) ?
+		decodeURIComponent(urlParams['gpt-model']) : 'gpt-3.5-turbo';
+	
+	/**
+	 * Specifies the ChatGPT endpoint URL. Default is
+	 * 'https://api.openai.com/v1/chat/completions'.
+	 */
+	Editor.gptUrl = (urlParams['gpt-url'] != null) ?
+		decodeURIComponent(urlParams['gpt-url']) :
+		'https://api.openai.com/v1/chat/completions';
+	
+	/**
+	 * Specifies if data URIs should be replaced with SVG sub-trees in SVG export.
+	 * Default is true.
+	 */
+	Editor.replaceSvgDataUris = true;
+	
+	/**
+	 * Specifies if foreignObject alternate content should be replaced with an image
+	 * of the HTML text. Default is true.
+	 */
+	Editor.foreignObjectImages = true;
+		
+	/**
+	 * Specifies the scale used to rasterize SVG images. Default is 4.
+	 */
+	Editor.svgRasterScale = 4;
+			
+	/**
+	 * Specifies the scale used to rasterize HTML markup. Default is 4.
+	 */
+	Editor.htmlRasterScale = 4;
+	
+	/**
 	 * Reference to the config object passed to <configure>.
 	 */
 	Editor.config = null;
@@ -244,11 +316,6 @@
 	 * mxSettings.parse, then the settings are reset.
 	 */
 	Editor.configVersion = null;
-
-	/**
-	 * Default border for image export (to allow for sketch style).
-	 */
-	Editor.defaultBorder = 5;
 
 	/**
 	 * Common properties for all edges.
@@ -323,9 +390,49 @@
         	isVisible: function(state, format)
         {
         	return mxUtils.getValue(state.style, 'sketch', (urlParams['rough'] == '1') ? '1' : '0') == '1';
-        }}
+        }},
+		{name: mxConstants.STYLE_SHADOWCOLOR, dispName: 'Shadow Color', type: 'color', getDefaultValue: function()
+		{
+			return mxConstants.SHADOWCOLOR;
+		}, isVisible: function(state, format)
+		{
+			return mxUtils.getValue(state.style, mxConstants.STYLE_SHADOW, '0') == '1' ||
+				mxUtils.getValue(state.style, mxConstants.STYLE_TEXT_SHADOW, '0') == '1';
+		}},
+		{name: mxConstants.STYLE_SHADOW_OPACITY, dispName: 'Shadow Opacity', type: 'int', min: 0, max: 100, getDefaultValue: function()
+		{
+			return mxConstants.SHADOW_OPACITY * 100;
+		}, isVisible: function(state, format)
+		{
+			return mxUtils.getValue(state.style, mxConstants.STYLE_SHADOW, '0') == '1' ||
+				mxUtils.getValue(state.style, mxConstants.STYLE_TEXT_SHADOW, '0') == '1';
+		}},
+		{name: mxConstants.STYLE_SHADOW_OFFSET_X, dispName: 'Shadow Offset X', type: 'int', getDefaultValue: function()
+		{
+			return mxConstants.SHADOW_OFFSET_X;
+		}, isVisible: function(state, format)
+		{
+			return mxUtils.getValue(state.style, mxConstants.STYLE_SHADOW, '0') == '1' ||
+				mxUtils.getValue(state.style, mxConstants.STYLE_TEXT_SHADOW, '0') == '1';
+		}},
+		{name: mxConstants.STYLE_SHADOW_OFFSET_Y, dispName: 'Shadow Offset Y', type: 'int', getDefaultValue: function()
+		{
+			return mxConstants.SHADOW_OFFSET_Y;
+		}, isVisible: function(state, format)
+		{
+			return mxUtils.getValue(state.style, mxConstants.STYLE_SHADOW, '0') == '1' ||
+				mxUtils.getValue(state.style, mxConstants.STYLE_TEXT_SHADOW, '0') == '1';
+		}},
+		{name: mxConstants.STYLE_SHADOW_BLUR, dispName: 'Shadow Blur', type: 'int', min: 0, getDefaultValue: function()
+		{
+			return mxConstants.SHADOW_BLUR;
+		}, isVisible: function(state, format)
+		{
+			return mxUtils.getValue(state.style, mxConstants.STYLE_SHADOW, '0') == '1' ||
+				mxUtils.getValue(state.style, mxConstants.STYLE_TEXT_SHADOW, '0') == '1';
+		}}
 	];
-
+	
 	/**
 	 * Common properties for all edges.
 	 */
@@ -342,6 +449,10 @@
         {
     		return mxUtils.getValue(state.style, mxConstants.STYLE_EDGE, null) == 'orthogonalEdgeStyle';
         }},
+        {name: 'segment', dispName: 'Segment Size', type: 'int', min: 0, defVal: mxConstants.ENTITY_SEGMENT, isVisible: function(state)
+        {
+    		return mxUtils.getValue(state.style, mxConstants.STYLE_EDGE, null) == 'entityRelationEdgeStyle';
+        }},
         {name: 'fillOpacity', dispName: 'Fill Opacity', type: 'int', min: 0, max: 100, defVal: 100},
         {name: 'strokeOpacity', dispName: 'Stroke Opacity', type: 'int', min: 0, max: 100, defVal: 100},
         {name: 'startFill', dispName: 'Start Fill', type: 'bool', defVal: true},
@@ -349,8 +460,28 @@
         {name: 'perimeterSpacing', dispName: 'Terminal Spacing', type: 'float', defVal: 0},
         {name: 'anchorPointDirection', dispName: 'Anchor Direction', type: 'bool', defVal: true},
         {name: 'snapToPoint', dispName: 'Snap to Point', type: 'bool', defVal: false},
+        {name: 'dashPattern', dispName: 'Dash Pattern', type: 'numbers', defVal: ''},
         {name: 'fixDash', dispName: 'Fixed Dash', type: 'bool', defVal: false},
-        {name: 'editable', dispName: 'Editable', type: 'bool', defVal: true},
+		{name: 'flowAnimationDuration', dispName: 'Flow Duration', type: 'int', defVal: 500, isVisible: function(state)
+		{
+			return mxUtils.getValue(state.style, 'flowAnimation', null) == '1';
+		}},
+		{name: 'flowAnimationTimingFunction', dispName: 'Flow Timing', type: 'enum', defVal: 'linear',
+			enumList: [{val: 'linear', dispName: 'Linear'}, {val: 'ease', dispName: 'Ease'}, {val: 'ease-in', dispName: 'Ease-in'},
+			{val: 'ease-out', dispName: 'Ease-out'}, {val: 'ease-in-out', dispName: 'Ease-in-out'}], isVisible: function(state)
+			{
+				return mxUtils.getValue(state.style, 'flowAnimation', null) == '1';
+			}
+		},
+		{name: 'flowAnimationDirection', dispName: 'Flow Direction', type: 'enum', defVal: 'normal',
+			enumList: [{val: 'normal', dispName: 'Normal'}, {val: 'reverse', dispName: 'Reverse'},
+			{val: 'alternate', dispName: 'Alternate'}, {val: 'alternate-reverse', dispName: 'Alternate-Reverse'}],
+			isVisible: function(state)
+			{
+				return mxUtils.getValue(state.style, 'flowAnimation', null) == '1';
+			}
+		},
+		{name: 'editable', dispName: 'Editable', type: 'bool', defVal: true},
         {name: 'metaEdit', dispName: 'Edit Dialog', type: 'bool', defVal: false},
         {name: 'backgroundOutline', dispName: 'Background Outline', type: 'bool', defVal: false},
         {name: 'bendable', dispName: 'Bendable', type: 'bool', defVal: true},
@@ -358,7 +489,6 @@
         {name: 'cloneable', dispName: 'Cloneable', type: 'bool', defVal: true},
         {name: 'deletable', dispName: 'Deletable', type: 'bool', defVal: true},
         {name: 'noJump', dispName: 'No Jumps', type: 'bool', defVal: false},
-        {name: 'flowAnimation', dispName: 'Flow Animation', type: 'bool', defVal: false},
 		{name: 'ignoreEdge', dispName: 'Ignore Edge', type: 'bool', defVal: false},
         {name: 'orthogonalLoop', dispName: 'Loop Routing', type: 'bool', defVal: false},
 		{name: 'orthogonal', dispName: 'Orthogonal', type: 'bool', defVal: false}
@@ -528,29 +658,6 @@
 	].concat(Editor.commonProperties);
 
 	/**
-	 * CSS for adaptive SVG dark mode.
-	 */
-	Editor.svgDarkModeCss = '@media (prefers-color-scheme: dark) {' +
-		':root {--light-color: #c9d1d9; --dark-color: #0d1117; }' +
-		'svg[style^="background-color:"] { background-color: var(--dark-color) !important; }' +
-		'g[filter="url(#dropShadow)"] { filter: none !important; }' +
-		'[stroke="rgb(0, 0, 0)"] { stroke: var(--light-color); }' +
-		'[stroke="rgb(255, 255, 255)"] { stroke: var(--dark-color); }' +
-		'[fill="rgb(0, 0, 0)"] { fill: var(--light-color); }' +
-		'[fill="rgb(255, 255, 255)"] { fill: var(--dark-color); }' +
-		'g[fill="rgb(0, 0, 0)"] text { fill: var(--light-color); }' +
-		'div[data-drawio-colors*="color: rgb(0, 0, 0)"]' +
-		'	div { color: var(--light-color) !important; }' +
-		'div[data-drawio-colors*="border-color: rgb(0, 0, 0)"]' +
-		'	{ border-color: var(--light-color) !important; }' +
-		'div[data-drawio-colors*="border-color: rgb(0, 0, 0)"]' +
-		'	div { border-color: var(--light-color) !important; }' +
-		'div[data-drawio-colors*="background-color: rgb(255, 255, 255)"]' +
-		'	{ background-color: var(--dark-color) !important; }' +
-		'div[data-drawio-colors*="background-color: rgb(255, 255, 255)"]' +
-		'	div { background-color: var(--dark-color) !important; }}';
-	
-	/**
 	 * Default value for the CSV import dialog.
 	 */
 	Editor.defaultCsvValue = '##\n' +
@@ -633,6 +740,7 @@
 		'## x is from -1 to 1 along the edge, y is orthogonal, and dx/dy are offsets in pixels.\n' +
 		'## An optional placeholders with the string value "source" or "target" can be specified\n' +
 		'## to replace placeholders in the additional label with data from the source or target.\n' +
+		'## An optional data object can be specified to define the metadata for the connector.\n' +
 		'## The target column may contain a comma-separated list of values.\n' +
 		'## Multiple connect entries are allowed.\n' +
 		'#\n' +
@@ -655,7 +763,7 @@
 		'#\n' +
 		'# width: auto\n' +
 		'#\n' +
-		'## Node height. Possible value is a number (in px), auto or an @ sign followed by a column\n' +
+		'## Node height. Possible value is a number (in px), auto, width or an @ sign followed by a column\n' +
 		'## name that contains the value for the height. Default is auto.\n' +
 		'#\n' +
 		'# height: auto\n' +
@@ -1521,7 +1629,7 @@
 	/**
 	 * Extracts the XML from the compressed or non-compressed text chunk.
 	 */
-	Editor.parseDiagramNode = function(diagramNode, checked)
+	Editor.parseDiagramNode = function(diagramNode, checked, allowRecurse)
 	{
 		var text = mxUtils.trim(mxUtils.getTextContent(diagramNode));
 		var node = null;
@@ -1541,9 +1649,16 @@
 			
 			if (temp.length > 0)
 			{
+				var tempNode = temp[0];
+
+				if (allowRecurse)
+				{
+					tempNode = Editor.parseDiagramNode(tempNode, checked, false);
+				}
+
 				// Creates new document for unique IDs within mxGraphModel
 				var doc = mxUtils.createXmlDocument();
-				doc.appendChild(doc.importNode(temp[0], true));
+				doc.appendChild(doc.importNode(tempNode, true));
 				node = doc.documentElement;
 			}
 		}
@@ -1556,16 +1671,21 @@
 	 */
 	Editor.getDiagramNodeXml = function(diagramNode)
 	{
-		var text = mxUtils.getTextContent(diagramNode);
+		var text = mxUtils.getNodeValue(diagramNode);
 		var xml = null;
 		
 		if (text.length > 0)
 		{
 			xml = Graph.decompress(text);
 		}
-		else if (diagramNode.firstChild != null)
+		else
 		{
-			xml = mxUtils.getXml(diagramNode.firstChild);
+			var temp = diagramNode.getElementsByTagName('mxGraphModel');
+
+			if (temp != null && temp.length > 0)
+			{
+				xml = mxUtils.getXml(temp[0]);
+			}
 		}
 		
 		return xml;
@@ -1777,7 +1897,7 @@
     
 	/**
 	 * Global configuration of the Editor
-	 * see https://www.diagrams.net/doc/faq/configure-diagram-editor
+	 * see https://www.drawio.com/doc/faq/configure-diagram-editor
 	 * 
 	 * For defaultVertexStyle, defaultEdgeStyle and defaultLibraries, this must be called before
 	 * mxSettings.load via global config variable window.mxLoadSettings = false.
@@ -1823,6 +1943,11 @@
 			if (config.defaultEdgeLength != null)
 			{
 				Graph.prototype.defaultEdgeLength = config.defaultEdgeLength
+			}
+
+			if (config.selectParentLayer != null)
+			{
+				Graph.selectParentLayer = config.selectParentLayer
 			}
 
 			if (config.autosaveDelay != null)
@@ -1873,6 +1998,11 @@
 				Editor.oneDriveInlinePicker = config.oneDriveInlinePicker;
 			}
 
+			if (config.enableCssDarkMode != null)
+			{
+				Editor.enableCssDarkMode = config.enableCssDarkMode;
+			}
+
 			if (config.darkColor != null)
 			{
 				Editor.darkColor = config.darkColor;
@@ -1917,6 +2047,16 @@
 				
 				var t = document.getElementsByTagName('script')[0];
 			  	t.parentNode.insertBefore(s, t);
+			}
+
+			if (config.expandLibraries != null)
+			{
+				Sidebar.prototype.expandLibraries = config.expandLibraries;
+			}
+			
+			if (config.appendCustomLibraries != null)
+			{
+				Sidebar.prototype.appendCustomLibraries = config.appendCustomLibraries;
 			}
 			
 			// Configures the custom libraries
@@ -1998,6 +2138,21 @@
 				else
 				{
 					EditorUi.debug('Configuration Error: Float > 1 expected for zoomFactor');
+				}
+			}
+
+			// Overrides default grid size
+			if (config.defaultGridSize != null)
+			{
+				var val = parseInt(config.defaultGridSize);
+				
+				if (!isNaN(val) && val > 0)
+				{
+					mxGraph.prototype.gridSize = val;
+				}
+				else
+				{
+					EditorUi.debug('Configuration Error: Int > 0 expected for defaultGridSize');
 				}
 			}
 
@@ -2131,27 +2286,67 @@
 			{
 				DrawioFile.RESTRICT_EXPORT = config.restrictExport;
 			}
+			
+			if (config.replaceSvgDataUris != null)
+			{
+				Editor.replaceSvgDataUris = config.replaceSvgDataUris;
+			}
+
+			if (config.foreignObjectImages != null)
+			{
+				Editor.foreignObjectImages = config.foreignObjectImages;
+			}
+
+			if (config.shadowColor != null)
+			{
+				mxConstants.SHADOW_COLOR = config.shadowColor;
+			}
+
+			if (config.shadowOpacity != null)
+			{
+				mxConstants.SHADOW_OPACITY = config.shadowOpacity;
+			}
+
+			if (config.shadowOffsetX != null)
+			{
+				mxConstants.SHADOW_OFFSET_X = config.shadowOffsetX;
+			}
+
+			if (config.shadowOffsetY != null)
+			{
+				mxConstants.SHADOW_OFFSET_Y = config.shadowOffsetY;
+			}
+
+			if (config.shadowBlur != null)
+			{
+				mxConstants.SHADOW_BLUR = config.shadowBlur;
+			}
+
+			if (config.gptApiKey != null)
+			{
+				Editor.gptApiKey = config.gptApiKey;
+			}
+
+			if (config.gptModel != null)
+			{
+				Editor.gptModel = config.gptModel;
+			}
+
+			if (config.gptUrl != null)
+			{
+				Editor.gptUrl = config.gptUrl;
+			}
 		}
 	};
 	
 	/**
-	 * Returns the current state of the dark mode.
+	 * 
 	 */
-	Editor.isAutoDarkMode = function(ignoreUrl)
-	{
-		return (!ignoreUrl && urlParams['dark'] == 'auto') ||
-			(Editor.isSettingsEnabled() &&
-			mxSettings.settings.darkMode == 'auto');
-	};
-		 
-	 /**
-	  * 
-	  */
 	Editor.isSettingsEnabled = function()
 	{
 		return typeof window.mxSettings !== 'undefined' && (isLocalStorage || mxClient.IS_CHROMEAPP);
 	};
- 
+	
 	/**
 	 * Adds the global fontCss configuration.
 	 */
@@ -2201,6 +2396,11 @@
      * Prefix for URLs that reference Google fonts.
      */
 	Editor.GOOGLE_FONTS = 'https://fonts.googleapis.com/css?family=';
+     
+    /**
+     * Prefix for URLs that reference Google fonts with CSS2.
+     */
+	Editor.GOOGLE_FONTS_CSS2 = 'https://fonts.googleapis.com/css2?family=';
     
 	/**
 	 * Alphabet for global unique IDs.
@@ -2236,26 +2436,25 @@
 	/**
 	 * Specifies the app name. Default is document.title.
 	 */
-	Editor.prototype.appName = 'diagrams.net';
+	Editor.prototype.appName = 'draw.io';
 		
-	 /**
-	  * Known file types.
-	  */
+	/**
+	 * Known file types.
+	 */
 	Editor.prototype.diagramFileTypes = [
 		{description: 'diagramXmlDesc', extension: 'drawio', mimeType: 'text/xml'},
 		{description: 'diagramPngDesc', extension: 'png', mimeType: 'image/png'},
 		{description: 'diagramSvgDesc', extension: 'svg', mimeType: 'image/svg'},
-		{description: 'diagramHtmlDesc', extension: 'html', mimeType: 'text/html'},
-		{description: 'diagramXmlDesc', extension: 'xml', mimeType: 'text/xml'}];
-
-	 /**
-	  * Known file types.
-	  */
+		{description: 'diagramHtmlDesc', extension: 'html', mimeType: 'text/html'}];
+	
+	/**
+	 * Known file types.
+	 */
 	Editor.prototype.libraryFileTypes = [{description: 'Library (.drawiolib, .xml)', extensions: ['drawiolib', 'xml']}];
  
-	 /**
-	  * Additional help text for special file extensions.
-	  */
+	/**
+	 * Additional help text for special file extensions.
+	 */
 	Editor.prototype.fileExtensions = [
 		{ext: 'html', title: 'filetypeHtml'},
 		{ext: 'png', title: 'filetypePng'},
@@ -2613,12 +2812,6 @@
 					Editor.mathJaxQueue.push(container);
 				}
 			};
-
-			// Adds global clear queue method
-			Editor.MathJaxClear = function()
-			{
-				Editor.mathJaxQueue = [];
-			};
 			
 			// Adds global MathJax render callback
 			Editor.onMathJaxDone = function()
@@ -2635,8 +2828,8 @@
 
 				var renderMath = mxUtils.bind(this, function(sender, evt)
 				{
-					if (this.graph.container != null && this.graph.mathEnabled &&
-						!this.graph.blockMathRender)
+					if (this.graph.container != null &&
+						this.graph.mathEnabled)
 					{
 						Editor.MathJaxRender(this.graph.container);
 					}
@@ -2708,8 +2901,7 @@
 			/app\.diagrams\.net$/.test(window.location.hostname)) &&
 			!this.isCorsEnabledForUrl(url))
 		{
-			var isVisioFilename = /(\.v(dx|sdx?))($|\?)/i.test(url) ||
-				/(\.vs(x|sx?))($|\?)/i.test(url);
+			var isVisioFilename = EditorUi.isVisioFilename(url);
 			var binary = /\.png$/i.test(url) || /\.pdf$/i.test(url);
 			var base64 = binary || isVisioFilename;
 			var nocache = 't=' + new Date().getTime();
@@ -2766,20 +2958,16 @@
 		
 		converter.convert = function(src)
 		{
-			if (src != null)
+			if (src != null && navigator.onLine)
 			{
 				var remote = src.substring(0, 7) == 'http://' || src.substring(0, 8) == 'https://';
 				
-				if (remote && !navigator.onLine)
-				{
-					src = Editor.svgBrokenImage.src;
-				}
-				else if (remote && src.substring(0, converter.baseUrl.length) != converter.baseUrl &&
+				if (remote && src.substring(0, converter.baseUrl.length) != converter.baseUrl &&
 						(!self.crossOriginImages || !self.isCorsEnabledForUrl(src)))
 				{
 					src = PROXY_URL + '?url=' + encodeURIComponent(src);
 				}
-				else if (src.substring(0, 19) != 'chrome-extension://' && !mxClient.IS_CHROMEAPP)
+				else if (src.substring(0, 19) != 'chrome-extension://')
 				{
 					src = convert.apply(this, arguments);
 				}
@@ -2802,7 +2990,7 @@
 	/**
 	 * 
 	 */
-	Editor.prototype.convertImageToDataUri = function(url, callback)
+	Editor.prototype.convertImageToDataUri = function(url, callback, error, convertScale, forceConvert)
 	{
 		try
 		{
@@ -2811,29 +2999,51 @@
 			var timeoutThread = window.setTimeout(mxUtils.bind(this, function()
 			{
 				acceptResponse = false;
-				callback(Editor.svgBrokenImage.src);
+				callback(url);
 			}), this.timeout);
+
+			// Fallback to raster image if SVG cannot be loaded
+			var svgError = mxUtils.bind(this, function()
+			{
+				if (convertScale != null)
+				{
+					this.convertImageToDataUri(url, callback, error, convertScale, true);
+				}
+				else
+				{
+					callback(url);
+				}
+			});
 	
-			if (/(\.svg)$/i.test(url))
+			if (/(\.svg)$/i.test(url) && !forceConvert)
 			{
 				mxUtils.get(url, mxUtils.bind(this, function(req)
 				{
 			    	window.clearTimeout(timeoutThread);
-					
+
 					if (acceptResponse)
 					{
-						callback(Editor.createSvgDataUri(req.getText()));
+						if (req.getStatus() < 200 || req.getStatus() > 299)
+						{
+							svgError();
+						}
+						else
+						{
+							callback(Editor.createSvgDataUri(req.getText()));
+						}
+
+						
 					}
 				}),
-				function()
+				mxUtils.bind(this, function()
 				{
 			    	window.clearTimeout(timeoutThread);
-					
+
 					if (acceptResponse)
 					{
-						callback(Editor.svgBrokenImage.src);
+						svgError();
 					}
-				});
+				}));
 			}
 			else
 			{
@@ -2852,17 +3062,21 @@
 					{
 				        try
 				        {
+							convertScale = (convertScale != null &&
+								forceConvert) ? convertScale : 1;
+
 					        var canvas = document.createElement('canvas');
 					        var ctx = canvas.getContext('2d');
-					        canvas.height = img.height;
-					        canvas.width = img.width;
+							ctx.scale(convertScale, convertScale);
+					        canvas.height = img.height * convertScale;
+					        canvas.width = img.width * convertScale;
 					        ctx.drawImage(img, 0, 0);
-
+							
 				        	callback(canvas.toDataURL());
 				        }
 				        catch (e)
 				        {
-			        		callback(Editor.svgBrokenImage.src);
+			        		callback(url);
 				        }
 					}
 			    };
@@ -2873,7 +3087,14 @@
 					
 					if (acceptResponse)
 					{
-						callback(Editor.svgBrokenImage.src);
+						if (error != null)
+						{
+							error();
+						}
+						else
+						{
+							callback(url);
+						}
 					}
 			    };
 			    
@@ -2882,10 +3103,16 @@
 		}
 		catch (e)
 		{
-			callback(Editor.svgBrokenImage.src);
+			if (error != null)
+			{
+				error();
+			}
+			else
+			{
+				callback(url);
+			}
 		}
 	};
-	
 	
 	/**
 	 * Converts all images in the SVG output to data URIs for immediate rendering
@@ -2898,19 +3125,16 @@
 			converter = this.createImageUrlConverter();
 		}
 		
-		// Barrier for asynchronous image loading
-		var counter = 0;
-		
-		function inc()
+		// Queues image conversion and executes in order
+		var pending = [];
+
+		function next()
 		{
-			counter++;
-		};
-		
-		function dec()
-		{
-			counter--;
-			
-			if (counter == 0)
+			if (pending.length > 0)
+			{
+				pending.shift()();
+			}
+			else
 			{
 				callback(svgRoot);
 			}
@@ -2926,47 +3150,55 @@
 			{
 				(mxUtils.bind(this, function(img)
 				{
-					try
+					pending.push(mxUtils.bind(this, function()
 					{
-						if (img != null)
+						try
 						{
-							var src = converter.convert(img.getAttribute(srcAttr));
-				        	
-							// Data URIs are pass-through
-							if (src != null && src.substring(0, 5) != 'data:')
+							if (img != null)
 							{
-								var tmp = cache[src];
-								
-								if (tmp == null)
+								var src = converter.convert(img.getAttribute(srcAttr));
+
+								// Data URIs are pass-through
+								if (src != null && src.substring(0, 5) != 'data:')
 								{
-									inc();
-									
-									this.convertImageToDataUri(src, function(uri)
+									var tmp = cache[src];
+
+									if (tmp == null)
 									{
-										if (uri != null)
+										this.convertImageToDataUri(src, function(uri)
 										{
-											cache[src] = uri;
-											img.setAttribute(srcAttr, uri);
-										}
-										
-										dec();
-									});
+											if (uri != null)
+											{
+												cache[src] = uri;
+												img.setAttribute(srcAttr, uri);
+											}
+											
+											next();
+										}, null, Editor.svgRasterScale);
+									}
+									else
+									{
+										img.setAttribute(srcAttr, tmp);
+
+										next();
+									}
 								}
 								else
 								{
-									img.setAttribute(srcAttr, tmp);
+									if (src != null)
+									{
+										img.setAttribute(srcAttr, src);
+									}
+
+									next();
 								}
 							}
-							else if (src != null)
-							{
-								img.setAttribute(srcAttr, src);
-							}
 						}
-					}
-					catch (e)
-					{
-						// ignore
-					}
+						catch (e)
+						{
+							next();
+						}
+					}));
 				}))(images[i]);
 			}
 		});
@@ -2975,14 +3207,9 @@
 		// LATER: Add support for images in CSS
 		convertImages('image', 'xlink:href');
 		convertImages('img', 'src');
-		
-		// All from cache or no images
-		if (counter == 0)
-		{
-			callback(svgRoot);
-		}
+		next();
 	};
-
+		
 	/**
 	 * Base64 encodes the given string. This method seems to be more
 	 * robust for encoding PNG from binary AJAX responses.
@@ -3083,11 +3310,12 @@
 						}
 						else if (req.getStatus() == 404)
 						{
-							error({code: req.getStatus()}, req);
+							error({message: mxResources.get('fileNotFound'),
+								code: req.getStatus()}, req);
 						}
 						else
 						{
-							error({message: mxResources.get('error') + ' ' + req.getStatus()}, req);
+							error({message: this.getErrorMessage(req)}, req);
 						}
 			    	}
 				}), function(req)
@@ -3114,6 +3342,32 @@
 				error(e);
 			}
 		}
+	};
+
+	/**
+	 * Adds the listener for automatically saving the diagram for local changes.
+	 */
+	Editor.prototype.getErrorMessage = function(req)
+	{
+		var msg = mxResources.get('error') + ' ' + req.getStatus();
+
+		try
+		{
+			var data = req.getText();
+			var obj = JSON.parse(data);
+
+			if (obj != null && obj.error != null &&
+				obj.error.message != null)
+			{
+				msg = obj.error.message + ' (' + msg + ')';
+			}
+		}
+		catch (e)
+		{
+			// ignore
+		}
+
+		return msg;
 	};
 
 	/**
@@ -3383,7 +3637,7 @@
 						{
 							waiting++;
 							
-							this.loadUrl(fontUrl, mxUtils.bind(this, function(css)
+							this.loadUrl(Graph.rewriteGoogleFontUrl(fontUrl), mxUtils.bind(this, function(css)
 		                    {
 								this.cachedGoogleFonts[fontUrl] = css;
 								content.push(css + '\n');
@@ -3391,7 +3645,6 @@
 		                        googleCssDone();
 		                    }), mxUtils.bind(this, function(err)
 		                    {
-		                        // LATER: handle error
 		                        waiting--;
 								content.push('@import url(' + fontUrl + ');\n');
 		                        googleCssDone();
@@ -3478,12 +3731,40 @@
 				defsElt = defs[0];
 			}
 
+			// Moves imports to separate style element
+			var lines = fontCss.split('\n');
+			var imports = [];
+			var other = [];
+
+			for (var i = 0; i < lines.length; i++)
+			{
+				if (lines[i].substring(0, 7) == '@import')
+				{
+					imports.push(lines[i]);
+				}
+				else
+				{
+					other.push(lines[i]);
+				}
+			}
+			
 			var style = (svgDoc.createElementNS != null) ?
 				svgDoc.createElementNS(mxConstants.NS_SVG, 'style') :
 				svgDoc.createElement('style');
 			style.setAttribute('type', 'text/css');
-			mxUtils.setTextContent(style, fontCss);
-			defsElt.appendChild(style);
+
+			if (imports.length > 0)
+			{
+				mxUtils.setTextContent(style, imports.join('\n'));
+				defsElt.appendChild(style);
+			}
+
+			if (other.length > 0)
+			{
+				style = style.cloneNode(false);
+				mxUtils.setTextContent(style, other.join('\n'));
+				defsElt.appendChild(style);
+			}
 		}
 	};
 	
@@ -3514,7 +3795,7 @@
 	 */
 	Editor.prototype.exportToCanvas = function(callback, width, imageCache, background, error, limitHeight,
 		ignoreSelection, scale, transparentBackground, addShadow, converter, graph, border, noCrop, grid,
-		keepTheme, exportType, cells)
+		theme, exportType, cells)
 	{
 		try
 		{
@@ -3538,11 +3819,11 @@
 			// Handles special case where background is null but transparent is false
 			if (bg == null && transparentBackground == false)
 			{
-				bg = (keepTheme) ? this.graph.defaultPageBackgroundColor : '#ffffff';
+				bg = (theme == 'dark') ? Editor.darkColor : '#ffffff';
 			}
-			
+
 			this.convertImages(graph.getSvg(null, null, border, noCrop, null, ignoreSelection,
-				null, null, null, addShadow, null, keepTheme, exportType, cells),
+				null, null, null, addShadow, null, theme, exportType, cells),
 				mxUtils.bind(this, function(svgRoot)
 			{
 				try
@@ -3899,7 +4180,7 @@
 	 */
 	if (window.ColorDialog)
 	{
-		FilenameDialog.filenameHelpLink = 'https://www.diagrams.net/doc/faq/save-file-formats'; 
+		FilenameDialog.filenameHelpLink = 'https://www.drawio.com/doc/faq/save-file-formats'; 
 		
 		var colorDialogAddRecentColor = ColorDialog.addRecentColor;
 		
@@ -4261,7 +4542,7 @@
 					
 					div.appendChild(option);
 					
-					var help = ui.menus.createHelpLink('https://www.diagrams.net/doc/faq/math-typesetting');
+					var help = ui.menus.createHelpLink('https://www.drawio.com/doc/faq/math-typesetting');
 					help.style.position = 'relative';
 					help.style.marginLeft = '6px';
 					option.appendChild(help);
@@ -4665,10 +4946,12 @@
 			{
 				this.addActions(div, ['pasteStyle', 'pasteData']);
 			}
+
+			styleFormatPanelAddStyleOps.apply(this, arguments);
 			
-			return styleFormatPanelAddStyleOps.apply(this, arguments);
+			return div;
 		};
-		
+
 		/**
 		 * Initial collapsed state of the properties panel.
 		 */
@@ -4677,7 +4960,7 @@
 		/**
 		 * Create Properties Panel
 		 */
-		StyleFormatPanel.prototype.addProperties = function(div, properties, state)
+		BaseFormatPanel.prototype.addProperties = function(div, properties, state, hideId)
 		{
 			var that = this;
 			var graph = this.editorUi.editor.graph;
@@ -4688,98 +4971,105 @@
 				curElem.parentNode.insertBefore(newElem, curElem.nextSibling);
 			};
 			
-			function applyStyleVal(pName, newVal, prop, delIndex)
+			function applyStyleVal(pName, newVal, prop, delIndex, input)
 			{
-				graph.getModel().beginUpdate();
-				try
+				if (prop.valueChanged != null)
 				{
-					var changedProps = [];
-					var changedVals = [];
-
-					if (prop.index != null)
+					prop.valueChanged(newVal, input);
+				}
+				else
+				{
+					graph.getModel().beginUpdate();
+					try
 					{
-						var allVals = [];
-						var curVal = prop.parentRow.nextSibling;
-						
-						while(curVal && curVal.getAttribute('data-pName') == pName)
-						{
-							allVals.push(curVal.getAttribute('data-pValue'));
-							curVal = curVal.nextSibling;
-						}
-						
-						if (prop.index < allVals.length)
-						{
-							if (delIndex != null)
-							{
-								allVals.splice(delIndex, 1);
-							}
-							else
-							{
-								allVals[prop.index] = newVal;
-							}
-						}
-						else
-						{
-							allVals.push(newVal);
-						}
-						
-						if (prop.size != null && allVals.length > prop.size) //trim the array to the specifies size
-						{
-							allVals = allVals.slice(0, prop.size);
-						}
-						
-						newVal = allVals.join(',');
-						
-						if (prop.countProperty != null)
-						{
-							graph.setCellStyles(prop.countProperty, allVals.length, graph.getSelectionCells());
-							
-							changedProps.push(prop.countProperty);
-							changedVals.push(allVals.length);
-						}
-					}
+						var changedProps = [];
+						var changedVals = [];
 
-					graph.setCellStyles(pName, newVal, graph.getSelectionCells());
-					changedProps.push(pName);
-					changedVals.push(newVal);
-					
-					if (prop.dependentProps != null)
-					{
-						for (var i = 0; i < prop.dependentProps.length; i++)
+						if (prop.index != null)
 						{
-							var defVal = prop.dependentPropsDefVal[i];
-							var vals = prop.dependentPropsVals[i];
+							var allVals = [];
+							var curVal = prop.parentRow.nextSibling;
 							
-							if (vals.length > newVal)
+							while(curVal && curVal.getAttribute('data-pName') == pName)
 							{
-								vals = vals.slice(0, newVal);
+								allVals.push(curVal.getAttribute('data-pValue'));
+								curVal = curVal.nextSibling;
 							}
-							else
+							
+							if (prop.index < allVals.length)
 							{
-								for (var j = vals.length; j < newVal; j++)
+								if (delIndex != null)
 								{
-									vals.push(defVal);
+									allVals.splice(delIndex, 1);
+								}
+								else
+								{
+									allVals[prop.index] = newVal;
 								}
 							}
+							else
+							{
+								allVals.push(newVal);
+							}
 							
-							vals = vals.join(',');
-							graph.setCellStyles(prop.dependentProps[i], vals, graph.getSelectionCells());
-							changedProps.push(prop.dependentProps[i]);
-							changedVals.push(vals);
+							if (prop.size != null && allVals.length > prop.size) //trim the array to the specifies size
+							{
+								allVals = allVals.slice(0, prop.size);
+							}
+							
+							newVal = allVals.join(',');
+							
+							if (prop.countProperty != null)
+							{
+								graph.setCellStyles(prop.countProperty, allVals.length, graph.getSelectionCells());
+								
+								changedProps.push(prop.countProperty);
+								changedVals.push(allVals.length);
+							}
 						}
+
+						graph.setCellStyles(pName, newVal, graph.getSelectionCells());
+						changedProps.push(pName);
+						changedVals.push(newVal);
+						
+						if (prop.dependentProps != null)
+						{
+							for (var i = 0; i < prop.dependentProps.length; i++)
+							{
+								var defVal = prop.dependentPropsDefVal[i];
+								var vals = prop.dependentPropsVals[i];
+								
+								if (vals.length > newVal)
+								{
+									vals = vals.slice(0, newVal);
+								}
+								else
+								{
+									for (var j = vals.length; j < newVal; j++)
+									{
+										vals.push(defVal);
+									}
+								}
+								
+								vals = vals.join(',');
+								graph.setCellStyles(prop.dependentProps[i], vals, graph.getSelectionCells());
+								changedProps.push(prop.dependentProps[i]);
+								changedVals.push(vals);
+							}
+						}
+						
+						if (typeof(prop.onChange) == 'function')
+						{
+							prop.onChange(graph, newVal);
+						}
+						
+						that.editorUi.fireEvent(new mxEventObject('styleChanged', 'keys', changedProps,
+							'values', changedVals, 'cells', graph.getSelectionCells()));
 					}
-					
-					if (typeof(prop.onChange) == 'function')
+					finally
 					{
-						prop.onChange(graph, newVal);
+						graph.getModel().endUpdate();
 					}
-					
-					that.editorUi.fireEvent(new mxEventObject('styleChanged', 'keys', changedProps,
-						'values', changedVals, 'cells', graph.getSelectionCells()));
-				}
-				finally
-				{
-					graph.getModel().endUpdate();
 				}
 			}
 			
@@ -4802,15 +5092,18 @@
 				clrDiv.style.height = '4px';
 				clrDiv.style.margin = '2px';
 				clrDiv.style.border = '1px solid black';
-				clrDiv.style.background = !pValue || pValue == 'none'? 'url(\'' + Dialog.prototype.noColorImage + '\')' : pValue;
+				clrDiv.style.background = !pValue || pValue == 'none'?
+					'url(\'' + Dialog.prototype.noColorImage + '\')' : pValue;
 
 				btn = mxUtils.button('', mxUtils.bind(that, function(evt)
 				{
 					this.editorUi.pickColor(pValue, function(color)
 					{
-						clrDiv.style.background = color == 'none'? 'url(\'' + Dialog.prototype.noColorImage + '\')' : color;
+						clrDiv.style.background = color == 'none'?
+							'url(\'' + Dialog.prototype.noColorImage + '\')' : color;
 						applyStyleVal(pName, color, prop);
 					});
+					
 					mxEvent.consume(evt);
 				}));
 				
@@ -4827,7 +5120,9 @@
 				if (pValue != null)
 				{
 					var vals = pValue.split(',');
-					secondLevel.push({name: pName, values: vals, type: subType, defVal: defVal, countProperty: countProperty, parentRow: myRow, isDeletable: true, flipBkg: flipBkg});
+					secondLevel.push({name: pName, values: vals, type: subType,
+						defVal: defVal, countProperty: countProperty,
+						parentRow: myRow, isDeletable: true, flipBkg: flipBkg});
 				}
 				
 				btn = mxUtils.button('+', mxUtils.bind(that, function(evt)
@@ -4851,7 +5146,8 @@
 						}
 					}
 					
-					var newProp = {type: subType, parentRow: myRow, index: index, isDeletable: true, defVal: defVal, countProperty: countProperty};
+					var newProp = {type: subType, parentRow: myRow, index: index,
+						isDeletable: true, defVal: defVal, countProperty: countProperty};
 					var arrItem = createPropertyRow(pName, '', newProp, index % 2 == 0, flipBkg);
 					applyStyleVal(pName, defVal, newProp);
 					insertAfter(arrItem, beforeElem);
@@ -4929,6 +5225,7 @@
 				row.appendChild(td);
 				td = document.createElement('td');
 				td.className = 'gePropRowCell';
+				td.setAttribute('title', (pValue != null) ? pValue : mxResources.get('none'));
 				
 				if (pType == 'color')
 				{
@@ -5000,9 +5297,25 @@
 					var inp = document.createElement('input');
 					inp.setAttribute('readonly', '');
 					inp.value = pValue;
-					inp.style.width = '96px';
 					inp.style.borderWidth = '0px';
-					td.appendChild(inp);
+
+					if (pName == 'id')
+					{
+						inp.style.width = '190px';
+						inp.style.position = 'relative';
+						inp.style.right = '6px';
+						inp.style.float = 'right';
+						inp.style.background = 'none';
+						inp.style.textAlign = 'right';
+						row.firstChild.setAttribute('colspan', '2');
+						inp.setAttribute('title', pValue);
+						row.firstChild.appendChild(inp);
+					}
+					else
+					{
+						inp.style.width = '96px';
+						td.appendChild(inp);
+					}
 				}
 				else
 				{
@@ -5036,11 +5349,13 @@
 						function setInputVal()
 						{
 							var inputVal = input.value;
-							inputVal = inputVal.length == 0 && pType != 'string'? 0 : inputVal;
+							inputVal = inputVal.length == 0 && pType != 'string' &&
+								pType != 'numbers'? 0 : inputVal;
 							
 							if (prop.allowAuto)
 							{
-								if (inputVal.trim != null && inputVal.trim().toLowerCase() == 'auto')
+								if (inputVal.trim != null && inputVal.trim().
+									toLowerCase() == 'auto')
 								{
 									inputVal = 'auto';
 									pType = 'string';
@@ -5061,9 +5376,19 @@
 								inputVal = prop.max;
 							}
 
-							var newVal = encodeURIComponent((pType == 'int'? parseInt(inputVal) : inputVal) + '');
+							var newVal = null;
+
+							try
+							{
+								newVal = (pType == 'numbers') ? inputVal.match(/\d+/g).map(Number).join(' ') :
+									encodeURIComponent((pType == 'int'? parseInt(inputVal) : inputVal) + '');
+							}
+							catch(e)
+							{
+								// ignores parsing errors
+							}
 							
-							applyStyleVal(pName, newVal, prop);
+							applyStyleVal(pName, newVal, prop, null, input);
 						}
 						
 						mxEvent.addListener(input, 'keypress', function(e)
@@ -5189,9 +5514,10 @@
 			}
 			
 			//Add it to top (always)
-			if (cellId != null)
+			if (cellId != null && !hideId)
 			{
-				grid.appendChild(createPropertyRow('id', mxUtils.htmlEntities(cellId), {dispName: 'ID', type: 'readOnly'}, true, false));
+				grid.appendChild(createPropertyRow('id', mxUtils.htmlEntities(cellId),
+					{dispName: 'id', type: 'readOnly'}, true, false));
 			}
 			
 			for (var key in properties)
@@ -5203,8 +5529,8 @@
 					if (!prop.isVisible(state, this)) continue;
 				}
 				
-				var pValue = state.style[key] != null? mxUtils.htmlEntities(state.style[key] + '') :
-					((prop.getDefaultValue != null) ? prop.getDefaultValue(state, this) : prop.defVal); //or undefined if defVal is undefined
+				var pValue = (prop.getValue != null) ? prop.getValue() : (state.style[key] != null? mxUtils.htmlEntities(state.style[key] + '') :
+					((prop.getDefaultValue != null) ? prop.getDefaultValue(state, this) : prop.defVal)); //or undefined if defVal is undefined
 
 				if (prop.type == 'separator')
 				{
@@ -5245,7 +5571,8 @@
 				for (var j = 0; j < prop.values.length; j++)
 				{
 					//mxUtils.clone failed because of the HTM element, so manual cloning is used
-					var iProp = {type: prop.type, parentRow: prop.parentRow, isDeletable: prop.isDeletable, index: j, defVal: prop.defVal, countProperty: prop.countProperty, size: prop.size};
+					var iProp = {type: prop.type, parentRow: prop.parentRow, isDeletable: prop.isDeletable, index: j,
+							defVal: prop.defVal, countProperty: prop.countProperty, size: prop.size};
 					var arrItem = createPropertyRow(prop.name, prop.values[j], iProp, j % 2 == 0, prop.flipBkg);
 					insertAfter(arrItem, insertElem);
 					insertElem = arrItem;
@@ -5496,14 +5823,17 @@
 					
 					picker.innerText = '';
 					
-					for (var i = 0; i < colorsets.length; i++)
+					if (colorsets != null)
 					{
-						if (i > 0 && mxUtils.mod(i, 4) == 0)
+						for (var i = 0; i < colorsets.length; i++)
 						{
-							mxUtils.br(picker);
+							if (i > 0 && mxUtils.mod(i, 4) == 0)
+							{
+								mxUtils.br(picker);
+							}
+							
+							addButton(colorsets[i]);
 						}
-						
-						addButton(colorsets[i]);
 					}
 				});
 
@@ -5582,18 +5912,14 @@
 	 * Lookup table for mapping from font URL and name to elements in the DOM.
 	 */
 	Graph.customFontElements = {};
-		
-	/**
-	 * Lookup table for recent custom fonts.
-	 */
-	Graph.recentCustomFonts = {};
 
 	/**
 	 * Returns true if the given font URL references a Google font.
 	 */
 	Graph.isGoogleFontUrl = function(url)
 	{
-		return url.substring(0, Editor.GOOGLE_FONTS.length) == Editor.GOOGLE_FONTS;
+		return url.substring(0, Editor.GOOGLE_FONTS.length) == Editor.GOOGLE_FONTS ||
+			url.substring(0, Editor.GOOGLE_FONTS_CSS2.length) == Editor.GOOGLE_FONTS_CSS2;
 	};
 
 	/**
@@ -5602,6 +5928,21 @@
 	Graph.isCssFontUrl = function(url)
 	{
 		return Graph.isGoogleFontUrl(url);
+	};
+
+	/**
+	 * Uses CSS2 for Google fonts to support bold font style eg.
+	 * https://fonts.googleapis.com/css?family=IBM+Plex+Sans is rewritten as
+	 * https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500
+	 */
+	Graph.rewriteGoogleFontUrl = function(url)
+	{
+		if (url != null && url.substring(0, Editor.GOOGLE_FONTS.length) == Editor.GOOGLE_FONTS)
+		{
+			url = Editor.GOOGLE_FONTS_CSS2 + url.substring(Editor.GOOGLE_FONTS.length) + ':wght@400;500';
+		}
+
+		return url;
 	};
 
 	/**
@@ -5618,7 +5959,7 @@
 			elt.setAttribute('rel', 'stylesheet');
 			elt.setAttribute('type', 'text/css');
 			elt.setAttribute('charset', 'UTF-8');
-			elt.setAttribute('href', url);
+			elt.setAttribute('href', Graph.rewriteGoogleFontUrl(url));
 		}
 		else
 		{
@@ -5635,7 +5976,15 @@
 		
 		return elt;
 	};
-	
+		
+	/**
+	 * Adds an entry to the recent custom fonts list.
+	 */
+	Graph.addRecentCustomFont = function(key, entry)
+	{
+		// Hook for registering recent custom fonts in the UI
+	};
+
 	/**
 	 * Adds a font to the document.
 	 */
@@ -5645,7 +5994,7 @@
 		{
 			var key = name.toLowerCase();
 			
-			// Blocks UI font from being overwritten
+			// Blocks UI fonts from being overwritten
 			if (key != 'helvetica' && name != 'arial' && key != 'sans-serif')
 			{
 				var entry = Graph.customFontElements[key];
@@ -5669,7 +6018,6 @@
 
 					entry = {name: name, url: url, elt: Graph.createFontElement(name, realUrl)};
 					Graph.customFontElements[key] = entry;
-					Graph.recentCustomFonts[key] = entry;
 					var head = document.getElementsByTagName('head')[0];
 					
 					if (callback != null)
@@ -5940,7 +6288,7 @@
 	 * Handles custom fonts in labels.
 	 */
 	var mxSvgCanvas2DUpdateTextNodes = mxSvgCanvas2D.prototype.updateTextNodes;
-	mxSvgCanvas2D.prototype.updateTextNodes = function(x, y, w, h, align, valign, wrap, overflow, clip, rotation, g)
+	mxSvgCanvas2D.prototype.updateTextNodes = function(x, y, w, h, align, valign, wrap, overflow, clip, rotation, dir, g)
 	{
 		mxSvgCanvas2DUpdateTextNodes.apply(this, arguments);
 		Graph.processFontAttributes(g);
@@ -5964,7 +6312,7 @@
 	/**
 	 * Creates the tags dialog.
 	 */
-	Graph.prototype.createTagsDialog = function(isEnabled, invert, addFn)
+	Graph.prototype.createTagsDialog = function(isEnabled, invert, addFn, helpButton)
 	{
 		var graph = this;
 		var allTags = graph.hiddenTags.slice();
@@ -6106,6 +6454,7 @@
 							img.setAttribute('src', visible ? Editor.visibleImage : Editor.hiddenImage);
 							img.setAttribute('title', mxResources.get(visible ? 'hideIt' : 'show', [tag]));
 							mxUtils.setOpacity(img, visible ? 75 : 25);
+							img.className = 'geAdaptiveAsset';
 							img.style.verticalAlign = 'middle';
 							img.style.cursor = 'pointer';
 							img.style.width = '16px';
@@ -6143,6 +6492,7 @@
 							img.setAttribute('src', Editor.selectImage);
 							img.setAttribute('title', mxResources.get('select'));
 							mxUtils.setOpacity(img, visible ? 75 : 25);
+							img.className = 'geAdaptiveAsset';
 							img.style.verticalAlign = 'middle';
 							img.style.cursor = 'pointer';
 							img.style.width = '16px';
@@ -6217,6 +6567,7 @@
 									img.setAttribute('src', Editor.trashImage);
 									img.setAttribute('title', mxResources.get('removeIt', [tag]));
 									mxUtils.setOpacity(img, visible ? 75 : 25);
+									img.className = 'geAdaptiveAsset';
 									img.style.verticalAlign = 'middle';
 									img.style.cursor = 'pointer';
 									img.style.width = '16px';
@@ -6322,11 +6673,13 @@
 		graph.addListener(mxEvent.REFRESH, refreshUi);
 	
 		var footer = document.createElement('div');
+		footer.style.display = 'flex';
+		footer.style.alignItems = 'center';
 		footer.style.boxSizing = 'border-box';
 		footer.style.whiteSpace = 'nowrap';
 		footer.style.position = 'absolute';
 		footer.style.overflow = 'hidden';
-		footer.style.bottom = '0px';
+		footer.style.bottom = '6px';
 		footer.style.height = '42px';
 		footer.style.right = '10px';
 		footer.style.left = '10px';
@@ -6336,6 +6689,11 @@
 			footer.appendChild(resetBtn);
 			footer.appendChild(addBtn);
 			div.appendChild(footer);
+		}
+
+		if (helpButton != null)
+		{
+			footer.appendChild(helpButton);
 		}
 
 		return {div: div, refresh: refreshUi};
@@ -6373,31 +6731,44 @@
 	{
 		// Adds the font element to the document
 		Graph.addFont(name, url);
-		
-		// Only valid known fonts are allowed as parameters so we set
-		// the real font name and the data-source-face in the element
-		// which is used as the face attribute when editing stops
-		// KNOWN: Undo for the DOM change is not working
-		document.execCommand('fontname', false, name);
 
-		// Finds element with new font name and checks its data-font-src attribute
-		if (url != null)
+		// Marks the element with a random font name so
+		// that it can be found in the code below
+		var temp = Editor.guid();
+		document.execCommand('fontname', false, temp);
+
+		// Finds the new or updated element and changes or
+		// removes is data-font-src attribute as required
+		var fonts = this.cellEditor.textarea.getElementsByTagName('font');
+		var elt = null;
+
+		for (var i = 0; i < fonts.length; i++)
 		{
-			var fonts = this.cellEditor.textarea.getElementsByTagName('font');
-			
-			// Enforces consistent font naming
-			url = Graph.getFontUrl(name, url);
-			
-			for (var i = 0; i < fonts.length; i++)
+			if (fonts[i].getAttribute('face') == temp)
 			{
-				if (fonts[i].getAttribute('face') == name)
-				{
-					if (fonts[i].getAttribute('data-font-src') != url)
-					{
-						fonts[i].setAttribute('data-font-src', url);
-					}
-				}
+				elt = fonts[i];
+				break;
 			}
+		}
+
+		if (elt != null)
+		{
+			fonts[i].setAttribute('face', name);
+
+			if (url != null)
+			{
+				fonts[i].setAttribute('data-font-src', url);
+			}
+			else
+			{
+				fonts[i].removeAttribute('data-font-src');
+			}
+		}
+		else
+		{
+			// Fallback to use the real font name if a new
+			// or updated element can not be found above
+			document.execCommand('fontname', false, name);
 		}
 	};
 	
@@ -6494,30 +6865,70 @@
 	};
 
 	/**
+	 * Returns true if the given string contains an mxfile.
+	 */
+	Graph.prototype.adaptBackgroundPage = function(image, theme)
+	{
+		if (image != null && image.src != null && Graph.isPageLink(image.originalSrc))
+		{
+			try
+			{
+				var svg = Graph.getSvgFromDataUri(image.src);
+
+				if (svg != null)
+				{
+					var doc = new DOMParser().parseFromString(svg, 'text/xml');
+
+					// Removes dark theme CSS
+					var styles = doc.getElementsByTagName('style');
+					var css = mxUtils.htmlEntities(Graph.createSvgDarkModeCss(), false);
+
+					for (var i = 0; i < styles.length; i++)
+					{
+						if (styles[i].innerHTML == css)
+						{
+							styles[i].parentNode.removeChild(styles[i]);
+							
+							break;
+						}
+					}
+
+					// Adds new dark theme CSS
+					if (theme == 'dark' || theme == 'auto')
+					{
+						var style = Graph.createSvgDarkModeStyle(doc, theme);
+						doc.getElementsByTagName('defs')[0].appendChild(style);
+					}
+
+					image = new mxImage(Editor.createSvgDataUri(mxUtils.getXml(
+						doc.documentElement)), image.width, image.height,
+						image.x, image.y)
+				}
+			}
+			catch (e)
+			{
+				// ignore
+			}
+		}
+
+		return image;
+	};
+
+	/**
 	 * Temporarily overrides stylesheet during image export in dark mode.
 	 */
 	var graphGetSvg = Graph.prototype.getSvg;
 	
 	Graph.prototype.getSvg = function(background, scale, border, nocrop, crisp,
 		ignoreSelection, showText, imgExport, linkTarget, hasShadow,
-		incExtFonts, keepTheme, exportType, cells)
+		incExtFonts, theme, exportType, cells, noCssClass, disableLinks)
 	{
 		var temp = null;
 		var tempFg = null;
 		var tempBg = null;
 
-		if (false)
-		{
-			var svgDoc = result.ownerDocument;
-			var style = (svgDoc.createElementNS != null) ?
-		    	svgDoc.createElementNS(mxConstants.NS_SVG, 'style') : svgDoc.createElement('style');
-			svgDoc.setAttributeNS != null? style.setAttributeNS('type', 'text/css') :
-				style.setAttribute('type', 'text/css');
-			style.appendChild(svgDoc.createTextNode(Editor.svgDarkModeCss));
-			result.getElementsByTagName('defs')[0].appendChild(style);
-		}
-
-		if (!keepTheme && this.themes != null && this.defaultThemeName == 'darkTheme')
+		if (!Editor.enableCssDarkMode && this.themes != null && theme != null &&
+			((theme == 'dark') != (this.defaultThemeName == 'darkTheme')))
 		{
 			temp = this.stylesheet;
 			tempFg = this.shapeForegroundColor;
@@ -6529,8 +6940,31 @@
 			this.stylesheet = this.getDefaultStylesheet();
 			this.refresh();
 		}
-		
+
+		var bgImg = null;
+
+		// Adapts background page to given theme
+		if (Editor.enableCssDarkMode && this.backgroundImage != null)
+		{
+			bgImg = this.backgroundImage;
+			this.backgroundImage = this.adaptBackgroundPage(bgImg, theme);
+		}
+
 		var result = graphGetSvg.apply(this, arguments);
+
+		if (Editor.enableCssDarkMode && (theme == 'dark' || theme == 'auto'))
+		{
+			var cssClass = (noCssClass) ? null : 'ge-export-svg-' + theme;
+			
+			if (cssClass != null)
+			{
+				result.setAttribute('class', cssClass);
+			}
+
+			var style = Graph.createSvgDarkModeStyle(result.ownerDocument, theme, cssClass, background);
+			result.getElementsByTagName('defs')[0].appendChild(style);
+		}
+		
 		var extFonts = this.getCustomFonts();
 		
 		// Adds external fonts
@@ -6550,7 +6984,7 @@
 				
 				if (Graph.isCssFontUrl(fontUrl))
 				{
-					prefix += '@import url(' + fontUrl + ');\n';
+					prefix += '@import url(' + Graph.rewriteGoogleFontUrl(fontUrl) + ');\n';
 				}
 				else
 				{
@@ -6570,6 +7004,19 @@
 			document.body.appendChild(result);
 			Editor.MathJaxRender(result);
 			result.parentNode.removeChild(result);
+
+			// Copies MathJax CSS to output
+			var style = result.ownerDocument.getElementById('MJX-SVG-styles');
+
+			if (style != null)
+			{
+				result.getElementsByTagName('defs')[0].appendChild(style.cloneNode(true));
+			}
+		}
+
+		if (bgImg != null)
+		{
+			this.backgroundImage = bgImg;
 		}
 		
 		if (temp != null)
@@ -6692,46 +7139,6 @@
 	};
 
 	/**
-	 * Adds workaround for math rendering in Chrome.
-	 * 
-	 * Workaround for https://bugs.webkit.org/show_bug.cgi?id=93358 in WebKit
-	 * 
-	 * Adding an absolute position DIV before the SVG seems to mitigate the problem.
-	 */
-	var graphViewValidateBackgroundPage = mxGraphView.prototype.validateBackgroundPage;
-	
-	mxGraphView.prototype.validateBackgroundPage = function()
-	{
-		graphViewValidateBackgroundPage.apply(this, arguments);
-		
-		if (mxClient.IS_GC && this.getDrawPane() != null)
-		{
-			var g = this.getDrawPane().parentNode;
-			
-			if (this.graph.mathEnabled && !mxClient.NO_FO &&
-				(this.webKitForceRepaintNode == null ||
-				this.webKitForceRepaintNode.parentNode == null) &&
-				this.graph.container.firstChild.nodeName == 'svg')
-			{
-				this.webKitForceRepaintNode = document.createElement('div');
-				this.webKitForceRepaintNode.style.cssText = 'position:absolute;';
-				g.ownerSVGElement.parentNode.insertBefore(this.webKitForceRepaintNode, g.ownerSVGElement);
-			}
-			else if (this.webKitForceRepaintNode != null && (!this.graph.mathEnabled ||
-					(this.graph.container.firstChild.nodeName != 'svg' &&
-					this.graph.container.firstChild != this.webKitForceRepaintNode)))
-			{
-				if (this.webKitForceRepaintNode.parentNode != null)
-				{
-					this.webKitForceRepaintNode.parentNode.removeChild(this.webKitForceRepaintNode);
-				}
-				
-				this.webKitForceRepaintNode = null;
-			}
-		}
-	};
-
-	/**
 	 * Updates the SVG for the background image if it references another page.
 	 */
 	var graphRefresh = Graph.prototype.refresh;
@@ -6774,7 +7181,7 @@
 	 * 
 	 * This toggles the visible state of the cells with ID 3 and 4.
 	 */
-	Graph.prototype.handleCustomLink = function(href)
+	Graph.prototype.handleCustomLink = function(href, cell)
 	{
 		if (href.substring(0, 17) == 'data:action/json,')
 		{
@@ -6782,7 +7189,7 @@
 
 			if (link.actions != null)
 			{
-				this.executeCustomActions(link.actions);
+				this.executeCustomActions(link.actions, null, cell);
 			}
 		}
 	};
@@ -6792,7 +7199,7 @@
 	 * When adding new actions that reference cell IDs support for updating
 	 * those cell IDs must be handled in Graph.updateCustomLinkActions
 	 */
-	Graph.prototype.executeCustomActions = function(actions, done)
+	Graph.prototype.executeCustomActions = function(actions, done, cell)
 	{
 		if (!this.executingCustomActions)
 		{
@@ -6847,7 +7254,7 @@
 
 						if (this.isCustomLink(action.open))
 						{
-							if (!this.customLinkClicked(action.open))
+							if (!this.customLinkClicked(action.open, cell))
 							{
 								return;
 							}
@@ -6978,18 +7385,48 @@
 					{
 						this.scrollCellToVisible(cells[0]);
 					}
+					
+					if (cell != null && action.explore != null)
+					{
+						Graph.exploreFromCell(this, cell, action.explore);
+					}
 
 					if (action.tags != null)
 					{
-						var hidden = [];
+						if (action.tags.toggle != null)
+						{
+							var tags = action.tags.toggle;
+
+							if (tags.length == 0)
+							{
+								tags = this.getAllTags();
+							}
+
+							for (var i = 0; i < tags.length; i++)
+							{
+								this.toggleHiddenTag(tags[i]);
+							}
+						}
 						
+						var hidden = null;
+
 						if (action.tags.hidden != null)
 						{
+							if (hidden == null)
+							{
+								hidden = [];
+							}
+							
 							hidden = hidden.concat(action.tags.hidden);
 						}
 
 						if (action.tags.visible != null)
 						{
+							if (hidden == null)
+							{
+								hidden = [];
+							}
+
 							var all = this.getAllTags();
 
 							for (var i = 0; i < all.length; i++)
@@ -7002,7 +7439,11 @@
 							}
 						}
 
-						this.setHiddenTags(hidden);
+						if (hidden != null)
+						{
+							this.setHiddenTags(hidden);
+						}
+
 						this.refresh();
 					}
 
@@ -7371,6 +7812,7 @@
 		
 		return result;
 	};
+
 	/**
 	 * Returns all tags in the diagram.
 	 */
@@ -7819,7 +8261,7 @@
 	mxStencilRegistry.libraries['cisco_safe'] = [SHAPES_PATH + '/mxCiscoSafe.js', STENCIL_PATH + '/cisco_safe/architecture.xml', STENCIL_PATH + '/cisco_safe/business_icons.xml', STENCIL_PATH + '/cisco_safe/capability.xml', STENCIL_PATH + '/cisco_safe/design.xml', STENCIL_PATH + '/cisco_safe/iot_things_icons.xml', STENCIL_PATH + '/cisco_safe/people_places_things_icons.xml', STENCIL_PATH + '/cisco_safe/security_icons.xml', STENCIL_PATH + '/cisco_safe/technology_icons.xml', STENCIL_PATH + '/cisco_safe/threat.xml'];
 	mxStencilRegistry.libraries['dfd'] = [SHAPES_PATH + '/mxDFD.js'];
 	mxStencilRegistry.libraries['er'] = [SHAPES_PATH + '/er/mxER.js'];
-	mxStencilRegistry.libraries['kubernetes'] = [SHAPES_PATH + '/mxKubernetes.js', STENCIL_PATH + '/kubernetes.xml'];
+	mxStencilRegistry.libraries['kubernetes'] = [SHAPES_PATH + '/mxKubernetes.js', STENCIL_PATH + '/kubernetes.xml', STENCIL_PATH + '/kubernetes2.xml'];
 	mxStencilRegistry.libraries['flowchart'] = [SHAPES_PATH + '/mxFlowchart.js', STENCIL_PATH + '/flowchart.xml'];
 	mxStencilRegistry.libraries['ios'] = [SHAPES_PATH + '/mockup/mxMockupiOS.js'];
 	mxStencilRegistry.libraries['rackGeneral'] = [SHAPES_PATH + '/rack/mxRack.js', STENCIL_PATH + '/rack/general.xml'];
@@ -7865,6 +8307,8 @@
 	mxStencilRegistry.libraries['pid2misc'] = [SHAPES_PATH + '/pid2/mxPidMisc.js', STENCIL_PATH + '/pid/misc.xml'];
 	mxStencilRegistry.libraries['pid2valves'] = [SHAPES_PATH + '/pid2/mxPidValves.js'];
 	mxStencilRegistry.libraries['pidFlowSensors'] = [STENCIL_PATH + '/pid/flow_sensors.xml'];
+	mxStencilRegistry.libraries['salesforce'] = [STENCIL_PATH + '/salesforce.xml'];
+	mxStencilRegistry.libraries['emoji'] = [SHAPES_PATH + '/emoji/mxEmoji.js'];
 
 	// Triggers dynamic loading for markers
 	mxMarker.getPackageForType = function(type)
@@ -8351,7 +8795,8 @@
 						if (editorUi.editor.fontCss != null)
 						{
 							doc.writeln('<style type="text/css">');
-							doc.writeln(editorUi.editor.fontCss);
+							doc.writeln(mxUtils.htmlEntities(editorUi.editor.fontCss,
+								false, false, false));
 							doc.writeln('</style>');
 						}
 						
@@ -8365,7 +8810,7 @@
 							if (Graph.isCssFontUrl(fontUrl))
 							{
 						   		doc.writeln('<link rel="stylesheet" href="' +
-						   			mxUtils.htmlEntities(fontUrl) +
+						   			mxUtils.htmlEntities(Graph.rewriteGoogleFontUrl(fontUrl)) +
 						   			'" charset="UTF-8" type="text/css">');
 							}
 							else
@@ -8378,6 +8823,19 @@
 							}
 						}
 					};
+
+					// Adapts background images
+					if (Editor.enableCssDarkMode)
+					{
+						var printGetBackgroundImage = pv.getBackgroundImage;
+						
+						pv.getBackgroundImage = function()
+						{
+							return graph.adaptBackgroundPage(
+								printGetBackgroundImage.apply(
+									this, arguments));
+						};
+					}
 					
 					if (typeof(MathJax) !== 'undefined')
 					{
@@ -8633,7 +9091,7 @@
 				pv = printGraph(graph);
 			}
 			
-			if (pv == null)
+			if (pv == null || pv.wnd == null)
 			{
 				editorUi.handleError({message: mxResources.get('errorUpdatingPreview')});
 			}
@@ -8651,7 +9109,7 @@
 						pv.wnd.IMMEDIATE_PRINT = true;
 					}
 
-					doc.writeln('<script type="text/javascript" src="' + DRAWIO_BASE_URL + '/js/math-print.js"></script>');
+					doc.writeln('<script type="text/javascript" src="js/math-print.js"></script>');
 				}
 				
 				pv.closeDocument();
@@ -8690,7 +9148,7 @@
 		{
 			var helpBtn = mxUtils.button(mxResources.get('help'), function()
 			{
-				graph.openLink('https://www.diagrams.net/doc/faq/print-diagram');
+				graph.openLink('https://www.drawio.com/doc/faq/print-diagram');
 			});
 			
 			helpBtn.className = 'geBtn';

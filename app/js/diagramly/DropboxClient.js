@@ -1,6 +1,6 @@
 /**
- * Copyright (c) 2006-2017, JGraph Ltd
- * Copyright (c) 2006-2017, Gaudenz Alder
+ * Copyright (c) 2006-2024, JGraph Ltd
+ * Copyright (c) 2006-2024, draw.io AG
  */
 //Add a closure to hide the class private variables without changing the code a lot
 (function()
@@ -41,7 +41,7 @@ DropboxClient.prototype.maxRetries = 4;
 
 DropboxClient.prototype.clientId = window.DRAWIO_DROPBOX_ID;
 
-DropboxClient.prototype.redirectUri = window.location.protocol + '//' + window.location.host + '/dropbox';
+DropboxClient.prototype.redirectUri = window.DRAWIO_SERVER_URL + 'dropbox';
 
 /**
  * Authorizes the client, gets the userId and calls <open>.
@@ -49,7 +49,7 @@ DropboxClient.prototype.redirectUri = window.location.protocol + '//' + window.l
 DropboxClient.prototype.logout = function()
 {
 	//Send to server to clear refresh token cookie
-	this.ui.editor.loadUrl(this.redirectUri + '?doLogout=1&state=' + encodeURIComponent('cId=' + this.clientId + '&domain=' + window.location.hostname));
+	this.ui.editor.loadUrl(this.redirectUri + '?doLogout=1&state=' + encodeURIComponent('cId=' + this.clientId + '&domain=' + window.location.host));
 	this.clearPersistentToken();
 	this.setUser(null);
 	_token = null;
@@ -143,16 +143,23 @@ DropboxClient.prototype.authenticateStep2 = function(state, success, error)
 			
 			if (authRemembered != null)
 			{
-				var req = new mxXmlRequest(this.redirectUri + '?state=' + encodeURIComponent('cId=' + this.clientId + '&domain=' + window.location.hostname + '&token=' + state), null, 'GET'); //To identify which app/domain is used
+				var req = new mxXmlRequest(this.redirectUri + '?state=' + encodeURIComponent('cId=' + this.clientId + '&domain=' + window.location.host + '&token=' + state), null, 'GET'); //To identify which app/domain is used
 				
 				req.send(mxUtils.bind(this, function(req)
 				{
 					if (req.getStatus() >= 200 && req.getStatus() <= 299)
 					{
-						_token = JSON.parse(req.getText()).access_token;
-						this.client.setAccessToken(_token);
-						this.setUser(null);
-						success();
+						try
+						{
+							_token = JSON.parse(req.getText()).access_token;
+							this.client.setAccessToken(_token);
+							this.setUser(null);
+							success();
+						}
+						catch (e)
+						{
+							error({message: mxResources.get('authFailed'), retry: auth});
+						}
 					}
 					else 
 					{
@@ -180,7 +187,7 @@ DropboxClient.prototype.authenticateStep2 = function(state, success, error)
 						this.clientId + (remember? '&token_access_type=offline' : '') +
 						'&redirect_uri=' + encodeURIComponent(this.redirectUri) +
 						'&response_type=code&state=' + encodeURIComponent('cId=' + this.clientId + //To identify which app/domain is used
-							'&domain=' + window.location.hostname + '&token=' + state), 'dbauth');
+							'&domain=' + window.location.host + '&token=' + state), 'dbauth');
 					
 					if (win != null)
 					{
