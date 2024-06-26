@@ -1,5 +1,18 @@
 # Changelog
 
+## [1.4.1](https://github.com/INCYDE-GmbH/drawio-plugin-attackgraphs/compare/v1.4.0...v1.4.1) - 2024-06-26
+
+## Internals
+
+- Only run GitHub Actions if necessary files are changed ([#153](https://github.com/INCYDE-GmbH/drawio-plugin-attackgraphs/pull/153))
+- Fix security vulnerability: Bump express from 4.19.1 to 4.19.2 ([#151](https://github.com/INCYDE-GmbH/drawio-plugin-attackgraphs/pull/151))
+- Fix security vulnerability: Bump braces from 3.0.2 to 3.0.3 ([#150](https://github.com/INCYDE-GmbH/drawio-plugin-attackgraphs/pull/150))
+- Fix security vulnerability: Bump ws from 8.16.0 to 8.17.1 ([#149](https://github.com/INCYDE-GmbH/drawio-plugin-attackgraphs/pull/149))
+- Update draw.io webversion to v24.2.0 ([#148](https://github.com/INCYDE-GmbH/drawio-plugin-attackgraphs/pull/148))
+- Update dependencies to fix some vulernabilities in dev environment ([#147](https://github.com/INCYDE-GmbH/drawio-plugin-attackgraphs/pull/147))
+- Bump versions of GitHub Action ([#146](https://github.com/INCYDE-GmbH/drawio-plugin-attackgraphs/pull/146))
+- Fix security vulnerability: Bump webpack-dev-middleware from 5.3.3 to 5.3.4 ([#145](https://github.com/INCYDE-GmbH/drawio-plugin-attackgraphs/pull/145))
+
 ## [1.4.0](https://github.com/INCYDE-GmbH/drawio-plugin-attackgraphs/compare/v1.3.0...v1.4.0) - 2023-06-27
 
 ## Added
