@@ -2,7 +2,23 @@ name: Draw.io Plugin CI
 
 on:
   push:
+    paths:
+      - .github/worklfows/node.js.yml
+      - docker/**
+      - src/**
+      - package-lock.json
+      - package.json
+      - '**.ts'
+      - '**.js'
   pull_request:
+    paths:
+      - .github/worklfows/node.js.yml
+      - docker/**
+      - src/**
+      - package-lock.json
+      - package.json
+      - '**.ts'
+      - '**.js'
 
 jobs:
   # https://github.com/orgs/community/discussions/27031#discussioncomment-3254376

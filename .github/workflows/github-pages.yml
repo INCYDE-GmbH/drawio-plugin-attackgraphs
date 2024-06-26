@@ -2,6 +2,15 @@ name: GitHub Pages
 
 on:
   push:
+    paths:
+      - .github/worklfows/github-pages.yml
+      - docker/**
+      - docs/**
+      - src/**
+      - package-lock.json
+      - package.json
+      - '**.ts'
+      - '**.js'
     branches:
       - main
 
