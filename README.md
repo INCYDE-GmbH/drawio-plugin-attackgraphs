@@ -6,6 +6,8 @@
 
 Please find the detailed documentation [here](https://incyde-gmbh.github.io/drawio-plugin-attackgraphs/).
 
+The browser-based version can be launched [here](https://incyde-gmbh.github.io/drawio-plugin-attackgraphs/app).
+
 ## Technical Documentation
 
 - [Overview of the Plugin](/docs/technical/plugin.md)
@@ -75,3 +77,7 @@ After the webserver started, the tests can be run using the following command:
 ```
 npm run test
 ```
+
+## Contact
+
+Markus Heinrich – markus.heinrich@incyde.com
