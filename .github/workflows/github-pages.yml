@@ -3,7 +3,7 @@ name: GitHub Pages
 on:
   push:
     paths:
-      - '.github/worklfows/github-pages.yml'
+      - '.github/workflows/github-pages.yml'
       - 'docker/**'
       - 'docs/**'
       - 'src/**'

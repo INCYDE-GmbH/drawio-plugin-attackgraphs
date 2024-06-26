@@ -3,7 +3,7 @@ name: Draw.io Plugin CI
 on:
   push:
     paths:
-      - '.github/worklfows/node.js.yml'
+      - '.github/workflows/node.js.yml'
       - 'docker/**'
       - 'src/**'
       - 'package-lock.json'
@@ -12,7 +12,7 @@ on:
       - '**.js'
   pull_request:
     paths:
-      - '.github/worklfows/node.js.yml'
+      - '.github/workflows/node.js.yml'
       - 'docker/**'
       - 'src/**'
       - 'package-lock.json'
