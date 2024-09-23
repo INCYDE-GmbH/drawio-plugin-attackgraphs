@@ -132,6 +132,7 @@ export class Menubar {
     ui.actions.addAction('attackGraphs.openImportTemplateDialog', () => {
       // https://stackoverflow.com/a/40971885
       const input = document.createElement('input');
+      input.accept = 'application/json';
       input.type = 'file';
       input.onchange = e => {
         void (async () => {
