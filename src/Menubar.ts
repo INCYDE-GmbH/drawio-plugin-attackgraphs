@@ -167,7 +167,13 @@ export class Menubar {
     });
 
     ui.actions.addAction('attackGraphs.documentation', () => {
-      window.open('https://incyde-gmbh.github.io/drawio-plugin-attackgraphs/', '_blank')?.focus();
+      void (async () => {
+        // With Electron, window.open() returns a Promise instead of a WindowProxy.
+        // For increased compatability, we always await the returned value.
+        // eslint-disable-next-line @typescript-eslint/await-thenable
+        const proxy = await window.open('https://incyde-gmbh.github.io/drawio-plugin-attackgraphs/', '_blank');
+        proxy && proxy.focus();
+      })();
     });
 
     ui.actions.addAction('attackGraphs.showVersion', () => {
