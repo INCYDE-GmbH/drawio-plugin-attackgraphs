@@ -1,5 +1,19 @@
 # Changelog
 
+## [Unreleased](https://github.com/INCYDE-GmbH/drawio-plugin-attackgraphs/compare/v1.4.1...develop)
+
+## Fixes and Improvements
+
+- Fix: Template import/export string can be misleading ([#163](https://github.com/INCYDE-GmbH/drawio-plugin-attackgraphs/pull/163))
+- Fix: Open the documentation presents error ([#155](https://github.com/INCYDE-GmbH/drawio-plugin-attackgraphs/issues/155))
+
+## Internals
+
+- Fix security vulnerability: Bump webpack from 5.91.0 to 5.94.0 ([#162](https://github.com/INCYDE-GmbH/drawio-plugin-attackgraphs/pull/162))
+- Fix security vulnerability: Bump serve-static and express ([#161](https://github.com/INCYDE-GmbH/drawio-plugin-attackgraphs/pull/161))
+- Fix security vulnerability: Bump send and express ([#160](https://github.com/INCYDE-GmbH/drawio-plugin-attackgraphs/pull/160))
+- Fix security vulnerability: Bump body-parser and express ([#158](https://github.com/INCYDE-GmbH/drawio-plugin-attackgraphs/pull/158))
+
 ## [1.4.1](https://github.com/INCYDE-GmbH/drawio-plugin-attackgraphs/compare/v1.4.0...v1.4.1) - 2024-06-26
 
 ## Internals
