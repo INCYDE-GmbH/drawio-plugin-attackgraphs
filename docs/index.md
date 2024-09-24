@@ -33,8 +33,8 @@ If you want to use the templates in the desktop version, you can download them, 
 If you want to use the attributes and functions of the analysis methods "RKL" and "TS 50701" in your graph, you can import them via `Attack Graphs > Import Attributes and Functions...`.
 Download the templates here:
 
-- <a href="https://github.com/INCYDE-GmbH/drawio-plugin-attackgraphs/releases/latest/download/AttackGraphTemplate_RKL.json" download>RKL attributes and functions template</a>
-- <a href="https://github.com/INCYDE-GmbH/drawio-plugin-attackgraphs/releases/latest/download/AttackGraphTemplate_TS50701.json" download>TS 50701 attributes and functions template</a>
+- <a href="https://github.com/INCYDE-GmbH/drawio-plugin-attackgraphs/releases/latest/download/Attributes_Functions_RKL.json" download>RKL attributes and functions template</a>
+- <a href="https://github.com/INCYDE-GmbH/drawio-plugin-attackgraphs/releases/latest/download/Attributes_Functions_TS50701.json" download>TS 50701 attributes and functions template</a>
 
 If you started from an Attack Graph template of the analysis method, there is no need to import attributes and functions as they were already contained in the graph template.
 
