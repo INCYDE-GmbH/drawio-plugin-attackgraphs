@@ -36,8 +36,12 @@ self.onmessage = function(e: MessageEvent<WorkerRequest>) {
     void (async () => {
       try {
         const result = await self.fetch('https://api.github.com/repos/INCYDE-GmbH/drawio-plugin-attackgraphs/releases/latest');
-        const json = await result.json() as {[id:string]: string};
-        returnValue(json);
+        if (result.ok) {
+          const json = await result.json() as {[id:string]: string};
+          returnValue(json);
+        } else {
+          returnValue(undefined, 'Could not fetch version number of latest release.');
+        }        
       } catch (e) {
         if (e instanceof Error) {
           returnValue(undefined, e.message);

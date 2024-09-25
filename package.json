@@ -1,6 +1,6 @@
 {
   "name": "drawio-plugin-attackgraphs",
-  "version": "1.4.1",
+  "version": "1.4.2",
   "description": "An Attack Graphs Extension for Draw.io",
   "main": "index.js",
   "private": true,
@@ -26,7 +26,7 @@
     "eslint-plugin-github": "^4.3.5",
     "ts-loader": "^9.2.6",
     "typescript": "^4.4.3",
-    "webpack": "^5.76.2",
+    "webpack": "^5.94.0",
     "webpack-cli": "^5.0.1",
     "webpack-dev-server": "^4.13.1"
   },
