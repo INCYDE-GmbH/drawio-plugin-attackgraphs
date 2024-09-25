@@ -1,11 +1,12 @@
 # Changelog
 
-## [Unreleased](https://github.com/INCYDE-GmbH/drawio-plugin-attackgraphs/compare/v1.4.1...develop)
+## [1.4.2](https://github.com/INCYDE-GmbH/drawio-plugin-attackgraphs/compare/v1.4.1...v1.4.2) - 2024-09-25
 
 ## Fixes and Improvements
 
 - Fix: Template import/export string can be misleading ([#163](https://github.com/INCYDE-GmbH/drawio-plugin-attackgraphs/pull/163))
 - Fix: Open the documentation presents error ([#155](https://github.com/INCYDE-GmbH/drawio-plugin-attackgraphs/issues/155))
+- Fix: Show appropriate error message when unable to fetch version from GitHub API ([e11e59a](https://github.com/INCYDE-GmbH/drawio-plugin-attackgraphs/commit/e11e59ae53d751c49d3f3fef6c197329ecd570ff))
 
 ## Internals
 
