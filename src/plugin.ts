@@ -98,7 +98,7 @@ Draw.loadPlugin(ui => {
   });
 
 
-  ui.editor.graph.model.addListener(mxEvent.CHANGE, (sender, evt: import('mxgraph').mxEventObject) => {
+  ui.editor.graph.model.addListener(mxEvent.CHANGE, (_, evt: import('mxgraph').mxEventObject) => {
     const cells: {[id: string]: import('mxgraph').mxCell} = {};
     const deferCellUpdate = (cell: import('mxgraph').mxCell) => {
       if (!Object.prototype.hasOwnProperty.call(cells, cell.id)) {

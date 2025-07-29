@@ -12,7 +12,7 @@ export class AttackGraphNodeShape extends mxRectangleShape {
     super(bounds, fill, stroke, strokewidth);
   }
 
-  drawAttributeShapes(c: import('mxgraph').mxAbstractCanvas2D, x: number, y: number, w: number, h: number, attrs: NodeValues): void {
+  drawAttributeShapes(c: import('mxgraph').mxAbstractCanvas2D, x: number, y: number, _: number, h: number, attrs: NodeValues): void {
     const opacity = mxUtils.getValue(this.state?.style, 'opacity', '100') as string;
     c.translate(x, y);
 

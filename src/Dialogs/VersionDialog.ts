@@ -40,6 +40,7 @@ export class VersionDialog {
         this.height,
         true,
         false,
+        // eslint-disable-next-line @typescript-eslint/prefer-promise-reject-errors
         () => (this.closed) ? resolve() : reject(),
         true,
         false,
@@ -96,13 +97,16 @@ export class VersionDialog {
           this.release = e.data.result as Release;
           resolve(this.release);
         } else if (e.data.error) {
+          // eslint-disable-next-line @typescript-eslint/prefer-promise-reject-errors
           reject(e.data.error);
         } else {
+          // eslint-disable-next-line @typescript-eslint/prefer-promise-reject-errors
           reject(mxResources.get('attackGraphs.updateError'));
         }
         worker.terminate();
       };
-      worker.onerror = (e: ErrorEvent) => {        
+      worker.onerror = (e: ErrorEvent) => {     
+        // eslint-disable-next-line @typescript-eslint/prefer-promise-reject-errors   
         reject(e.message);
         worker.terminate();
       };

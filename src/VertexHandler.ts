@@ -60,7 +60,7 @@ abstract class Handle {
 
   abstract redraw(state: import('mxgraph').mxCellState): void;
   protected abstract createHandle(): HTMLElement;
-  protected abstract clicked(handle: Handle): void;
+  protected abstract clicked(handle: Handle): Promise<void>;
 }
 
 class TooltipHandle extends Handle {
@@ -76,8 +76,8 @@ class TooltipHandle extends Handle {
     this.getHandle().style.top = `${state.y}px`;
   }
 
-  protected clicked(): void {
-    return;
+  protected clicked(): Promise<void> {
+    return new Promise(() => {});
   }
 
   protected createHandle(): HTMLElement {

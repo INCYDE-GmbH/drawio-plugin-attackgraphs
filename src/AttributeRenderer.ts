@@ -244,7 +244,7 @@ export class AttributeRenderer {
 
     try {
       return await this.runAggregationFunctionWorker(aggregationFunction.fn, childAttributes, worker);
-    } catch (e) {
+    } catch (_) {
       return {};
     }
   }
@@ -275,7 +275,7 @@ export class AttributeRenderer {
   private static async runLabelFunctionWorker(labelFunction: AttackgraphFunction, attributes: CellDataCollection, worker: AsyncWorker): Promise<KeyValuePairs> {
     try {
       return await worker.runWorkerFunction<CellDataCollection, KeyValuePairs>(labelFunction.fn, attributes);
-    } catch (e) {      
+    } catch (_) {      
       return {};
     }
   }

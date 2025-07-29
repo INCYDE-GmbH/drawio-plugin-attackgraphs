@@ -1,9 +1,6 @@
-version: '3.8'
-
 services:
   app:
     build: .
-    image: drawio-plugin-attackgraphs:1.4.0
     container_name: drawio
     ports:
       - '127.0.0.1:8000:8080'

@@ -1,22 +1,29 @@
-const path = require('path');
-const version = require('./package.json').version;
-const webpack = require('webpack');
-const CopyPlugin = require('copy-webpack-plugin');
+import path from "path";
+import { fileURLToPath } from "url";
 
-const commitHash = require('child_process')
+import packageJSON from './package.json' with {type: 'json'};
+import webpack from 'webpack';
+import CopyPlugin from 'copy-webpack-plugin';
+
+import child_process from 'child_process';
+
+const commitHash = child_process
   .execSync('git rev-parse --short HEAD')
   .toString()
   .trim();
 
 const LAUNCH_COMMAND = process.env.npm_lifecycle_event;
 
-module.exports = {
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+export default {
   entry: './src/index.ts',
   devtool: 'source-map',
   plugins: [
     new webpack.DefinePlugin({
       __COMMIT_HASH__: JSON.stringify(commitHash),
-      __VERSION__: JSON.stringify(version),
+      __VERSION__: JSON.stringify(packageJSON.version),
       __DEVELOPMENT__: LAUNCH_COMMAND === 'watch',
     }),
     new CopyPlugin({
@@ -47,12 +54,13 @@ module.exports = {
     static: {
       directory: path.join(__dirname, 'dist'),
     },
-    proxy: {
-      '/': {
+    proxy: [
+      {
+        context: ['/'],
         target: 'https://jgraph.github.io/drawio/src/main/webapp',
         changeOrigin: true,
       },
-    },
+    ],
     compress: true,
     port: 8000,
   }

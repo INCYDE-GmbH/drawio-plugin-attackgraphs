@@ -2,6 +2,7 @@ node_modules/
 dist/
 .vscode/
 playwright-report/
+test-results/
 
 *.dtmp
 *.drawio.bkp
