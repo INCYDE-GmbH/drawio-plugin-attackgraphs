@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.4.3](https://github.com/INCYDE-GmbH/drawio-plugin-attackgraphs/compare/v1.4.1...v1.4.3) - 2025-07-29
+
+## Fixes and Improvements
+
+- Update package.json dependencies
+- Update eslint configuration and fix errors
+- Update GitHub Actions workflow
+
 ## [1.4.2](https://github.com/INCYDE-GmbH/drawio-plugin-attackgraphs/compare/v1.4.1...v1.4.2) - 2024-09-25
 
 ## Fixes and Improvements
