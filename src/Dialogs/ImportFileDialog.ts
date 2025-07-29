@@ -22,13 +22,16 @@ export class ImportFileDialog extends FileDialog {
             if (readerEvt.target && readerEvt.target.result) {
               resolve(readerEvt.target.result as string);
             } else {
+              // eslint-disable-next-line @typescript-eslint/prefer-promise-reject-errors
               reject(mxResources.get('error'));
             }
           };
         } else {
+          // eslint-disable-next-line @typescript-eslint/prefer-promise-reject-errors
           reject(mxResources.get('attackgraphs.alertSelectSingleFile'));
         }
       } else {
+        // eslint-disable-next-line @typescript-eslint/prefer-promise-reject-errors
         reject(mxResources.get('error'));
       }
     });
