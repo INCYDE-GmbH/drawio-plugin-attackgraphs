@@ -1,6 +1,13 @@
 # Changelog
 
-## [1.4.3](https://github.com/INCYDE-GmbH/drawio-plugin-attackgraphs/compare/v1.4.1...v1.4.3) - 2025-07-29
+## [1.4.4](https://github.com/INCYDE-GmbH/drawio-plugin-attackgraphs/compare/v1.4.3...v1.4.4) - 2025-09-04
+
+## Fixes and Improvements
+
+- Fix: version string not updated in package.json
+- Update package.json dependencies
+
+## [1.4.3](https://github.com/INCYDE-GmbH/drawio-plugin-attackgraphs/compare/v1.4.2...v1.4.3) - 2025-07-29
 
 ## Fixes and Improvements
 
